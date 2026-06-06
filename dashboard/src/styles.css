@@ -162,8 +162,8 @@ button {
 .header-title {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  width: max-content; /* = 한글 줄 너비 */
+  align-items: flex-start; /* 각 줄이 자연 폭(stretch 금지) → 폭 측정/매칭 정확 */
+  width: max-content;
   line-height: 1.1;
 }
 .header-title-main {
@@ -174,10 +174,9 @@ button {
 }
 .header-title-sub {
   font-weight: 700;
-  font-size: 12px;
+  font-size: 12px; /* = SUB_BASE; 실제 크기는 Header가 한글 폭에 맞춰 인라인 지정 */
   color: var(--text-dim);
-  text-align: justify;
-  text-align-last: justify; /* 영문을 한글 줄 길이에 맞춤(폰트 길이 매칭) */
+  white-space: nowrap; /* 폭 측정/매칭을 위해 한 줄 유지 */
 }
 
 .header-lights {
