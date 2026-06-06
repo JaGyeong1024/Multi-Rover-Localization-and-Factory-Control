@@ -1,0 +1,13 @@
+# map.json-based mission scenario. Nodes from map.json zones/shelves.
+# leader_standby zone -> node 22, loading zone -> node 20, parts on shelves (-> nodes 29, 28).
+standby_node: 22         # leader wait zone (leader_standby zone)
+unloading_node: 20       # follower drop-off (loading zone, 하역)
+follower_home_node: 24   # follower's OWN wait zone (follower zone), separate from drop-off
+capacity: 4
+position_tol: 0.20     # m (parts sit ~0.2m off the lane node, on the shelf)
+pick_dwell: 8.0
+drop_dwell: 2.0
+
+parts:
+  - {id: gear_01, x: 5.3864, y: 2.6859}   # shelf 0 -> node 29
+  - {id: gear_02, x: 5.3864, y: 4.1274}   # shelf 1 -> node 28

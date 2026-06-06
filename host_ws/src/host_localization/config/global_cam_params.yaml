@@ -1,0 +1,51 @@
+camera_publisher_node:
+  ros__parameters:
+    device: "/dev/global_cam"     # udev 심링크 (없으면 노드가 /dev/video2 폴백)
+    width: 1920                   # BRIO USB2 링크 최대. 4K 필요 시 USB3 + 값 변경
+    height: 1080
+    fps: 30
+    compressed_topic: "/global_cam/image_raw/compressed"  # compressed-only (base name = /global_cam/image_raw)
+    jpeg_quality: 80
+    frame_id: "global_cam"
+
+    # ── Layer 1: GEOMETRIC only (intrinsic phase) ────────────────────────────
+    # K,D(내부행렬)는 줌·포커스·해상도만 의존. 노출/게인/WB(Layer 2)는 K,D 무관이라
+    # 노드가 exposure AUTO로 둔다(체커보드만 보이면 됨). 천장 장착 거리에서 focus를
+    # 고정하고 calib == runtime 동일 값을 써야 K,D가 그대로 전이된다.
+    zoom_absolute: 100              # 1x (디지털 줌 = 크롭 → 다른 focal length)
+    focus_automatic_continuous: 0   # autofocus OFF
+    focus_absolute: 0               # 0 = 무한대(먼 초점) — 천장 ~3m에 적합. calib==runtime 동일
+    # Layer 2(노출/게인/WB/밝기/색)는 최종 runtime 노드(global_cam_node)가 freeze 적용.
+
+# ── FINAL runtime 노드 ───────────────────────────────────────────────────────
+# 전체 freeze(geometric+photometric, manual exposure) 적용 + camera_info(K,D) 발행.
+# v4l2 컨트롤 값은 camera_io.DEFAULT_CONTROLS(단일 SoT)에서 옴 — 여기 중복 안 둠
+# (calib==runtime 픽셀 동일 보장). 특정 컨트롤만 임시로 덮고 싶으면 키를 추가하면 됨.
+global_cam_node:
+  ros__parameters:
+    device: "/dev/global_cam"
+    width: 1920
+    height: 1080
+    fps: 30
+    compressed_topic: "/global_cam/image_raw/compressed"
+    camera_info_topic: "/global_cam/camera_info"
+    jpeg_quality: 80
+    frame_id: "global_cam"
+    # intrinsic(K,D) npz — charuco 캘리 산출물. camera_info 발행에 사용.
+    # (charuco 스크립트 기본 출력은 ~/ 이나, 산출물은 repo의 data/calibration/로 정리함.)
+    intrinsic_path: "/home/a/capstone/data/calibration/charuco_intrinsics.npz"
+
+    # ── 처리단계 파이프라인 (raw → rect → bev → processed) ────────────────────
+    # 외부캘리 산출물. bev/processed는 이 둘이 있어야 발행됨.
+    remap_path: "/home/a/.factory_calibration/remap.npz"
+    calibration_path: "/home/a/.factory_calibration/calibration.yaml"
+    rect_topic: "/global_cam/image_rect"            # undistort, 무압축 Image
+    bev_topic: "/global_cam/bev"                    # 지면 워프(undistort+H), 무압축 Image
+    processed_topic: "/global_cam/processed/compressed"  # ROI crop, 압축은 여기서만
+    # 무압축 1080p rect는 가장 무거움(전체 fps ~21까지 하락) — 안 쓰면 false로.
+    publish_rect: true
+    publish_bev: true
+    publish_processed: true
+    # processed crop ROI (world meters, uwb_global). zones.json(활동영역 +1cm 마진).
+    roi_x: [1.63, 5.73]
+    roi_y: [2.10, 4.64]

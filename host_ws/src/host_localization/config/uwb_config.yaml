@@ -1,0 +1,103 @@
+uwb_reader_node:
+  ros__parameters:
+    port: "/dev/ttyUWB"
+    baud_rate: 115200
+    frame_id: "uwb_global"
+    # 4-hex short tag ID (e.g. "08BA"). Leave empty to auto-lock the first
+    # observed tag — convenient for single-tag setups.
+    # Pinned to 08BA (leader): follower tag 31D4 may power up first, and an
+    # empty value would auto-lock the follower as "leader" by plug-in order.
+    leader_tag_id: "08BA"
+    # Second rover tag. Empty => no follower channel (single-tag setups).
+    # Publishes /uwb/follower_pose|_qf|_marker. (council DEF-003, 2026-05-31)
+    follower_tag_id: "31D4"
+    # Visualization sphere diameter in meters. 0.05 ≈ real tag size.
+    marker_scale: 0.05
+
+uwb_site:
+  ros__parameters:
+    # Firmware z is not trusted for evaluation/corrected output. Keep raw
+    # /uwb/leader_pose unchanged; use these constants only downstream.
+    tag_z_default: 0.185
+    tag_z_by_id:
+      - "08BA=0.185"      # leader 18.5cm 설치 (2026-06-03 사용자 확인; affine refit z=0.185와 일치)
+      - "31D4=0.090"      # follower 9cm 설치
+
+uwb_correction_node:
+  ros__parameters:
+    # 한 노드가 robots를 모두 보정 → /uwb/{robot}_pose_corrected. 계수 SSOT 단일 위치.
+    robots: ["leader", "follower"]
+    leader:
+      input_topic: "/uwb/leader_pose"
+      output_topic: "/uwb/leader_pose_corrected"
+      # Refit 2026-05-17 on uwb_20260516_223956_waypoint_static_newframe
+      # (z=0.185, wall-corner frame, 36 waypoints). ⚠ 다른 기종으로 잡은 fit — 재캘리 예정.
+      # Validation:
+      #   raw                   mean 15.9cm median 15.3 p90 25.5 max 39.5
+      #   affine (LOO honest)   mean 11.6cm median 10.6 p90 20.1 max 29.9
+      #   affine (full-bag)     mean 10.7cm median  9.8 p90 18.7 max 27.4
+      # Reduction: raw→affine LOO ~27%. Single-cell NLOS spikes not captured
+      # by global affine — use KF residual gating downstream.
+      model: "affine"
+      offset: [0.075407832, 0.079169054]
+      affine_x: [0.986821080, -0.019559413, 0.178495766]
+      affine_y: [0.010359302, 1.035218051, -0.061380870]
+      output_z_mode: "fixed"
+      fixed_z: 0.185      # leader 18.5cm (affine refit z=0.185와 일치)
+      marker_topic: "/uwb/leader_marker_corrected"
+      marker_scale: 0.10  # raw(0.05)보다 크게 — RViz 비교용
+    follower:
+      # ⚠ 임시(A, 2026-06-06): leader affine **재사용**. leader 높이(0.185) 전용 fit이라
+      # follower(z=0.09) 태그 성분(높이·안테나딜레이·본체NLOS) 미보정. 실측(BEV-GT) raw 24.5cm
+      # → leader-affine 16.4cm(-33%). follower 전용fit(in-sample 9.5cm)이 본책. TODO: 둘 다 웨이포인트 재캘리.
+      input_topic: "/uwb/follower_pose"
+      output_topic: "/uwb/follower_pose_corrected"
+      model: "affine"
+      offset: [0.075407832, 0.079169054]
+      affine_x: [0.986821080, -0.019559413, 0.178495766]
+      affine_y: [0.010359302, 1.035218051, -0.061380870]
+      output_z_mode: "fixed"
+      fixed_z: 0.090      # follower 9cm
+      marker_topic: "/uwb/follower_marker_corrected"
+      marker_scale: 0.10
+
+anchor_publisher_node:
+  ros__parameters:
+    frame_id: "uwb_global"
+    # Anchor short IDs (4-hex), ordered by physical label #1..#4.
+    # The publisher uses idx+1 to render labels as "anchor_1" .. "anchor_4",
+    # so this order MUST match the physical numbering on the hardware
+    # (matches firmware `la` seat 0..3).
+    anchor_ids: ["5E54", "1F1F", "2F65", "1C14"]
+    # Flat list, 3 values per anchor: x, y, z (meters). Order matches anchor_ids.
+    # Frame origin = demo-room wall corner (NOT an anchor). Room X=6.9m, Y=6.2m
+    # (laser-measured wall-to-wall). Coords measured to module surface indicator,
+    # not antenna phase center -- residual bias absorbed by affine correction.
+    anchor_positions:
+      # anchor_1 = 5E54 (top-left in reference/preview.webp)
+      - 0.070
+      - 0.030
+      - 0.520
+      # anchor_2 = 1F1F (bottom-left, +x side)
+      - 6.870
+      - 0.030
+      - 0.520
+      # anchor_3 = 2F65 (bottom-right, +x +y)
+      - 6.870
+      - 6.130
+      - 0.520
+      # anchor_4 = 1C14 (top-right, +y side)
+      - 0.030
+      - 6.130
+      - 0.520
+    cube_size: 0.08
+    label_height: 0.20
+    # ROI = anchor bbox shrunk inward by roi_buffer m on each side, drawn at
+    # z=roi_z. Set roi_buffer=0.0 to disable.
+    roi_buffer: 0.5
+    roi_z: 0.0
+    # Waypoint grid inside the ROI, numbered ㄹ-shape from row 0 col 0.
+    # rows x cols points; set either < 2 to disable.
+    waypoint_rows: 6
+    waypoint_cols: 6
+    waypoint_z: 0.0

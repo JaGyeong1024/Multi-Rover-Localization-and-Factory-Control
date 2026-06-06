@@ -1,0 +1,46 @@
+# Rover -> Host sensor bridge: FOLLOWER (domain 73 -> 30).
+#
+# Brings the follower's RAW proprioceptive sensors onto the host domain (30) for
+# host-side fusion (EKF / FGO). The rover is NOT modified — it already publishes
+# these on domain 73 via the classic turtlebot3_node (executable `turtlebot3_ros`).
+#
+# 2026-06-03 FIX (real bug): the follower runs the CLASSIC turtlebot3_node, which
+# publishes BARE /imu and /joint_states (namespace ""), NOT the ros2_control
+# `/imu_broadcaster/imu` this file previously assumed. The old name silently
+# bridged nothing — follower IMU never reached the host. Names below now match the
+# actual rover output (verified: follower_system.launch.py -> turtlebot3_ros,
+# namespace=""; imu.cpp publishes "imu"; joint_state.cpp publishes "joint_states").
+# (The leader bridge likely has the SAME stale name — verify on 164 separately.)
+#
+# Fusion boundary — decision: take RAW, fuse on host.
+#   /imu          -> /follower/imu          : gyro (w) + bias, raw full rate
+#   /joint_states -> /follower/joint_states : wheel angles -> linear v
+# We deliberately DO NOT bridge /odom: with `odometry.use_imu: true` (waffle_pi.yaml)
+# the rover already fuses the gyro into /odom yaw (double-count if combined with raw
+# /imu), and its covariance is an unset placeholder (TODO in odometry.cpp). The host
+# owns the fusion. (For raw encoder ticks use /sensor_state — needs turtlebot3_msgs
+# on the host; /joint_states avoids that extra dependency.)
+#
+# QoS: a best_effort subscription is reliability-compatible with BOTH reliable and
+# best_effort publishers, so it is the safe choice (a reliable subscription gets
+# nothing from a best_effort publisher). Verify live with `ros2 topic hz`.
+name: rover_bridge_follower
+from_domain: 73
+to_domain: 30
+topics:
+  imu:
+    type: sensor_msgs/msg/Imu
+    remap: follower/imu
+    qos:
+      reliability: best_effort
+  joint_states:
+    type: sensor_msgs/msg/JointState
+    remap: follower/joint_states
+    qos:
+      reliability: best_effort
+  # 배터리(classic turtlebot3_node가 /battery_state 발행) -> bag 기록용. 1Hz 저속.
+  battery_state:
+    type: sensor_msgs/msg/BatteryState
+    remap: follower/battery_state
+    qos:
+      reliability: best_effort

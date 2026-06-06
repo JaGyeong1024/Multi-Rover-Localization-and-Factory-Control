@@ -1,0 +1,6 @@
+# .venv_yolo (perception) — torch/torchvision는 setup.sh가 cu124 인덱스로 별도 설치(여기 두면 CPU휠 받힐 위험).
+# 호스트와 버전 핀(재현성). numpy 2.x는 perception 전용(cv_bridge 회피)이라 OK.
+ultralytics==8.4.60
+numpy==2.2.6
+opencv-python==4.13.0.92
+scipy==1.15.3

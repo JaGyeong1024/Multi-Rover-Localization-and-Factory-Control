@@ -1,0 +1,40 @@
+# Rover -> Host sensor bridge: LEADER (domain 25 -> 30).
+#
+# MASTER_PLAN K-2: the bridge runs on the HOST. We do not modify the rover at runtime
+# (the leader workspace was set up separately to run the ros2_control 4WD stack).
+#
+# 2026-06-03: the leader now runs the ros2_control (turtlebot3_manipulation) 4WD
+# stack (hardware.launch.py), NOT the classic turtlebot3_node. ros2_control
+# broadcasters publish with DIFFERENT names + QoS than classic — verified live on
+# domain 25 (all RELIABLE, ~14 Hz, publishing even at rest):
+#   IMU (raw)    -> /imu_broadcaster/imu    (sensor_msgs/Imu)
+#   wheel enc.   -> /joint_states           (sensor_msgs/JointState; wheel_left_joint
+#                                             + wheel_right_joint + arm joints)
+#   wheel odom   -> /odom (diff_drive_controller, wheel-only) — NOT bridged; host
+#                          fusion uses raw /joint_states + /imu, /odom excluded.
+# Re-published as /leader/imu, /leader/joint_states on domain 30 for host fusion /
+# offline bag recording.
+#
+# (Follower is still classic turtlebot3_node = bare /imu -> see bridge_follower.yaml.)
+name: rover_bridge_leader
+from_domain: 25
+to_domain: 30
+topics:
+  imu_broadcaster/imu:
+    type: sensor_msgs/msg/Imu
+    remap: leader/imu
+    # ros2_control imu_sensor_broadcaster publishes RELIABLE.
+    qos:
+      reliability: reliable
+  joint_states:
+    type: sensor_msgs/msg/JointState
+    remap: leader/joint_states
+    qos:
+      reliability: reliable
+  # 배터리: manipulation엔 broadcaster가 없어 battery_state_broadcaster 컨트롤러를
+  # 추가해 /battery_state(reliable) 발행하게 함. bag 기록용. 1Hz 저속.
+  battery_state:
+    type: sensor_msgs/msg/BatteryState
+    remap: leader/battery_state
+    qos:
+      reliability: reliable

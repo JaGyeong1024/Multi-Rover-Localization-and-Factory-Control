@@ -1,0 +1,8 @@
+# Follower(73) -> Host(30): nav feedback (mission contract return path).
+name: mission_73_to_30
+from_domain: 73
+to_domain: 30
+topics:
+  follower/nav_feedback:
+    type: host_mission_interfaces/msg/NavFeedback
+    qos: {reliability: best_effort}

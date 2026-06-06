@@ -1,0 +1,13 @@
+# Host -> Follower: 글로벌 위치 (로버 제어 입력). domain 30 -> 73.
+#
+# global_position_node가 호스트 domain 30에 /follower/global/position
+# (geometry_msgs/PoseStamped, x·y + heading) 발행 → 이 브릿지가 팔로워 domain 73으로 전달.
+# 제어 입력이라 reliable (위치 누락보다 확실한 전달 우선; ~10Hz라 reliable 부담 적음).
+name: host_to_follower
+from_domain: 30
+to_domain: 73
+topics:
+  follower/global/position:
+    type: geometry_msgs/msg/PoseStamped
+    qos:
+      reliability: reliable

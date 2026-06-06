@@ -1,0 +1,36 @@
+ceiling_tracker_node:
+  ros__parameters:
+    camera_device: "/dev/video2"
+    camera_width: 1920
+    camera_height: 1080
+    camera_fps: 30
+
+    # 빈 문자열 → ~/.factory_calibration/ 자동 사용
+    calibration_path: ""
+    remap_path: ""
+
+    detection_method: "color"   # "color" 또는 "yolo"
+    model_path: ""
+    yolo_conf_threshold: 0.7
+    publish_rate: 15
+
+    origin_offset_x: 0.0
+    origin_offset_y: 0.0
+    origin_offset_theta: 0.0
+
+    # 색상 탐지 HSV 범위 (실제 환경에서 hsv_tuner.py로 튜닝)
+    color_leader_hsv_low: [35, 100, 100]
+    color_leader_hsv_high: [85, 255, 255]
+    color_follower_a_hsv_low: [10, 100, 100]
+    color_follower_a_hsv_high: [25, 255, 255]
+    color_follower_b_hsv_low: [130, 100, 100]
+    color_follower_b_hsv_high: [160, 255, 255]
+    color_min_area: 200
+    color_max_area: 10000
+
+    heading_red_hsv_low1: [0, 120, 100]
+    heading_red_hsv_high1: [10, 255, 255]
+    heading_red_hsv_low2: [160, 120, 100]
+    heading_red_hsv_high2: [180, 255, 255]
+    heading_blue_hsv_low: [100, 120, 100]
+    heading_blue_hsv_high: [130, 255, 255]

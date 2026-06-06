@@ -1,0 +1,20 @@
+bev_height: 594
+bev_width: 906
+calibration_date: '2026-06-03 19:10:56'
+homography_matrix:
+- 0.4892293875028484
+- -0.019473724145573613
+- -15.500019446124035
+- -0.0017653748050672304
+- 0.48688933014453867
+- 29.438146036827717
+- -1.524357728908261e-05
+- -3.003272410635593e-05
+- 1.0
+pixels_per_meter: 200
+real_origin_x: 1.4144999999999999
+real_origin_y: 1.8844999999999998
+remap_file: remap.npz
+scale_x: 0.005
+scale_y: 0.005
+y_axis_inverted: true

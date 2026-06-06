@@ -1,0 +1,98 @@
+# Claude Code workspace files (개인 작업물, 팀 공유 X)
+CLAUDE.md
+.claude/
+
+# ROS 2 build artifacts
+host_ws/build/
+host_ws/install/
+host_ws/log/
+
+# Stray build artifacts at wrong location (반드시 삭제 권장 — CLAUDE.md 참조)
+/build/
+/install/
+/log/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Editor / OS
+*.swp
+*.swo
+.vscode/
+.idea/
+.DS_Store
+
+# Local secrets / tmp
+*.local
+*.tmp
+
+# Weights & Biases: 실제 키 파일은 커밋 금지 (.example 템플릿만 커밋). run 로그도 ignore.
+tools/yolo_train/wandb_config.yaml
+wandb/
+
+# 정리 보관소 (테스트/임시/폐기 코드 격리, 삭제 대신). 커밋 X.
+trash/
+
+# Data bucket 규칙은 맨 아래 큐레이션 섹션에 통합(런타임 모델·캘리만 예외 포함).
+
+# Path editor: 실험 보조·디버깅용 로컬 웹 도구 (host PC 런타임에 불필요).
+# 도구 전체 ignore. 실 대시보드는 별도 제작(MASTER_PLAN §5.2). BEV는 ~/.factory_calibration 파생.
+tools/path_editor/
+
+# YOLO venv (로컬 전용)
+.venv_yolo/
+*.pt
+
+# Path editor outputs (로컬 경로 데이터, 커밋 X)
+/paths.csv
+/paths.json
+
+# ============================================================
+# 배포 저장소 큐레이션 (2026-06): 공개 repo엔 런타임+대시보드+셋업+data만 올린다.
+# 아래는 로컬 전용(개발/연구/문서/벤치/재캘리/bag) — 추적 해제(git rm --cached)했고
+# 재추가 차단용. 로컬 작업본은 디스크에 그대로 남아있다.
+# ============================================================
+# 모든 .md는 무시(README.md만 예외) — 설계/노트/플랜 문서는 로컬 전용
+*.md
+!README.md
+/tools/
+/analysis/
+/host_ws/analysis/
+/docs/
+/reference/
+/MASTER_PLAN.md
+/STRUCTURE.md
+/plan0606.md
+/project_council.md
+/CONTROL_DASHBOARD_PLAN.md
+/localization_tracking_association_workplan.md
+/map.json
+/map_clean.json
+/map_before_tidy.json
+
+# host_ws dev/bag 도구 (런타임 아님)
+/host_ws/record_bag.sh
+/host_ws/play_bag.sh
+/host_ws/bag_to_csv.py
+/host_ws/measure_baseline.sh
+/host_ws/analyze_baseline.py
+/host_ws/dashboard_bag_qos.yaml
+/host_ws/run_dashboard_offline.sh
+
+# experiments/: perception은 host_ws/perception/로 이관됨 → 전체 로컬 전용
+/experiments/
+
+# Data: 대용량(bags·datasets·기타 weights)은 무시하되, 런타임 필수 모델·캘리만
+# 예외로 포함 → 새로 clone 하거나 `git add .` 해도 self-contained 유지.
+/data/*
+!/data/models/
+/data/models/*
+!/data/models/yolo11n-obb_2class_v3.pt
+!/data/calibration/
+/data/calibration/*
+!/data/calibration/calibration.yaml
+!/data/calibration/remap.npz
+!/data/calibration/charuco_intrinsics.npz
+!/data/calibration/ground_frame_nadir.npz

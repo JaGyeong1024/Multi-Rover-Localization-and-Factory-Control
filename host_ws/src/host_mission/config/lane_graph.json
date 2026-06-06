@@ -1,0 +1,31 @@
+{
+  "frame_id": "uwb_global",
+  "note": "Inc1 demo dual-lane. up-lane 0..4 (y=4.3, +x directed), down-lane 5..9 (y=3.7, -x directed), top turn 4->5, return 9->0, lane-change cross-edges 1<->8,2<->7,3<->6. STANDBY=0 (leader home), UNLOADING=9 (follower home). Author real graph via tools/path_editor. Keep in sync with rover_nav_ref/config/lane_graph.json (shared SSOT).",
+  "nodes": [
+    {"id": 0, "x": 1.8, "y": 4.3},
+    {"id": 1, "x": 2.6, "y": 4.3},
+    {"id": 2, "x": 3.4, "y": 4.3},
+    {"id": 3, "x": 4.2, "y": 4.3},
+    {"id": 4, "x": 5.0, "y": 4.3},
+    {"id": 5, "x": 5.0, "y": 3.7},
+    {"id": 6, "x": 4.2, "y": 3.7},
+    {"id": 7, "x": 3.4, "y": 3.7},
+    {"id": 8, "x": 2.6, "y": 3.7},
+    {"id": 9, "x": 1.8, "y": 3.7}
+  ],
+  "edges": [
+    {"from": 0, "to": 1, "directed": true},
+    {"from": 1, "to": 2, "directed": true},
+    {"from": 2, "to": 3, "directed": true},
+    {"from": 3, "to": 4, "directed": true},
+    {"from": 4, "to": 5, "directed": true},
+    {"from": 5, "to": 6, "directed": true},
+    {"from": 6, "to": 7, "directed": true},
+    {"from": 7, "to": 8, "directed": true},
+    {"from": 8, "to": 9, "directed": true},
+    {"from": 9, "to": 0, "directed": true},
+    {"from": 1, "to": 8, "directed": false},
+    {"from": 2, "to": 7, "directed": false},
+    {"from": 3, "to": 6, "directed": false}
+  ]
+}

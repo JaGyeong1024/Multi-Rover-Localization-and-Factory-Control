@@ -1,0 +1,17 @@
+# Host(30) -> Leader(25): mission state/queue broadcast + leader's mission commands.
+name: mission_30_to_25
+from_domain: 30
+to_domain: 25
+topics:
+  mission/state:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  mission/queue:
+    type: host_mission_interfaces/msg/MissionQueue
+    qos: {reliability: reliable, durability: transient_local}
+  leader/target_cmd:
+    type: host_mission_interfaces/msg/TargetCommand
+    qos: {reliability: reliable, durability: transient_local}
+  leader/pickplace_cmd:
+    type: host_mission_interfaces/msg/PickPlaceCommand
+    qos: {reliability: reliable, durability: transient_local}

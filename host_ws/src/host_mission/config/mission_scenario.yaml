@@ -1,0 +1,15 @@
+# Demo scenario (uwb_global). Parts sit within ~50cm of the up-lane; "go to a part"
+# = drive to the part's nearest lane node (the stop), then pick&place teammate takes over.
+standby_node: 0        # leader home
+unloading_node: 9      # follower dropoff
+capacity: 4            # follower load capacity N (>=4 -> single batch for all parts)
+position_tol: 0.15     # m, host "in front of part" arrival tolerance (handoff point)
+pick_dwell: 8.0        # s, FALLBACK timeout if no PickPlaceStatus DONE arrives (teammate A
+                       #    drives completion via signal; mock_pickplace ~3s, dwell is safety)
+drop_dwell: 2.0        # s, unloading dwell
+
+parts:
+  - {id: gear_01, x: 2.6, y: 4.75}
+  - {id: gear_02, x: 3.4, y: 4.75}
+  - {id: gear_03, x: 4.2, y: 4.75}
+  - {id: gear_04, x: 5.0, y: 4.75}

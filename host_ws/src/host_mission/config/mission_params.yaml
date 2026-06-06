@@ -1,0 +1,5 @@
+mission_coordinator_node:
+  ros__parameters:
+    tick_rate: 5.0
+    frame_id: uwb_global
+    robots: ['leader', 'follower']

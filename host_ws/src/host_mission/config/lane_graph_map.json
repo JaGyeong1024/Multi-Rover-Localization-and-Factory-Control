@@ -1,0 +1,318 @@
+{
+  "frame_id": "uwb_global",
+  "source": "generated from repo-root map.json (graph). Edit map.json + regenerate.",
+  "nodes": [
+    {
+      "id": 0,
+      "x": 2.3,
+      "y": 4.4
+    },
+    {
+      "id": 1,
+      "x": 2.3,
+      "y": 4.15
+    },
+    {
+      "id": 2,
+      "x": 2.3,
+      "y": 3.55
+    },
+    {
+      "id": 3,
+      "x": 2.3,
+      "y": 3.3
+    },
+    {
+      "id": 4,
+      "x": 2.3,
+      "y": 2.7
+    },
+    {
+      "id": 5,
+      "x": 2.3,
+      "y": 2.45
+    },
+    {
+      "id": 6,
+      "x": 4.6,
+      "y": 2.45
+    },
+    {
+      "id": 7,
+      "x": 4.6,
+      "y": 2.7
+    },
+    {
+      "id": 8,
+      "x": 4.6,
+      "y": 3.3
+    },
+    {
+      "id": 9,
+      "x": 4.6,
+      "y": 3.55
+    },
+    {
+      "id": 11,
+      "x": 4.6,
+      "y": 4.4
+    },
+    {
+      "id": 12,
+      "x": 2.55,
+      "y": 2.7
+    },
+    {
+      "id": 13,
+      "x": 2.55,
+      "y": 3.3
+    },
+    {
+      "id": 14,
+      "x": 4.35,
+      "y": 3.3
+    },
+    {
+      "id": 15,
+      "x": 4.35,
+      "y": 2.7
+    },
+    {
+      "id": 16,
+      "x": 2.55,
+      "y": 3.55
+    },
+    {
+      "id": 17,
+      "x": 2.55,
+      "y": 4.15
+    },
+    {
+      "id": 18,
+      "x": 4.35,
+      "y": 4.15
+    },
+    {
+      "id": 19,
+      "x": 4.35,
+      "y": 3.55
+    },
+    {
+      "id": 20,
+      "x": 1.8,
+      "y": 3.3
+    },
+    {
+      "id": 21,
+      "x": 2.3,
+      "y": 3.78
+    },
+    {
+      "id": 22,
+      "x": 1.8,
+      "y": 3.78
+    },
+    {
+      "id": 23,
+      "x": 2.3,
+      "y": 4.27
+    },
+    {
+      "id": 24,
+      "x": 1.8,
+      "y": 4.27
+    },
+    {
+      "id": 27,
+      "x": 4.6,
+      "y": 4.15
+    },
+    {
+      "id": 28,
+      "x": 5.2,
+      "y": 4.15
+    },
+    {
+      "id": 29,
+      "x": 5.2,
+      "y": 2.7
+    }
+  ],
+  "edges": [
+    {
+      "from": 2,
+      "to": 3,
+      "directed": true
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "directed": true
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "directed": true
+    },
+    {
+      "from": 5,
+      "to": 6,
+      "directed": true
+    },
+    {
+      "from": 6,
+      "to": 7,
+      "directed": true
+    },
+    {
+      "from": 7,
+      "to": 8,
+      "directed": true
+    },
+    {
+      "from": 8,
+      "to": 9,
+      "directed": true
+    },
+    {
+      "from": 11,
+      "to": 0,
+      "directed": true
+    },
+    {
+      "from": 12,
+      "to": 13,
+      "directed": true
+    },
+    {
+      "from": 13,
+      "to": 14,
+      "directed": true
+    },
+    {
+      "from": 14,
+      "to": 15,
+      "directed": true
+    },
+    {
+      "from": 15,
+      "to": 12,
+      "directed": true
+    },
+    {
+      "from": 16,
+      "to": 17,
+      "directed": true
+    },
+    {
+      "from": 17,
+      "to": 18,
+      "directed": true
+    },
+    {
+      "from": 18,
+      "to": 19,
+      "directed": true
+    },
+    {
+      "from": 19,
+      "to": 16,
+      "directed": true
+    },
+    {
+      "from": 4,
+      "to": 12,
+      "directed": false
+    },
+    {
+      "from": 15,
+      "to": 7,
+      "directed": false
+    },
+    {
+      "from": 3,
+      "to": 13,
+      "directed": false
+    },
+    {
+      "from": 14,
+      "to": 8,
+      "directed": false
+    },
+    {
+      "from": 2,
+      "to": 16,
+      "directed": false
+    },
+    {
+      "from": 19,
+      "to": 9,
+      "directed": false
+    },
+    {
+      "from": 1,
+      "to": 17,
+      "directed": false
+    },
+    {
+      "from": 3,
+      "to": 20,
+      "directed": false
+    },
+    {
+      "from": 21,
+      "to": 22,
+      "directed": false
+    },
+    {
+      "from": 23,
+      "to": 24,
+      "directed": false
+    },
+    {
+      "from": 1,
+      "to": 21,
+      "directed": true
+    },
+    {
+      "from": 21,
+      "to": 2,
+      "directed": true
+    },
+    {
+      "from": 0,
+      "to": 23,
+      "directed": true
+    },
+    {
+      "from": 23,
+      "to": 1,
+      "directed": true
+    },
+    {
+      "from": 9,
+      "to": 27,
+      "directed": false
+    },
+    {
+      "from": 27,
+      "to": 18,
+      "directed": false
+    },
+    {
+      "from": 11,
+      "to": 27,
+      "directed": false
+    },
+    {
+      "from": 27,
+      "to": 28,
+      "directed": false
+    },
+    {
+      "from": 7,
+      "to": 29,
+      "directed": false
+    }
+  ]
+}

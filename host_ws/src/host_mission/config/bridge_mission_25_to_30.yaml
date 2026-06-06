@@ -1,0 +1,11 @@
+# Leader(25) -> Host(30): nav + pick&place feedback (mission contract return path).
+name: mission_25_to_30
+from_domain: 25
+to_domain: 30
+topics:
+  leader/nav_feedback:
+    type: host_mission_interfaces/msg/NavFeedback
+    qos: {reliability: best_effort}
+  leader/pickplace_status:
+    type: host_mission_interfaces/msg/PickPlaceStatus
+    qos: {reliability: reliable}

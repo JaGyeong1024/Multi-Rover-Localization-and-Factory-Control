@@ -1,0 +1,278 @@
+Panels:
+  - Class: rviz_common/Displays
+    Help Height: 70
+    Name: Displays
+    Property Tree Widget:
+      Expanded: ~
+      Splitter Ratio: 0.5
+    Tree Height: 262
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 0.5
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 30
+      Reference Frame: uwb_global
+      Value: true
+    - Class: rviz_default_plugins/Axes
+      Enabled: true
+      Length: 0.5
+      Name: Origin Axes
+      Radius: 0.019999999552965164
+      Reference Frame: uwb_global
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: UWB Leader (QF Color)
+      Namespaces:
+        {}
+      Topic:
+        Depth: 100
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /uwb/leader_marker
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: UWB Leader Corrected
+      Namespaces:
+        {}
+      Topic:
+        Depth: 100
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /uwb/leader_marker_corrected
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: UWB Anchors
+      Namespaces:
+        uwb_anchor_cube: true
+        uwb_anchor_label: true
+        uwb_roi: true
+        uwb_waypoint_dot: true
+        uwb_waypoint_label: true
+        uwb_waypoint_path: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /uwb/anchors
+      Value: true
+    - Alpha: 1
+      Axes Length: 0.3
+      Axes Radius: 0.02
+      Class: rviz_default_plugins/Pose
+      Color: 0; 255; 0
+      Enabled: true
+      Head Length: 0.1
+      Head Radius: 0.05
+      Name: Leader Pose (raw)
+      Shaft Length: 0.3
+      Shaft Radius: 0.02
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /uwb/leader_pose
+      Value: true
+    - Alpha: 1
+      Axes Length: 0.3
+      Axes Radius: 0.02
+      Class: rviz_default_plugins/Pose
+      Color: 0; 255; 255
+      Enabled: true
+      Head Length: 0.1
+      Head Radius: 0.05
+      Name: Leader Pose (corrected)
+      Shaft Length: 0.3
+      Shaft Radius: 0.02
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /uwb/leader_pose_corrected
+      Value: true
+    - Alpha: 1
+      Axes Length: 0.3
+      Axes Radius: 0.02
+      Class: rviz_default_plugins/Pose
+      Color: 255; 170; 0
+      Enabled: true
+      Head Length: 0.1
+      Head Radius: 0.05
+      Name: Follower Pose
+      Shaft Length: 0.3
+      Shaft Radius: 0.02
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /uwb/follower_pose
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Cam Processed (BEV)
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /global_cam/processed
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: false
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Cam Raw
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /global_cam/image_raw
+      Value: true
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: Analysis Raw Cloud
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /analysis/uwb_raw_cloud
+      Value: true
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: Raw UWB Trail
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /analysis/uwb_leader_raw_trail
+      Value: true
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: Analysis Corrected Cloud
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /analysis/uwb_corrected_cloud
+      Value: true
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: Analysis GT Cloud
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /analysis/uwb_gt_cloud
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Analysis Error Vectors
+      Namespaces:
+        uwb_corrected_error_vectors: true
+        uwb_raw_error_vectors: true
+        uwb_waypoint_cloud_label: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /analysis/uwb_waypoint_error_markers
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 30; 30; 30
+    Fixed Frame: uwb_global
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 7.895290851593018
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0.5
+        Y: 0.5
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.6300005912780762
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 3.069999933242798
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 763
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd0000000100000000000001cb000002a1fc0200000002fb000000100044006900730070006c006100790073010000003d00000189000000c900fffffffb0000000a0056006900650077007301000001cc00000112000000a400ffffff000003d9000002a100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Views:
+    collapsed: false
+  Width: 1450
+  X: 107
+  Y: 72

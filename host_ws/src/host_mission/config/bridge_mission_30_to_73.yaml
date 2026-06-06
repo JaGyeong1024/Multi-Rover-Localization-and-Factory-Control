@@ -1,0 +1,14 @@
+# Host(30) -> Follower(73): mission state/queue broadcast + follower's mission command.
+name: mission_30_to_73
+from_domain: 30
+to_domain: 73
+topics:
+  mission/state:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  mission/queue:
+    type: host_mission_interfaces/msg/MissionQueue
+    qos: {reliability: reliable, durability: transient_local}
+  follower/target_cmd:
+    type: host_mission_interfaces/msg/TargetCommand
+    qos: {reliability: reliable, durability: transient_local}

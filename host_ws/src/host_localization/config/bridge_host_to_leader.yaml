@@ -1,0 +1,10 @@
+# Host -> Leader: 글로벌 위치 (로버 제어 입력). domain 30 -> 25.
+# bridge_host_to_follower.yaml의 리더판. (리더 켜지면 검증.)
+name: host_to_leader
+from_domain: 30
+to_domain: 25
+topics:
+  leader/global/position:
+    type: geometry_msgs/msg/PoseStamped
+    qos:
+      reliability: reliable

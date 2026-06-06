@@ -1,0 +1,10 @@
+# Capstone 호스트 장치 udev 규칙 — setup.sh가 /etc/udev/rules.d/로 복사.
+# 꽂으면 노트북·포트번호 무관하게 안정 심링크 생성.
+
+# UWB 동글(CP210x, 10c4:ea60) → /dev/ttyUWB.
+#   MODE=0666: 그룹 무관 접근. ID_MM_DEVICE_IGNORE: ModemManager가 시리얼 잡으면 UWB 연결 깨짐 → 무시.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="ttyUWB", MODE="0666", GROUP="dialout", ENV{ID_MM_DEVICE_IGNORE}="1"
+
+# 천장 카메라(Logitech BRIO, 046d:085e)의 RGB 노드(index 0) → /dev/global_cam.
+#   BRIO는 video 노드 여러 개 → VID:PID + index==0 로 RGB만 지정(노트북 내장캠과 충돌 없음, 다른 VID).
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="085e", ATTR{index}=="0", SYMLINK+="global_cam"
