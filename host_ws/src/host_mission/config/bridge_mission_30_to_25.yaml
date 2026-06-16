@@ -1,4 +1,6 @@
 # Host(30) -> Leader(25): mission state/queue broadcast + leader's mission commands.
+# (The leader's own /leader/global/position arrives via the host_to_leader localization bridge,
+# so it is intentionally NOT duplicated here.)
 name: mission_30_to_25
 from_domain: 30
 to_domain: 25
@@ -12,6 +14,9 @@ topics:
   leader/target_cmd:
     type: host_mission_interfaces/msg/TargetCommand
     qos: {reliability: reliable, durability: transient_local}
-  leader/pickplace_cmd:
-    type: host_mission_interfaces/msg/PickPlaceCommand
+  pnp/start:
+    type: std_msgs/msg/Empty
+    qos: {reliability: reliable, durability: transient_local}
+  estop:
+    type: std_msgs/msg/Bool
     qos: {reliability: reliable, durability: transient_local}

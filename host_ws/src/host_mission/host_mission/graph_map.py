@@ -38,5 +38,18 @@ class GraphMap:
         """Ordered node-id list src..dst, or None if unreachable (reuses graph_route.dijkstra)."""
         return self._gr.dijkstra(self.adj, int(src), int(dst))
 
+    def route_cost(self, src, dst):
+        """Directed shortest-path length src->dst (m), inf if unreachable. Asymmetric on
+        directed lanes (cost(a,b) != cost(b,a)) — used for time-optimal pickup ordering."""
+        src, dst = int(src), int(dst)
+        if src == dst:
+            return 0.0
+        path = self.route(src, dst)
+        if not path or len(path) < 2:
+            return math.inf
+        return sum(math.hypot(self.nodes[path[k + 1]][0] - self.nodes[path[k]][0],
+                              self.nodes[path[k + 1]][1] - self.nodes[path[k]][1])
+                   for k in range(len(path) - 1))
+
     def xy(self, node):
         return self.nodes[int(node)]

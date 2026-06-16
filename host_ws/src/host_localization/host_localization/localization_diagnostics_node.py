@@ -22,11 +22,16 @@ from collections import deque
 
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import (DurabilityPolicy, QoSProfile, ReliabilityPolicy,
+                       qos_profile_sensor_data)
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import CompressedImage, Imu
-from std_msgs.msg import Float32
+from std_msgs.msg import Bool, Float32
+
+# fusion의 latched heading_aligned를 놓치지 않게 매칭 QoS(transient_local)로 구독.
+_ALIGNED_QOS = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE,
+                          durability=DurabilityPolicy.TRANSIENT_LOCAL)
 
 OK, WARN, ERROR = DiagnosticStatus.OK, DiagnosticStatus.WARN, DiagnosticStatus.ERROR
 _LABEL = {OK: 'GOOD', WARN: 'DEGRADED', ERROR: 'LOST'}
@@ -69,6 +74,8 @@ class LocalizationDiagnosticsNode(Node):
         q = qos_profile_sensor_data
         self.mon = {}
         self.qf = {r: None for r in self.robots}
+        self.aligned = {r: None for r in self.robots}   # heading_aligned (None=미수신/미정렬)
+        self.latency_ms = {r: None for r in self.robots}  # e2e capture->pose latency (EMA, ms)
 
         def m(key):
             self.mon[key] = Monitor()
@@ -81,10 +88,15 @@ class LocalizationDiagnosticsNode(Node):
             self.create_subscription(PoseStamped, uwb_t, m(f'uwb/{r}').hit, q)
             self.create_subscription(Float32, f'/uwb/{r}_qf',
                                      lambda msg, R=r: self.qf.__setitem__(R, float(msg.data)), q)
-            self.create_subscription(PoseStamped, f'/perception/{r}/bev_pose', m(f'perception/{r}').hit, q)
+            m(f'perception/{r}')  # create monitor; _on_bev calls .hit() + computes latency
+            self.create_subscription(PoseStamped, f'/perception/{r}/bev_pose',
+                                     lambda msg, R=r: self._on_bev(msg, R), q)
             self.create_subscription(PoseStamped, f'/{r}/pose', m(f'fusion/{r}').hit, q)
             self.create_subscription(PoseStamped, f'/{r}/global/position', m(f'output/{r}').hit, q)
             self.create_subscription(Imu, f'/{r}/imu', m(f'imu/{r}').hit, q)
+            self.create_subscription(Bool, f'/{r}/heading_aligned',
+                                     lambda msg, R=r: self.aligned.__setitem__(R, bool(msg.data)),
+                                     _ALIGNED_QOS)
         self.create_subscription(CompressedImage, '/global_cam/processed/compressed', m('camera').hit, q)
 
         self.chrony = {'ok': False, 'offset_ms': None, 'source': 'n/a'}
@@ -102,6 +114,20 @@ class LocalizationDiagnosticsNode(Node):
 
     def _hz(self, key):
         return round(self.mon[key].hz(), 1)
+
+    def _on_bev(self, msg, r):
+        # End-to-end latency: perception_node preserves the BEV image header.stamp on
+        # bev_pose, so (now - capture) is the capture->pose pipeline delay. Measured on
+        # arrival (not the growing age), lightly EMA-smoothed. fusion/output add only a
+        # small constant tail. fusion resets its own header to now() (estimate time), so
+        # this is the only place the capture stamp is still available end-to-end.
+        self.mon[f'perception/{r}'].hit()
+        cap = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
+        now = self.get_clock().now().nanoseconds * 1e-9
+        lat = (now - cap) * 1000.0
+        if 0.0 <= lat < 5000.0:   # ignore clock skew / garbage stamps
+            prev = self.latency_ms[r]
+            self.latency_ms[r] = round(lat if prev is None else 0.6 * prev + 0.4 * lat, 1)
 
     def _poll_chrony(self):
         try:
@@ -172,8 +198,22 @@ class LocalizationDiagnosticsNode(Node):
         st.append(self._stage('pipeline/uwb', 'uwb', TH['uwb'], qf=True))
         st.append(self._stage('pipeline/perception', 'perception', TH['perception']))
         st.append(self._stage('pipeline/fusion', 'fusion', TH['fusion']))
-        st.append(self._stage('pipeline/output', 'output', TH['output']))
+        out_stage = self._stage('pipeline/output', 'output', TH['output'])
+        lats = [v for v in (self.latency_ms[r] for r in self.robots) if v is not None]
+        if lats:                                 # dashboard end-to-end row auto-fills on this
+            out_stage.values.append(self._kv('latency_ms', round(max(lats), 1)))
+        st.append(out_stage)
         st.append(self._stage('pipeline/imu', 'imu', 1.0))
+
+        # heading(IMU/COG) 정렬 — 로버 init drive-straight 신호 + 대시보드 알람. 정렬=OK, 그 외=WARN.
+        for r in self.robots:
+            al = self.aligned[r]
+            a = DiagnosticStatus(
+                name=f'align/{r}', hardware_id='host',
+                level=OK if al else WARN,
+                message=('aligned' if al else ('unaligned' if al is False else 'no data')))
+            a.values = [self._kv('heading_aligned', al)]
+            st.append(a)
 
         # camera (단일)
         cam = DiagnosticStatus(name='pipeline/camera', hardware_id='host')

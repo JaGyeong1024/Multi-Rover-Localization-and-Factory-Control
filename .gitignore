@@ -7,6 +7,13 @@ host_ws/build/
 host_ws/install/
 host_ws/log/
 
+# ROS 2 bag recordings (대용량, 로컬 전용 — YOLO 학습/위치추정 테스트용)
+host_ws/rosbag2/
+host_ws/rosbag2_l/
+
+# 로버단(robot-side) 코드 — 호스트 repo 영역 아님 (리더 라인추종 패키지)
+leader_line_follower/
+
 # Stray build artifacts at wrong location (반드시 삭제 권장 — CLAUDE.md 참조)
 /build/
 /install/
@@ -24,9 +31,10 @@ __pycache__/
 .idea/
 .DS_Store
 
-# Local secrets / tmp
+# Local secrets / tmp / backups
 *.local
 *.tmp
+*.bak
 
 # Weights & Biases: 실제 키 파일은 커밋 금지 (.example 템플릿만 커밋). run 로그도 ignore.
 tools/yolo_train/wandb_config.yaml

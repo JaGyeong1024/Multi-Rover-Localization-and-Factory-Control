@@ -5,4 +5,7 @@ to_domain: 30
 topics:
   follower/nav_feedback:
     type: host_mission_interfaces/msg/NavFeedback
-    qos: {reliability: best_effort}
+    # rover_nav_node publishes RELIABLE and the coordinator subscribes RELIABLE, so the
+    # bridge must relay RELIABLE too — a best_effort relay is incompatible with the
+    # coordinator's reliable subscription (it would receive nothing).
+    qos: {reliability: reliable}

@@ -17,14 +17,19 @@ import math
 
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import (DurabilityPolicy, QoSProfile, ReliabilityPolicy,
+                       qos_profile_sensor_data)
 from geometry_msgs.msg import PoseStamped, TwistStamped
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Float32
+from std_msgs.msg import Bool, Float32
 
 from .se2nhc import EKFSE2, VX, VY
 
 COG_MIN_MOVE = 0.15      # COG 측정용 최소 위치변위[m] — 클수록 진행방향 노이즈↓(skid). 이동마다 EKF update_cog
+
+# heading_aligned(=COG 앵커 여부) 발행용 latched QoS — 늦게 붙는 로버/대시보드도 현재 정렬 상태를 즉시 받음.
+ALIGNED_QOS = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE,
+                         durability=DurabilityPolicy.TRANSIENT_LOCAL)
 
 # 벤치마크 결정 front-end 상수(per-robot, §1.3 분기). full-fusion 레짐: uwb_sigma0=절대-R(BEV가 정밀원 지배),
 # r_bev=(3cm)² 실측 YOLO잡음, q_vel=0.02(엔코더+NIS 튜닝), q_hoff(leader IMU 드리프트→큼). bench_config SSOT.
@@ -51,6 +56,10 @@ class _Robot:
         self.last_t = None
         self.pub = None
         self.vel_pub = None
+        self.aligned_pub = None
+        self.aligned_last = None    # 최근 발행한 heading_aligned (전이 시에만 발행)
+        self.cog_suppress_until_ns = 0   # 이 시각(ns)까지 COG 보정 억제 (정렬 직후 후진 복귀 구간 보호)
+        self.name = None
 
     def advance(self, t):
         """측정 시각까지 EKF predict(측정구동) — IMU가 고레이트라 위치측정 공백에도 coast."""
@@ -67,6 +76,10 @@ class FusionNode(Node):
         self.frame = self.declare_parameter('frame_id', 'uwb_global').value
         robots = self.declare_parameter('robots', ['leader', 'follower']).value
         self.exit_on_dup = bool(self.declare_parameter('exit_on_duplicate', False).value)  # 중복 인스턴스 시 종료
+        # 정렬(heading_aligned) 직후 N초간 COG 헤딩보정 억제. 정렬은 '전진'으로 끝난 뒤 로버가 '직진 후진'으로
+        # 복귀하는데, 후진 중 COG(진행방향)=헤딩+180°라 update_cog의 180° 자가복구가 맞던 헤딩을 잘못 뒤집는다.
+        # 후진은 회전이 없어 그동안 gyro가 헤딩을 유지 → 억제해도 손실 없음. (정렬 전진이 길면 값↑. 0=비활성)
+        self.cog_suppress_s = float(self.declare_parameter('cog_suppress_after_align', 5.0).value)
 
         self.robots = {}
         for name in robots:
@@ -75,6 +88,10 @@ class FusionNode(Node):
             # 내부 고빈도 = BEST_EFFORT(sensor_data): 최신값 우선·재전송 블로킹 없음. 외부(/global/*)는 그대로.
             r.pub = self.create_publisher(PoseStamped, f'/{name}/pose', qos_profile_sensor_data)
             r.vel_pub = self.create_publisher(TwistStamped, f'/{name}/velocity', qos_profile_sensor_data)  # → global_position 릴레이
+            r.name = name
+            r.aligned_pub = self.create_publisher(Bool, f'/{name}/heading_aligned', ALIGNED_QOS)
+            r.aligned_pub.publish(Bool(data=False))   # 시작=미정렬(latched). COG 부트스트랩 시 True로 전이.
+            r.aligned_last = False
             uwb_default = f'/uwb/{name}_pose_corrected'   # 둘 다 보정 입력(follower도 corrected — uwb_correction_node가 발행)
             uwb_t = self.declare_parameter(f'{name}.uwb', uwb_default).value
             qf_t = self.declare_parameter(f'{name}.qf', f'/uwb/{name}_qf').value
@@ -143,20 +160,33 @@ class FusionNode(Node):
         if R.last_xy is None:
             R.last_xy = (x, y)
         elif math.hypot(x - R.last_xy[0], y - R.last_xy[1]) >= COG_MIN_MOVE:
-            cog = math.atan2(y - R.last_xy[1], x - R.last_xy[0])
-            R.est.update_cog(cog, R.est.speed, R.last_wz)
+            # 정렬 직후 억제창(후진 복귀 구간)엔 COG 보정 skip — 후진 COG(헤딩+180°)가 180°
+            # 자가복구를 잘못 트리거하는 것 방지. 기준 위치는 갱신해 해제 후 stale COG 방지.
+            if now.nanoseconds >= R.cog_suppress_until_ns:
+                cog = math.atan2(y - R.last_xy[1], x - R.last_xy[0])
+                R.est.update_cog(cog, R.est.speed, R.last_wz)
             R.last_xy = (x, y)
         msg = PoseStamped()
         msg.header.stamp = now.to_msg()
         msg.header.frame_id = self.frame
         msg.pose.position.x, msg.pose.position.y = x, y
-        if R.est.heading_valid:           # COG로 h_off 앵커됨 → EKF 헤딩 출력
+        hv = R.est.heading_valid
+        if hv:                            # COG로 h_off 앵커됨 → EKF 헤딩 출력
             qx, qy, qz, qw = yaw_to_quat(R.est.heading())
             msg.pose.orientation.x = qx; msg.pose.orientation.y = qy
             msg.pose.orientation.z = qz; msg.pose.orientation.w = qw
         else:                             # 미수렴(첫 전진 전): identity(틀린 헤딩 미발행)
             msg.pose.orientation.w = 1.0
         R.pub.publish(msg)
+        # heading 정렬 상태(=COG 앵커 여부) 전이 시 발행 — 로버 init drive-straight + 대시보드 알람용.
+        if hv != R.aligned_last:
+            if hv and self.cog_suppress_s > 0.0:   # 정렬 상승엣지 → 직후 후진 복귀 구간 COG 억제창 개시
+                R.cog_suppress_until_ns = now.nanoseconds + int(self.cog_suppress_s * 1e9)
+            R.aligned_pub.publish(Bool(data=bool(hv)))
+            R.aligned_last = hv
+            self.get_logger().info(
+                f'{R.name}: heading_aligned={hv}'
+                + (f' (COG {self.cog_suppress_s:.0f}s 억제)' if hv and self.cog_suppress_s > 0.0 else ''))
 
         # 속도(보조) — EKF 월드속도 vx,vy + gyro yaw-rate. ⚠ noisy(위치미분), 제어백본 X.
         tw = TwistStamped()

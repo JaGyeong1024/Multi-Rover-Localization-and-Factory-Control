@@ -1,11 +1,11 @@
 {
   "frame_id": "uwb_global",
-  "source": "generated from repo-root map.json (graph). Edit map.json + regenerate.",
+  "source": "derived from ~/capstone/map.json (2026-06-13 cleanup: grid-snap + edge-merge)",
   "nodes": [
     {
       "id": 0,
       "x": 2.3,
-      "y": 4.4
+      "y": 4.47
     },
     {
       "id": 1,
@@ -30,12 +30,12 @@
     {
       "id": 5,
       "x": 2.3,
-      "y": 2.45
+      "y": 2.34
     },
     {
       "id": 6,
       "x": 4.6,
-      "y": 2.45
+      "y": 2.34
     },
     {
       "id": 7,
@@ -55,72 +55,57 @@
     {
       "id": 11,
       "x": 4.6,
-      "y": 4.4
+      "y": 4.47
     },
     {
       "id": 12,
-      "x": 2.55,
+      "x": 2.69,
       "y": 2.7
     },
     {
       "id": 13,
-      "x": 2.55,
+      "x": 2.69,
       "y": 3.3
     },
     {
       "id": 14,
-      "x": 4.35,
+      "x": 4.17,
       "y": 3.3
     },
     {
       "id": 15,
-      "x": 4.35,
+      "x": 4.17,
       "y": 2.7
     },
     {
       "id": 16,
-      "x": 2.55,
+      "x": 2.69,
       "y": 3.55
     },
     {
       "id": 17,
-      "x": 2.55,
+      "x": 2.69,
       "y": 4.15
     },
     {
       "id": 18,
-      "x": 4.35,
+      "x": 4.17,
       "y": 4.15
     },
     {
       "id": 19,
-      "x": 4.35,
+      "x": 4.17,
       "y": 3.55
-    },
-    {
-      "id": 20,
-      "x": 1.8,
-      "y": 3.3
     },
     {
       "id": 21,
       "x": 2.3,
-      "y": 3.78
+      "y": 3.81
     },
     {
       "id": 22,
       "x": 1.8,
-      "y": 3.78
-    },
-    {
-      "id": 23,
-      "x": 2.3,
-      "y": 4.27
-    },
-    {
-      "id": 24,
-      "x": 1.8,
-      "y": 4.27
+      "y": 3.81
     },
     {
       "id": 27,
@@ -129,13 +114,53 @@
     },
     {
       "id": 28,
-      "x": 5.2,
+      "x": 5.04,
       "y": 4.15
     },
     {
       "id": 29,
-      "x": 5.2,
+      "x": 5.04,
       "y": 2.7
+    },
+    {
+      "id": 32,
+      "x": 1.8,
+      "y": 3.3
+    },
+    {
+      "id": 34,
+      "x": 5.04,
+      "y": 2.34
+    },
+    {
+      "id": 35,
+      "x": 5.04,
+      "y": 3.81
+    },
+    {
+      "id": 36,
+      "x": 4.6,
+      "y": 3.81
+    },
+    {
+      "id": 37,
+      "x": 4.17,
+      "y": 2.34
+    },
+    {
+      "id": 38,
+      "x": 2.69,
+      "y": 2.34
+    },
+    {
+      "id": 39,
+      "x": 4.17,
+      "y": 4.47
+    },
+    {
+      "id": 40,
+      "x": 2.69,
+      "y": 4.47
     }
   ],
   "edges": [
@@ -156,6 +181,16 @@
     },
     {
       "from": 5,
+      "to": 38,
+      "directed": true
+    },
+    {
+      "from": 38,
+      "to": 37,
+      "directed": true
+    },
+    {
+      "from": 37,
       "to": 6,
       "directed": true
     },
@@ -176,6 +211,16 @@
     },
     {
       "from": 11,
+      "to": 39,
+      "directed": true
+    },
+    {
+      "from": 39,
+      "to": 40,
+      "directed": true
+    },
+    {
+      "from": 40,
       "to": 0,
       "directed": true
     },
@@ -255,18 +300,8 @@
       "directed": false
     },
     {
-      "from": 3,
-      "to": 20,
-      "directed": false
-    },
-    {
       "from": 21,
       "to": 22,
-      "directed": false
-    },
-    {
-      "from": 23,
-      "to": 24,
       "directed": false
     },
     {
@@ -280,29 +315,14 @@
       "directed": true
     },
     {
-      "from": 0,
-      "to": 23,
-      "directed": true
-    },
-    {
-      "from": 23,
-      "to": 1,
-      "directed": true
-    },
-    {
-      "from": 9,
-      "to": 27,
-      "directed": false
-    },
-    {
       "from": 27,
       "to": 18,
       "directed": false
     },
     {
-      "from": 11,
-      "to": 27,
-      "directed": false
+      "from": 27,
+      "to": 11,
+      "directed": true
     },
     {
       "from": 27,
@@ -312,6 +332,66 @@
     {
       "from": 7,
       "to": 29,
+      "directed": false
+    },
+    {
+      "from": 3,
+      "to": 32,
+      "directed": false
+    },
+    {
+      "from": 6,
+      "to": 34,
+      "directed": false
+    },
+    {
+      "from": 35,
+      "to": 36,
+      "directed": false
+    },
+    {
+      "from": 9,
+      "to": 36,
+      "directed": true
+    },
+    {
+      "from": 36,
+      "to": 27,
+      "directed": true
+    },
+    {
+      "from": 0,
+      "to": 1,
+      "directed": true
+    },
+    {
+      "from": 19,
+      "to": 14,
+      "directed": false
+    },
+    {
+      "from": 16,
+      "to": 13,
+      "directed": false
+    },
+    {
+      "from": 15,
+      "to": 37,
+      "directed": false
+    },
+    {
+      "from": 12,
+      "to": 38,
+      "directed": false
+    },
+    {
+      "from": 18,
+      "to": 39,
+      "directed": false
+    },
+    {
+      "from": 17,
+      "to": 40,
       "directed": false
     }
   ]

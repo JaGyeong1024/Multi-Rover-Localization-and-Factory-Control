@@ -16,6 +16,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/NavFeedback.msg"
   "msg/PickPlaceCommand.msg"
   "msg/PickPlaceStatus.msg"
+  "msg/LeaderRoute.msg"
   DEPENDENCIES std_msgs geometry_msgs builtin_interfaces
 )
 

@@ -20,7 +20,7 @@ from diagnostic_msgs.msg import DiagnosticArray
 from geometry_msgs.msg import PoseStamped
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
-from std_msgs.msg import String
+from std_msgs.msg import Bool, Empty, String
 
 from host_mission.graph_map import GraphMap
 from host_mission.health_gate import HealthGate
@@ -28,7 +28,6 @@ from host_mission.mission_queue import Item, MissionQueueModel
 from host_mission.task_sequencer import MissionStateMachine
 from host_mission.world_model import WorldModel
 from host_mission_interfaces.msg import (MissionItem, MissionQueue, NavFeedback,
-                                         PickPlaceCommand, PickPlaceStatus,
                                          RobotStatus, TargetCommand)
 
 
@@ -47,6 +46,9 @@ class MissionCoordinatorNode(Node):
         # health gating pauses the mission on localization LOST. Disable for the mock
         # (rover_nav_ref supplies pose directly; real /localization/diagnostics is irrelevant).
         self.health_gating = bool(self.declare_parameter('health_gating', True).value)
+        # 사림이형 doesn't report arrival in the new flow — host judges it from
+        # /{robot}/global/position alone. Set True to also trust rover NavFeedback ARRIVED.
+        self.use_nav_feedback = bool(self.declare_parameter('use_nav_feedback', False).value)
         ped = self.declare_parameter(
             'path_editor_dir', os.path.expanduser('~/capstone/tools/path_editor')).value
 
@@ -67,7 +69,9 @@ class MissionCoordinatorNode(Node):
             pick_dwell=float(scen.get('pick_dwell', 2.0)),
             drop_dwell=float(scen.get('drop_dwell', 2.0)),
             phase_timeout=float(scen.get('phase_timeout', 90.0)),
-            follower_home_node=scen.get('follower_home_node'))
+            follower_home_node=scen.get('follower_home_node'),
+            order_cost=self.graph.route_cost,    # time-optimal pickup order on directed lanes
+            cooldown=float(scen.get('pick_cooldown', 0.0)))  # per-shelf replenish cooldown (s)
         self.world = WorldModel(self.graph, self.position_tol)
         self.health = HealthGate()
 
@@ -82,10 +86,9 @@ class MissionCoordinatorNode(Node):
         # and so the QoS matches the mission domain bridge.
         self.queue_pub = self.create_publisher(MissionQueue, '/mission/queue', cmd_qos)
         self.state_pub = self.create_publisher(String, '/mission/state', cmd_qos)
-        self.pp_cmd_pub = self.create_publisher(
-            PickPlaceCommand, f'/{self.picker}/pickplace_cmd', cmd_qos)
-        self.create_subscription(PickPlaceStatus, f'/{self.picker}/pickplace_status',
-                                 self._on_pickplace_status, 10)
+        # picker PnP: Empty 'start' (latched) out, Bool 'working' in (host acts on falling edge)
+        self.pnp_start_pub = self.create_publisher(Empty, '/pnp/start', cmd_qos)
+        self.create_subscription(Bool, '/pnp/working', self._on_pnp_working, 10)
 
         for r in self.robots:
             self.create_subscription(PoseStamped, f'/{r}/global/position',
@@ -94,16 +97,24 @@ class MissionCoordinatorNode(Node):
                                      lambda m, rr=r: self._on_fb(m, rr), 10)
         self.create_subscription(DiagnosticArray, '/localization/diagnostics', self._on_diag, 10)
         self.create_subscription(String, '/mission/dispatch', self._on_dispatch, 10)
+        self.create_subscription(String, '/task/add', self._on_dispatch, 10)      # 관제 alias
         self.create_subscription(String, '/mission/control', self._on_control, 10)
+        self.create_subscription(Empty, '/unload/done', self._on_unload_done, 10)
+        # E-stop: latched safety line; coordinator forces STOP + pauses the FSM
+        self.create_subscription(Bool, '/estop', self._on_estop, cmd_qos)
 
         self._cmd_id = {r: 0 for r in self.robots}
         self._last_target = {r: None for r in self.robots}
+        self._last_mode = {r: None for r in self.robots}
         self._fb_state = {r: '' for r in self.robots}
         self._fb_cmd = {r: -1 for r in self.robots}
         self._pending_since = None
-        self._pp_cmd_id = 0
-        self._pp_requested_id = ''
-        self._pp_substate = ''
+        self._task_seq = 0
+        self._pnp_requested_id = ''
+        self._pnp_episode = 0
+        self._pnp_started_episode = -1
+        self._pnp_working_prev = False
+        self._estop = False
         self._arrived = {}
         self.create_timer(1.0 / tick_rate, self._tick)
         self.get_logger().info(
@@ -121,14 +132,31 @@ class MissionCoordinatorNode(Node):
     def _on_diag(self, msg):
         self.health.update(msg)
 
-    def _on_pickplace_status(self, msg):
-        if msg.cmd_id != self._pp_cmd_id:
-            return                         # stale (not the current pick request)
-        self._pp_substate = msg.state
-        if msg.state == 'DONE':
+    def _on_pnp_working(self, msg):
+        # picker's '작업중' flag. Act ONLY on a true->false edge that followed a true within
+        # the CURRENT pnp episode — rejects a leftover true or a standalone false (stale guard).
+        cur = bool(msg.data)
+        if cur and not self._pnp_working_prev:
+            self._pnp_started_episode = self._pnp_episode
+        elif (not cur) and self._pnp_working_prev \
+                and self._pnp_started_episode == self._pnp_episode:
             self.seq.pick_complete(True)
-        elif msg.state == 'FAILED':
-            self.seq.pick_complete(False)
+        self._pnp_working_prev = cur
+
+    def _on_unload_done(self, _msg):
+        # operator '하역완료' — accept only while the follower is actually at the unloading zone
+        if self.seq.system_state() == 'UNLOADING':
+            self.seq.unload_done()
+            self.get_logger().info('[mission] unload_done (operator 하역완료)')
+        else:
+            self.get_logger().warn(f'unload_done ignored (state={self.seq.system_state()})')
+
+    def _on_estop(self, msg):
+        engaged = bool(msg.data)
+        if engaged != self._estop:
+            self.get_logger().warn(f'[ESTOP] {"ENGAGED" if engaged else "released"}')
+        self._estop = engaged
+        self.seq.estop(engaged)
 
     def _on_dispatch(self, msg):
         token = msg.data.strip()
@@ -137,11 +165,16 @@ class MissionCoordinatorNode(Node):
         if p is None:
             self.get_logger().warn(f'dispatch: unknown part "{name}" (have {list(self.parts)})')
             return
-        node = self.graph.nearest_node(p['x'], p['y'])
-        item = Item(id=f'fetch_{name}', part_id=name, x=float(p['x']), y=float(p['y']),
-                    lane_node=int(node))
+        ln = int(p.get('leader_node', self.graph.nearest_node(p['x'], p['y'])))
+        fn = int(p.get('follower_node', ln))
+        # each press = a distinct task instance (unique id) — lets the operator queue N of the
+        # SAME part; the cooldown scheduler then spaces same-shelf picks into separate trips.
+        self._task_seq += 1
+        item = Item(id=f'fetch_{name}#{self._task_seq}', part_id=name,
+                    x=float(p['x']), y=float(p['y']),
+                    lane_node=ln, leader_node=ln, follower_node=fn)
         if self.queue.enqueue(item):
-            self.get_logger().info(f'enqueue {item.id} -> lane_node {node}')
+            self.get_logger().info(f'enqueue {item.id} -> leader {ln} / follower {fn}')
 
     def _on_control(self, msg):
         cmd = msg.data.strip()
@@ -158,6 +191,13 @@ class MissionCoordinatorNode(Node):
         elif cmd == 'resume':
             self.seq.resume()
             self.get_logger().warn('control: resume -> RUNNING')
+        elif cmd.startswith('cancel:'):
+            item_id = cmd.split(':', 1)[1]
+            now = self.get_clock().now().nanoseconds * 1e-9
+            if self.seq.cancel_item(item_id, now):
+                self.get_logger().info(f'control: cancel {item_id}')
+            else:
+                self.get_logger().warn(f'control: cancel rejected ({item_id} — picking/returning/missing)')
 
     # --- tick ---
     def _tick(self):
@@ -175,20 +215,25 @@ class MissionCoordinatorNode(Node):
                 self._pending_since = None
         arrived = {}
         for r in self.robots:
-            # position is ground truth; feedback ARRIVED is trusted only when it
-            # acknowledges the CURRENT command (avoids stale-ARRIVED race on retarget)
+            # host position estimate is the arrival source (사림이형 doesn't report arrival)
             pos_ok = self.world.arrived(r, self.seq.targets.get(r))
-            fb_ok = (self._fb_state.get(r) in ('ARRIVED', 'HOLDING')
-                     and self._fb_cmd.get(r) == self._cmd_id.get(r))
-            arrived[r] = pos_ok or fb_ok
+            if self.use_nav_feedback:
+                fb_ok = (self._fb_state.get(r) in ('ARRIVED', 'HOLDING')
+                         and self._fb_cmd.get(r) == self._cmd_id.get(r))
+                arrived[r] = pos_ok or fb_ok
+            else:
+                arrived[r] = pos_ok
         self._arrived = arrived
         health = {r: self.health.get(r) for r in self.robots} if self.health_gating else {}
         targets, modes, events = self.seq.tick(now, arrived, health)
         for ev in events:
             self.get_logger().info(f'[mission] {ev[0]} {ev[1]}')
+            if ev[0] == 'done':
+                self.queue.purge_finished()   # auto-reset to a clean, dispatchable queue
         self._handle_pickplace()
         for r in self.robots:
-            self._publish_cmd(r, targets.get(r), modes.get(r, 'GOTO'))
+            mode = 'STOP' if self._estop else modes.get(r, 'GOTO')
+            self._publish_cmd(r, targets.get(r), mode)
         self._publish_queue()
         self._publish_status()
         self._publish_state()
@@ -197,9 +242,12 @@ class MissionCoordinatorNode(Node):
         if node is None:
             return
         node = int(node)
-        if self._last_target[robot] != node:
+        # bump cmd_id when the target OR mode changes, so the rover re-plans after a
+        # STOP -> GOTO (E-stop release / pause resume), not only on a new target node.
+        if self._last_target[robot] != node or self._last_mode[robot] != mode:
             self._cmd_id[robot] += 1
             self._last_target[robot] = node
+            self._last_mode[robot] = mode
         msg = TargetCommand()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = self.frame
@@ -215,6 +263,7 @@ class MissionCoordinatorNode(Node):
         self.cmd_pub[robot].publish(msg)
 
     def _publish_queue(self):
+        now = self.get_clock().now().nanoseconds * 1e-9
         m = MissionQueue()
         m.header.stamp = self.get_clock().now().to_msg()
         m.active_id = self.queue.active_id()
@@ -228,6 +277,8 @@ class MissionCoordinatorNode(Node):
             mi.lane_node = it.lane_node
             mi.x, mi.y = self.graph.xy(it.lane_node)
             mi.status = it.status
+            # cooldown remaining for a still-queued part whose shelf was just picked (0 = ready)
+            mi.ready_in = self.seq.shelf_ready_in(it.lane_node, now) if it.status == 'pending' else 0.0
             m.items.append(mi)
         self.queue_pub.publish(m)
 
@@ -246,33 +297,19 @@ class MissionCoordinatorNode(Node):
             self.status_pub[r].publish(s)
 
     def _handle_pickplace(self):
-        # on entering PICK_PLACE for a new item, request the pick from teammate A (leader)
+        # on entering LOADING (PICKING) for a new item, tell the picker to start PnP
         if self.seq.phase == 'PICKING' and self.seq.active_id \
-                and self.seq.active_id != self._pp_requested_id:
-            it = self.queue.by_id(self.seq.active_id)
-            if it is None:
-                return
-            self._pp_requested_id = self.seq.active_id
-            self._pp_cmd_id += 1
-            self._pp_substate = ''
-            m = PickPlaceCommand()
-            m.header.stamp = self.get_clock().now().to_msg()
-            m.header.frame_id = self.frame
-            m.robot = self.picker
-            m.cmd_id = self._pp_cmd_id
-            m.part_id = it.part_id
-            m.part_coord.x = it.x
-            m.part_coord.y = it.y
-            m.target_robot = 'follower'
-            self.pp_cmd_pub.publish(m)
-            self.get_logger().info(f'[pickplace] request {it.part_id} (cmd {self._pp_cmd_id})')
+                and self.seq.active_id != self._pnp_requested_id:
+            self._pnp_requested_id = self.seq.active_id
+            self._pnp_episode += 1
+            self._pnp_started_episode = -1
+            self._pnp_working_prev = False
+            self.pnp_start_pub.publish(Empty())
+            self.get_logger().info(f'[pnp] start {self.seq.active_id} (episode {self._pnp_episode})')
 
     def _publish_state(self):
-        st = self.seq.system_state()
-        if st == 'PICK_PLACE' and self._pp_substate:
-            st = f'PICK_PLACE:{self._pp_substate}'
         m = String()
-        m.data = st
+        m.data = self.seq.system_state()
         self.state_pub.publish(m)
 
 

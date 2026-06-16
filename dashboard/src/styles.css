@@ -379,6 +379,10 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
+.twin-bar-btns {
+  display: flex;
+  gap: 6px;
+}
 .twin-reset {
   background: var(--inset);
   border: 1px solid var(--border);
@@ -879,6 +883,14 @@ button {
   background: rgba(74, 163, 224, 0.16);
   color: var(--detach);
 }
+.chip-failed {
+  background: rgba(229, 83, 75, 0.18);
+  color: #e5534b;
+}
+.chip-wait {
+  background: rgba(224, 169, 58, 0.18);
+  color: var(--degraded);
+}
 .queue-clear {
   background: var(--inset);
   border: 1px solid var(--border);
@@ -891,6 +903,81 @@ button {
 .queue-clear:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.queue-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-faint);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  padding: 1px 0;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.queue-cancel:hover {
+  color: #e5534b;
+  border-color: rgba(229, 83, 75, 0.6);
+}
+
+/* ---- Mission state badge + 하역완료 (operator) ------------------------- */
+.mission-state {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(92, 100, 112, 0.18);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.state-idle { color: var(--idle); }
+.state-to_pickup { color: var(--pickup); border-color: rgba(224, 169, 58, 0.4); }
+.state-loading { color: var(--platoon); border-color: rgba(46, 194, 126, 0.4); }
+.state-returning { color: var(--detach); border-color: rgba(74, 163, 224, 0.4); }
+.state-unloading {
+  color: var(--pickup);
+  border-color: rgba(224, 169, 58, 0.5);
+  background: rgba(224, 169, 58, 0.12);
+}
+.state-estop,
+.state-aborted {
+  color: var(--lost);
+  border-color: rgba(229, 72, 77, 0.5);
+  background: rgba(229, 72, 77, 0.12);
+}
+.state-paused,
+.state-fault { color: var(--degraded); border-color: rgba(224, 169, 58, 0.45); }
+
+.unload-done {
+  display: block;
+  margin: 6px;
+  padding: 7px 0;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  /* enabled (UNLOADING): green + pulse */
+  background: rgba(46, 194, 126, 0.16);
+  border: 1px solid var(--good);
+  color: var(--good);
+  animation: unload-pulse 1.2s ease-in-out infinite;
+}
+.unload-done:disabled {
+  background: var(--inset);
+  border: 1px solid var(--border);
+  color: var(--text-faint);
+  cursor: default;
+  animation: none;
+}
+@keyframes unload-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 194, 126, 0); }
+  50% { box-shadow: 0 0 0 3px rgba(46, 194, 126, 0.18); }
 }
 
 /* ---- Event / alarm timeline -------------------------------------------- */

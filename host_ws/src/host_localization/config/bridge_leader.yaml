@@ -36,5 +36,8 @@ topics:
   battery_state:
     type: sensor_msgs/msg/BatteryState
     remap: leader/battery_state
+    # Publisher is the leader_battery_state_relay node (NOT a ros2_control broadcaster),
+    # which publishes BEST_EFFORT. A reliable subscription is INCOMPATIBLE with a
+    # best_effort publisher (gets nothing) — best_effort works with both, so use it.
     qos:
-      reliability: reliable
+      reliability: best_effort

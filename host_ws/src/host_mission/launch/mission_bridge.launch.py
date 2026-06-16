@@ -18,9 +18,14 @@ CFG = ('bridge_mission_30_to_25', 'bridge_mission_30_to_73',
 
 def generate_launch_description():
     share = get_package_share_directory('host_mission')
+    # respawn: domain_bridge 0.5.0 occasionally SIGSEGVs during startup when several
+    # bridges come up at once (a discovery race, not a config error — each config runs
+    # fine standalone). Without respawn a crashed bridge stays dead and its whole domain
+    # leg goes silent (e.g. 30->73 down => follower gets no target_cmd). Auto-restart it.
     bridges = [
         Node(package='domain_bridge', executable='domain_bridge', name=cfg,
-             arguments=[os.path.join(share, 'config', cfg + '.yaml')])
+             arguments=[os.path.join(share, 'config', cfg + '.yaml')],
+             respawn=True, respawn_delay=2.0)
         for cfg in CFG
     ]
     return LaunchDescription(bridges)

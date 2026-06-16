@@ -1,62 +1,49 @@
 #!/usr/bin/env python3
-"""mock_pickplace_node — TEST AID (stands in for teammate A's pick&place).
+"""mock_pickplace_node — TEST AID (stands in for 택주's pick&place).
 
-Subscribes the host's PickPlaceCommand and replays a PickPlaceStatus sequence
-APPROACH -> PICKING -> PLACING -> DONE over `duration` seconds, echoing cmd_id. Lets
-the mock demo exercise the host PICK_PLACE phase + 관제 sub-state without the real arm.
-The real picker (leader, teammate A) replaces this with its manipulator pipeline.
+New contract: subscribes the host's /pnp/start (Empty) and replays the '작업중' flag
+/pnp/working (Bool) — true on start, false after `duration` seconds. The host completes
+its LOADING phase on the working-flag FALLING edge (success/fail not modeled). Lets the
+mock demo exercise the LOADING phase without the real arm; 택주 replaces this with the
+manipulator pipeline.
 """
 import rclpy
 from rclpy.node import Node
+from std_msgs.msg import Bool, Empty
 
-from host_mission_interfaces.msg import PickPlaceCommand, PickPlaceStatus
 
-
-class MockPickPlace(Node):
+class MockPnP(Node):
     def __init__(self):
-        super().__init__('mock_pickplace')
-        self.robot = self.declare_parameter('robot', 'leader').value
+        super().__init__('mock_pnp')
         self.dur = float(self.declare_parameter('duration', 3.0).value)
-        self.create_subscription(PickPlaceCommand, f'/{self.robot}/pickplace_cmd',
-                                 self._on_cmd, 10)
-        self.pub = self.create_publisher(PickPlaceStatus, f'/{self.robot}/pickplace_status', 10)
-        self.cmd_id = 0
-        self.part = ''
+        self.working = False
         self.t0 = None
+        self.create_subscription(Empty, '/pnp/start', self._on_start, 10)
+        self.pub = self.create_publisher(Bool, '/pnp/working', 10)
         self.create_timer(0.1, self._tick)
-        self.get_logger().info(f'mock_pickplace[{self.robot}] ready (duration {self.dur}s)')
+        self.get_logger().info(f'mock_pnp ready (duration {self.dur}s)')
 
-    def _on_cmd(self, msg):
-        if msg.robot != self.robot or msg.cmd_id == self.cmd_id:
-            return
-        self.cmd_id = msg.cmd_id
-        self.part = msg.part_id
+    def _set(self, value):
+        self.working = value
+        self.pub.publish(Bool(data=value))
+
+    def _on_start(self, _msg):
         self.t0 = self.get_clock().now().nanoseconds * 1e-9
+        self._set(True)
+        self.get_logger().info('pnp start -> working=true')
 
     def _tick(self):
         if self.t0 is None:
             return
-        e = self.get_clock().now().nanoseconds * 1e-9 - self.t0
-        if e < self.dur * 0.33:
-            state = 'APPROACH'
-        elif e < self.dur * 0.66:
-            state = 'PICKING'
-        elif e < self.dur:
-            state = 'PLACING'
-        else:
-            state = 'DONE'
-        m = PickPlaceStatus()
-        m.header.stamp = self.get_clock().now().to_msg()
-        m.robot = self.robot
-        m.cmd_id = self.cmd_id
-        m.part_id = self.part
-        m.state = state
-        self.pub.publish(m)
+        if self.working and self.get_clock().now().nanoseconds * 1e-9 - self.t0 >= self.dur:
+            self._set(False)
+            self.t0 = None
+            self.get_logger().info('pnp done -> working=false')
 
 
 def main():
     rclpy.init()
-    node = MockPickPlace()
+    node = MockPnP()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:

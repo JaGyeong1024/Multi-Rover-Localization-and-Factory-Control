@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDiagnostics } from '../ros/useDiagnostics';
 import { useRobotState, ROBOTS } from '../ros/useRobotState';
-import { HEALTH, MODE, COLORS, levelToHealth, levelToColor } from '../theme';
+import { HEALTH, COLORS, levelToHealth, levelToColor } from '../theme';
 
 // Battery bar — never fake a full battery when there is no data ("—").
 function BatteryBar({ pct, voltage }) {
   const hasData = typeof pct === 'number';
   const clamped = hasData ? Math.max(0, Math.min(100, pct)) : 0;
-  let barColor = COLORS.good;
+  let barColor = COLORS.good; // 50~100% 초록
   if (hasData) {
-    if (clamped <= 15) barColor = COLORS.lost;
-    else if (clamped <= 35) barColor = COLORS.degraded;
+    if (clamped <= 20) barColor = COLORS.lost; // 0~20% 빨강(저전압 경고)
+    else if (clamped < 50) barColor = COLORS.degraded; // 20~50% 노랑 (50%부터 초록)
   }
   return (
     <div className="battery">
@@ -31,14 +31,14 @@ function BatteryBar({ pct, voltage }) {
 // Rover card: name + state-machine badge (one dot, colored by health/trust) + battery.
 function RoverCard({ robot }) {
   const { getStatus } = useDiagnostics();
-  const { battery } = useRobotState();
+  const { battery, mission } = useRobotState();
   const st = getStatus(`localization/${robot}`);
   const key = st ? levelToHealth(st.level) : 'WAITING';
   const h = HEALTH[key];
-  // State machine (temporary: health→mode, same as the twin ring). Swap to the
-  // real rover task-state topic once it is bridged.
-  const modeKey = key === 'GOOD' ? 'PLATOONING' : key === 'DEGRADED' ? 'PICKUP' : 'IDLE';
-  const m = MODE[modeKey];
+  // Real per-robot mission state from /{robot}/status (host robot_state() projection);
+  // shows '—' until a coordinator publishes. The dot stays health-colored (loc trust).
+  const ms = (mission && mission[robot]) || {};
+  const stateLabel = ms.state || '—';
   const bat = battery[robot] || { percentage: null, voltage: null };
   return (
     <div className="rover-card">
@@ -46,10 +46,12 @@ function RoverCard({ robot }) {
         <span className="rover-card-name">{robot}</span>
         <span className="state-badge" style={{ borderColor: h.color, color: h.color }}>
           <span className="dot" style={{ background: h.color }} aria-hidden="true" />
-          {m.label}
+          {stateLabel}
         </span>
       </div>
-      <div className="rover-card-msg">{st ? st.message : 'no diagnostics'}</div>
+      <div className="rover-card-msg">
+        {ms.task ? `task: ${ms.task}` : st ? st.message : 'no diagnostics'}
+      </div>
       <BatteryBar pct={bat.percentage} voltage={bat.voltage} />
     </div>
   );

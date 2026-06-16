@@ -6,4 +6,5 @@ float64 x                          # lane-stop coord (node x) — convenience fo
 float64 y
 float64 yaw
 string status                      # pending | active | done | failed
+float64 ready_in                   # s until this item's shelf is off cooldown (0 = ready now)
 builtin_interfaces/Time enqueued_at

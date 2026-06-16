@@ -45,6 +45,12 @@ TAG_LINE_RE = re.compile(
 # Leader is declared stale (status "timeout") after this gap with no pose.
 LEADER_TIMEOUT_S = 2.0
 
+# Serial reconnect backoff bounds (seconds). The CP2102 USB bridge can
+# re-enumerate in sub-second bursts, so retry quickly but cap the interval so a
+# long outage does not busy-loop the open() syscall.
+RECONNECT_MIN_S = 0.5
+RECONNECT_MAX_S = 5.0
+
 
 class _TagChannel:
     """Publishers + freshness state for one UWB tag (one rover role).
@@ -141,8 +147,8 @@ class UWBReaderNode(Node):
         self.declare_parameter('follower_tag_id', '')
         self.declare_parameter('marker_scale', 0.05)  # meters (sphere diameter)
 
-        port = self.get_parameter('port').value
-        baud = self.get_parameter('baud_rate').value
+        self.port = self.get_parameter('port').value
+        self.baud = self.get_parameter('baud_rate').value
         self.frame_id = self.get_parameter('frame_id').value
         leader_id = self.get_parameter('leader_tag_id').value.upper()
         follower_id = self.get_parameter('follower_tag_id').value.upper()
@@ -168,28 +174,62 @@ class UWBReaderNode(Node):
         self._leader_auto = not leader_id
         self._auto_locked_id = None
 
-        try:
-            self.ser = serial.Serial(port, baud, timeout=0.1)
-            time.sleep(0.3)
-            # Wake the dwm> prompt; harmless if already awake.
-            self.ser.write(b'\r\r')
-            time.sleep(0.2)
-            self.ser.reset_input_buffer()
-        except serial.SerialException as e:
-            self.get_logger().error(f'Serial connection failed: {e}')
-            raise
-
         self.get_logger().info(
-            f'Connected to {port} @ {baud}, frame_id={self.frame_id}, '
+            f'port={self.port} @ {self.baud}, frame_id={self.frame_id}, '
             f'leader={leader_id or "<auto>"}, '
             f'follower={follower_id or "<none>"}')
 
-        self._ensure_location_stream()
+        # Serial connection state. The CP2102 USB bridge re-enumerates on power/
+        # cable glitches (kernel: "USB disconnect" → new ttyUSB), leaving our fd
+        # dead so readline() raises forever. We treat the port as a resource that
+        # can drop anytime: on error, close and reconnect with capped exponential
+        # backoff. A device absent at startup is likewise non-fatal — the read
+        # timer keeps retrying until it appears.
+        self.ser = None
+        self._reconnect_delay = RECONNECT_MIN_S
+        self._reconnect_at = 0.0  # monotonic deadline; 0 => attempt immediately
+        self._connect()
 
         self.timer = self.create_timer(0.01, self._read_serial)
         self.status_timer = self.create_timer(1.0, self._publish_status)
         # 측정치 평균은 debug 전용(평소 숨김). 1s마다 버퍼를 비워 메모리 바운드 + debug 출력.
         self.avg_timer = self.create_timer(1.0, self._log_avg)
+
+    def _open_serial(self):
+        """Open the port and wake the listener prompt. Raises on failure."""
+        ser = serial.Serial(self.port, self.baud, timeout=0.1)
+        time.sleep(0.3)
+        # Wake the dwm> prompt; harmless if already awake.
+        ser.write(b'\r\r')
+        time.sleep(0.2)
+        ser.reset_input_buffer()
+        return ser
+
+    def _connect(self):
+        """(Re)open the port and (re)start the location stream.
+
+        Returns True on success. Any serial error during open or stream probing
+        leaves us cleanly disconnected (self.ser is None) so the caller retries —
+        the device may still be mid-re-enumeration."""
+        try:
+            self.ser = self._open_serial()
+            self._ensure_location_stream()
+        except Exception as e:
+            self.get_logger().warn(
+                f'UWB 연결 실패 ({self.port}): {e}', throttle_duration_sec=5)
+            self._drop_serial()
+            return False
+        self.get_logger().info('UWB 시리얼 연결됨 — location stream 기동')
+        return True
+
+    def _drop_serial(self):
+        """Close the (likely dead) port and mark us disconnected."""
+        try:
+            if self.ser is not None and self.ser.is_open:
+                self.ser.close()
+        except Exception:
+            pass
+        self.ser = None
 
     def _ensure_location_stream(self):
         # `les` is a NVM-persisted ON/OFF toggle. We can't query it, so probe:
@@ -213,10 +253,29 @@ class UWBReaderNode(Node):
             '(tag off, anchors unpowered, or out of range).')
 
     def _read_serial(self):
+        if self.ser is None:
+            # Disconnected: retry on the backoff deadline, growing the interval on
+            # repeated failure so a long outage doesn't hammer open().
+            if time.monotonic() >= self._reconnect_at:
+                if self._connect():
+                    self._reconnect_delay = RECONNECT_MIN_S
+                else:
+                    self._reconnect_delay = min(
+                        self._reconnect_delay * 2, RECONNECT_MAX_S)
+                    self._reconnect_at = time.monotonic() + self._reconnect_delay
+            return
+
         try:
             line = self.ser.readline().decode('utf-8', errors='ignore').strip()
         except Exception as e:
-            self.get_logger().warn(f'Read error: {e}', throttle_duration_sec=5)
+            # EOF on a re-enumerated CP2102 surfaces here as a SerialException.
+            # Drop the dead fd and start a fresh backoff; udev needs a beat to
+            # recreate the /dev/ttyUWB symlink against the new ttyUSB.
+            self.get_logger().warn(
+                f'Read error: {e} — 포트 닫고 재연결', throttle_duration_sec=5)
+            self._drop_serial()
+            self._reconnect_delay = RECONNECT_MIN_S
+            self._reconnect_at = time.monotonic() + RECONNECT_MIN_S
             return
 
         if not line:
@@ -281,7 +340,7 @@ class UWBReaderNode(Node):
                     throttle_duration_sec=5)
 
     def destroy_node(self):
-        if hasattr(self, 'ser') and self.ser.is_open:
+        if getattr(self, 'ser', None) is not None and self.ser.is_open:
             self.ser.close()
         super().destroy_node()
 

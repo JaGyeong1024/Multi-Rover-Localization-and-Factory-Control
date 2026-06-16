@@ -1,13 +1,22 @@
-# map.json-based mission scenario. Nodes from map.json zones/shelves.
-# leader_standby zone -> node 22, loading zone -> node 20, parts on shelves (-> nodes 29, 28).
-standby_node: 22         # leader wait zone (leader_standby zone)
-unloading_node: 20       # follower drop-off (loading zone, 하역)
-follower_home_node: 24   # follower's OWN wait zone (follower zone), separate from drop-off
-capacity: 4
-position_tol: 0.20     # m (parts sit ~0.2m off the lane node, on the shelf)
-pick_dwell: 8.0
+# map.json-based mission scenario. Node roles come from map.json zones/shelves.
+# leader_standby zone (zone_3, y~3.3) -> node 32; loading/drop-off zone (zone_2, y~3.8)
+# -> node 22; parts on shelves -> nearest leader-pick nodes (29, 28).
+standby_node: 32         # leader wait (leader_standby zone, zone_3)
+unloading_node: 22       # follower drop-off (loading zone, 하역)
+# follower wait zone removed (2026-06-11) -> follower_home defaults to unloading (node 22).
+capacity: 2            # transport capacity = parts carried per trip
+pick_cooldown: 30.0    # s, per-shelf replenish (human refills) — same-shelf picks round-trip; 0 = off
+position_tol: 0.20     # m, rover-to-stop-node tolerance (part sits ~0.4m beyond, on the shelf)
+pick_dwell: 80.0       # /pnp/working 신호가 정상이면 그 falling edge가 픽을 실시간 완료시킴.
+                       # 이 값은 신호 無(픽커 무응답)일 때만 쓰는 fallback → **worst-case pnp보다 커야**
+                       # 진행중 pnp를 가짜완료 안 시킨다(실신호가 이김). 실제 pnp ≥40s라 8s는 부적절 → 80s.
+                       # 제약: pick_dwell < phase_timeout(기본 90s) 이어야 dwell이 FAULT보다 먼저 발동.
+                       # 80<90이라 동작하나 여유 10s뿐 → pnp가 80s에 근접하면 phase_timeout도 올릴 것.
 drop_dwell: 2.0
 
+# NOTE: id/coord must match dashboard map.json shelves[].part — the twin click
+#       publishes /mission/dispatch "fetch:<id>". shelf 0 = gear, shelf 1 = bolt.
 parts:
-  - {id: gear_01, x: 5.3864, y: 2.6859}   # shelf 0 -> node 29
-  - {id: gear_02, x: 5.3864, y: 4.1274}   # shelf 1 -> node 28
+  # parallel pick: leader at shelf-center node, follower 0.25 m to its right (-y).
+  - {id: gear_01, x: 5.3864, y: 2.6859, leader_node: 29, follower_node: 34}   # shelf 0
+  - {id: bolt_01, x: 5.3864, y: 4.1274, leader_node: 28, follower_node: 35}   # shelf 1

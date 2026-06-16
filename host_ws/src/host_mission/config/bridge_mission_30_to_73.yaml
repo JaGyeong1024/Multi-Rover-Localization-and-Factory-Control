@@ -1,4 +1,9 @@
-# Host(30) -> Follower(73): mission state/queue broadcast + follower's mission command.
+# Host(30) -> Follower(73): mission state/queue broadcast + follower's mission command,
+# E-stop safety line, the LEADER's live global position + planned route (so the follower's
+# planner can platoon/follow at offset; host only relays, no following logic here), and the
+# leader's platooning control topics relayed on from 25->30 (replacing the leader's removed
+# direct 25->73 bridge). The follower's OWN /follower/global/position arrives via the
+# host_to_follower localization bridge, so it is intentionally NOT duplicated here.
 name: mission_30_to_73
 from_domain: 30
 to_domain: 73
@@ -12,3 +17,24 @@ topics:
   follower/target_cmd:
     type: host_mission_interfaces/msg/TargetCommand
     qos: {reliability: reliable, durability: transient_local}
+  estop:
+    type: std_msgs/msg/Bool
+    qos: {reliability: reliable, durability: transient_local}
+  leader/global/position:
+    type: geometry_msgs/msg/PoseStamped
+    qos: {reliability: reliable}
+  leader/route:
+    type: host_mission_interfaces/msg/LeaderRoute
+    qos: {reliability: reliable, durability: transient_local}
+  leader/follower_enable:
+    type: std_msgs/msg/Bool
+    qos: {reliability: reliable, durability: transient_local}
+  leader/platoon_mode:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  leader/task_state:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  leader/heartbeat:
+    type: std_msgs/msg/Bool
+    qos: {reliability: best_effort}

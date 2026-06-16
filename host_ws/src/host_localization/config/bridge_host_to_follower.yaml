@@ -11,3 +11,10 @@ topics:
     type: geometry_msgs/msg/PoseStamped
     qos:
       reliability: reliable
+  # heading 정렬 상태(=COG 앵커). 로버 init: false면 직진해 COG 부트스트랩, true면 정지.
+  # latched(transient_local) — 로버가 늦게 켜져도 현재 정렬 상태를 즉시 수신.
+  follower/heading_aligned:
+    type: std_msgs/msg/Bool
+    qos:
+      reliability: reliable
+      durability: transient_local

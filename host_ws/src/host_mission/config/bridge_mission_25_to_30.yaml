@@ -1,11 +1,32 @@
-# Leader(25) -> Host(30): nav + pick&place feedback (mission contract return path).
+# Leader(25) -> Host(30): nav + pick&place feedback (mission contract return path) +
+# the leader's planned route (host relays it on to the follower via 30->73 for platooning) +
+# the leader's platooning control topics (host relays on to the follower via 30->73; this
+# REPLACES the leader's own direct 25->73 bridge, which is being removed so the host is the
+# single bridging authority). leader_task_manager keeps publishing these on domain 25.
 name: mission_25_to_30
 from_domain: 25
 to_domain: 30
 topics:
   leader/nav_feedback:
     type: host_mission_interfaces/msg/NavFeedback
-    qos: {reliability: best_effort}
-  leader/pickplace_status:
-    type: host_mission_interfaces/msg/PickPlaceStatus
+    # RELIABLE end-to-end: rover_nav_node publishes reliable, coordinator subscribes
+    # reliable; a best_effort relay would be incompatible with the reliable subscriber.
     qos: {reliability: reliable}
+  pnp/working:
+    type: std_msgs/msg/Bool
+    qos: {reliability: reliable}
+  leader/route:
+    type: host_mission_interfaces/msg/LeaderRoute
+    qos: {reliability: reliable, durability: transient_local}
+  leader/follower_enable:
+    type: std_msgs/msg/Bool
+    qos: {reliability: reliable, durability: transient_local}
+  leader/platoon_mode:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  leader/task_state:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  leader/heartbeat:
+    type: std_msgs/msg/Bool
+    qos: {reliability: best_effort}

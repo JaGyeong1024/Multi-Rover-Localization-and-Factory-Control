@@ -10,19 +10,25 @@ export default function Header({ onEstop, estopActive }) {
   const subRef = useRef(null); // 영문 줄(폰트크기로 한글 폭에 맞춤)
   const [subSize, setSubSize] = useState(SUB_BASE);
 
-  // 영문 줄 폭 = 한글 줄 폭이 되도록 폰트크기를 비례 스케일(text-align justify 자간왜곡 회피).
+  // 영문 줄 폭 = 한글 줄 폭이 되도록 폰트크기를 비례 스케일(자간왜곡 회피).
+  // 결정적으로: 기준 px는 React state가 아니라 '실제 렌더된' 폰트크기(getComputedStyle)에서
+  //   읽어 DOM과 어긋나지 않게 하고(=상태/DOM desync 제거), 폭은 fractional rect로 측정.
+  //   계산이 멱등이라 폰트 로드 전 잘못 잡혀도 fonts.ready 재측정에서 정확히 수렴한다.
   useLayoutEffect(() => {
     const measure = () => {
       const main = mainRef.current;
       const sub = subRef.current;
       if (!main || !sub) return;
-      const mainW = main.scrollWidth; // 한글 자연 폭(@18px)
-      const subW = sub.scrollWidth; // 영문 자연 폭(@현재 크기)
-      if (mainW > 0 && subW > 0) setSubSize((s) => s * (mainW / subW) * FIT_RATIO);
+      const mainW = main.getBoundingClientRect().width; // 한글 자연 폭
+      const subW = sub.getBoundingClientRect().width; // 영문 현재 폭
+      const curPx = parseFloat(getComputedStyle(sub).fontSize); // 실제 렌더된 크기
+      if (!(mainW > 0) || !(subW > 0) || !(curPx > 0)) return;
+      const target = curPx * (mainW / subW) * FIT_RATIO;
+      setSubSize((prev) => (Math.abs(prev - target) > 0.1 ? target : prev)); // 수렴 시 멈춤
     };
-    measure();
-    // 웹폰트가 늦게 로드되면 폭이 달라지므로 로드 완료 후 한 번 더 맞춘다.
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    const raf = requestAnimationFrame(measure); // 초기 레이아웃 후
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure); // 폰트 로드 후
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (

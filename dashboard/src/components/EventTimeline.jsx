@@ -17,6 +17,8 @@ const NAME_LABEL = {
   'pipeline/fusion': 'FUSION',
   'pipeline/output': 'FINAL OUTPUT',
   'pipeline/imu': 'IMU',
+  'align/leader': 'LEADER IMU',
+  'align/follower': 'FOLLOWER IMU',
   'sync/chrony': 'TIME SYNC',
 };
 const WATCH = Object.keys(NAME_LABEL);
@@ -39,6 +41,11 @@ function diagEvent(name, level) {
   }
   if (name === 'sync/chrony') {
     return level >= 1 ? ['warn', 'time sync warning (offset↑)'] : ['info', 'time sync OK'];
+  }
+  if (name.startsWith('align/')) {
+    return level === 0
+      ? ['info', `${label} heading aligned ✓`]
+      : ['warn', `${label} heading unaligned — drive straight`];
   }
   return level >= 1 ? ['warn', `${label} dropped`] : ['info', `${label} recovered`];
 }
@@ -76,6 +83,14 @@ export default function EventTimeline({ estopActive }) {
       const init = {};
       for (const n of names) init[n] = statuses[n].level;
       prevLevels.current = init;
+      // 정렬 상태는 초기값도 표시 — 미정렬=「직진해서 맞춰라」는 actionable 정보라 prime 때
+      // 한 번 띄운다. 나머지 status는 prime만(연결 시 전체 상태 스팸 방지).
+      for (const n of WATCH) {
+        if (n.startsWith('align/') && statuses[n]) {
+          const [sev, text] = diagEvent(n, statuses[n].level);
+          push(sev, n.split('/')[0], text);
+        }
+      }
       return;
     }
     for (const n of WATCH) {

@@ -16,10 +16,18 @@ from rclpy.qos import qos_profile_sensor_data
 from geometry_msgs.msg import PoseStamped, TwistStamped
 
 
+def _stamp_s(stamp):
+    return stamp.sec + stamp.nanosec * 1e-9
+
+
 class GlobalPositionNode(Node):
     def __init__(self):
         super().__init__('global_position_node')
         rate = self.declare_parameter('rate', 30.0).value           # 출력 계약 주기(여기서 통제)
+        # stale 가드: 추정기가 신선한 pose를 더는 안 흘리면(소스 끊김) 마지막 값을 무한
+        # 재발행하면 안 된다 — 다운스트림(트윈·로버 platooning·미션)이 죽은 로버를 살아있다
+        # 오인한다. 소스 stamp가 이보다 오래면 발행 중단 → 소비자가 미수신=부재로 timeout 감지.
+        self.stale_timeout = float(self.declare_parameter('stale_timeout', 0.5).value)  # [s]
         self.frame = self.declare_parameter('frame_id', 'uwb_global').value
         robots = self.declare_parameter('robots', ['leader', 'follower']).value
 
@@ -45,10 +53,13 @@ class GlobalPositionNode(Node):
         self.create_timer(1.0 / float(rate), self._on_timer)
 
     def _on_timer(self):
-        """최신 추정값을 고정 주기로 재발행. 소스 stamp 보존(데이터 시각). 미수신은 skip."""
+        """최신 추정값을 고정 주기로 재발행. 소스 stamp 보존(데이터 시각).
+        미수신·stale(소스 stamp가 stale_timeout 초과)은 skip — 죽은 소스의 마지막 값을
+        무한 재발행하지 않는다(다운스트림이 부재를 미수신=timeout으로 감지)."""
+        now = self.get_clock().now().nanoseconds * 1e-9
         for st in self.robots.values():
             m = st['pose']
-            if m is not None:
+            if m is not None and now - _stamp_s(m.header.stamp) <= self.stale_timeout:
                 out = PoseStamped()
                 out.header = m.header                          # 소스 stamp 보존
                 out.pose.position.x = m.pose.position.x
@@ -57,7 +68,7 @@ class GlobalPositionNode(Node):
                 out.pose.orientation = m.pose.orientation      # heading 보존
                 st['pose_pub'].publish(out)
             v = st['vel']
-            if v is not None:
+            if v is not None and now - _stamp_s(v.header.stamp) <= self.stale_timeout:
                 out = TwistStamped()
                 out.header = v.header
                 out.twist = v.twist

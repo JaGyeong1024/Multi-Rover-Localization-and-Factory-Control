@@ -1,26 +1,16 @@
 import React from 'react';
-import { usePublisher } from '../ros/useRos';
 import { useMission } from '../ros/useMission';
 
-// Static part list (mock). When the host_mission lane/Part/Action backend is
-// confirmed, replace with the real part registry + lane projection.
+// Console task buttons — the SAME parts the DigitalTwin shelves expose. ids must
+// match map.json shelves[].part and host_mission mission_scenario_map.yaml.
+// Clicking publishes /task/add "fetch:<id>" (via useMission); the coordinator enqueues.
 const PARTS = [
-  { id: 'gear_01', label: 'Gear 01', zone: 'A' },
-  { id: 'gear_02', label: 'Gear 02', zone: 'A' },
-  { id: 'bolt_01', label: 'Bolt 01', zone: 'B' },
-  { id: 'panel_01', label: 'Panel 01', zone: 'C' },
-  { id: 'bracket_01', label: 'Bracket 01', zone: 'C' },
+  { id: 'gear_01', label: 'Gear 01', shelf: 0 },
+  { id: 'bolt_01', label: 'Bolt 01', shelf: 1 },
 ];
 
 export default function MissionDispatch() {
-  // Real stub publisher — /mission/dispatch String "fetch:<part>".
-  const publishDispatch = usePublisher('/mission/dispatch', 'std_msgs/msg/String');
-  const { enqueue } = useMission();
-
-  const dispatch = (part) => {
-    publishDispatch({ data: `fetch:${part.id}` });
-    enqueue(part);
-  };
+  const { dispatch } = useMission();
 
   return (
     <div className="dispatch">
@@ -31,8 +21,8 @@ export default function MissionDispatch() {
         {PARTS.map((p) => (
           <li key={p.id} className="part-row">
             <span className="part-name">{p.label}</span>
-            <span className="part-zone">zone {p.zone}</span>
-            <button type="button" className="part-add" onClick={() => dispatch(p)}>
+            <span className="part-zone">shelf {p.shelf}</span>
+            <button type="button" className="part-add" onClick={() => dispatch(p.id)}>
               + Queue
             </button>
           </li>

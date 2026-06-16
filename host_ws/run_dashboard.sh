@@ -10,6 +10,9 @@
 #   MODE=bag  bash run_dashboard.sh        # 강제 bag
 #   MODE=live bash run_dashboard.sh        # 강제 live
 #   BAG=/path/to/bag bash run_dashboard.sh # bag 경로 지정
+#   MISSION=on bash run_dashboard.sh       # mock 미션 데모(map_demo) — 큐/상태/cancel/하역완료
+#                                          #   UI 테스트용. mock 로버가 pose 발행 →
+#                                          #   위치추정/bag/perception 대신 동작(pose 충돌 회피).
 #
 # 선행(최초 1회): sudo apt install -y ros-humble-rosbridge-suite ros-humble-web-video-server
 set -u
@@ -21,6 +24,7 @@ UWB_DEV="/dev/ttyUWB"
 BAG="${BAG:-$HOME/capstone/data/bags/uwb_20260604_003149_leader_follower_test2}"
 QOS="$HOME/capstone/host_ws/dashboard_bag_qos.yaml"
 PERCEPTION="$HOME/capstone/host_ws/perception/run_perception.sh"
+MISSION="${MISSION:-off}"   # on → mock 미션 데모(map_demo): mock 로버가 pose 발행, 위치추정/bag 대신
 
 # ROS setup.bash는 미설정 변수(AMENT_TRACE_SETUP_FILES 등)를 참조 → set -u에서 죽음.
 # 소싱 구간만 nounset 해제(맵에디터 컨벤션).
@@ -52,7 +56,8 @@ echo "[dash] 모드=$MODE  (카메라 $camO / UWB $uwbO)"
 # --- 이전 인스턴스 정리 (재실행 안전; 파일 스크립트라 argv 깨끗 → self-kill 없음) ----
 for pat in rosbridge_websocket web_video_server localization_diagnostics_node \
            "lib/host_localization/fusion_node" "lib/host_localization/global_position_node" \
-           "host_ws/perception/perception_node.py" "ros2 bag play"; do
+           "host_ws/perception/perception_node.py" "ros2 bag play" \
+           mock_rover_node mission_coordinator_node mock_pickplace_node; do
   pkill -f "$pat" 2>/dev/null || true
 done
 sleep 1
@@ -64,14 +69,20 @@ cleanup() {
   for p in "${PIDS[@]}"; do kill "$p" 2>/dev/null || true; done
   for pat in rosbridge_websocket web_video_server localization_diagnostics_node \
              "lib/host_localization/fusion_node" "lib/host_localization/global_position_node" \
-             "perception_node.py" "ros2 bag play"; do
+             "perception_node.py" "ros2 bag play" \
+             mock_rover_node mission_coordinator_node mock_pickplace_node; do
     pkill -f "$pat" 2>/dev/null || true
   done
 }
 trap cleanup EXIT INT TERM
 
 # --- ROS 백엔드 (모드별) ------------------------------------------------------
-if [ "$MODE" = live ]; then
+if [ "$MISSION" = on ]; then
+  echo "[dash] MOCK 미션 데모 (map_demo: mock 로버×2 + coordinator + mock pnp)..."
+  echo "       (mock 로버가 pose 발행 → 위치추정/bag/perception 미실행: pose 충돌 회피)"
+  ros2 launch host_mission map_demo.launch.py & PIDS+=($!)
+  sleep 2
+elif [ "$MODE" = live ]; then
   echo "[dash] LIVE 파이프라인 (uwb + global_cam + rover_bridge + fusion + global_position)..."
   ros2 launch host_localization pipeline.launch.py & PIDS+=($!)
   sleep 3
@@ -81,9 +92,11 @@ else
   sleep 2
 fi
 
-# --- perception (GPU YOLO) — 항상 ---------------------------------------------
-echo "[dash] perception (.venv YOLO · GPU)..."
-bash "$PERCEPTION" & PIDS+=($!)
+# --- perception (GPU YOLO) — mock 미션 모드 아니면 (이미지 소스 필요) -----------
+if [ "$MISSION" != on ]; then
+  echo "[dash] perception (.venv YOLO · GPU)..."
+  bash "$PERCEPTION" & PIDS+=($!)
+fi
 
 # --- 대시보드 서비스 (rosbridge :9090 / web_video :8080 / diagnostics) — 공통 --
 echo "[dash] 대시보드 서비스 (rosbridge + web_video + diagnostics)..."
@@ -91,7 +104,7 @@ ros2 launch host_localization dashboard.launch.py & PIDS+=($!)
 sleep 2
 
 # --- bag 모드면 리플레이 (카메라 QoS reliable override → web_video_server 호환) --
-if [ "$MODE" = bag ]; then
+if [ "$MODE" = bag ] && [ "$MISSION" != on ]; then
   echo "[dash] bag 리플레이(--loop)..."
   ros2 bag play --loop --qos-profile-overrides-path "$QOS" "$BAG" & PIDS+=($!)
 fi
@@ -119,7 +132,9 @@ else
 fi
 
 echo "──────────────────────────────────────────────"
-echo " 모드: $MODE    대시보드: $URL    (rosbridge :9090 · web_video :8080)"
+echo " 모드: $MODE   미션: $MISSION   대시보드: $URL   (rosbridge :9090 · web_video :8080)"
+[ "$MISSION" = on ] && \
+echo " 큐 추가: ros2 topic pub --once /task/add std_msgs/String \"data: 'fetch:gear_01'\" (또는 대시보드 버튼)"
 echo " 중지: Ctrl+C  (백엔드/프론트/브라우저 전부 정리)"
 echo "──────────────────────────────────────────────"
 wait
