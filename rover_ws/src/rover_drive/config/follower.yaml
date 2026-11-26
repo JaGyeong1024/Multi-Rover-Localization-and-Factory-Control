@@ -1,0 +1,179 @@
+# rover_drive parameters - follower (2-wheel differential drive).
+# All nodes (path_tracker, safety_gate, cmd_watchdog) read this file; each takes the keys it
+# declares. Hardware keys (motor / sensor quirks, mounts, device topics) are in
+# config/hardware/rover_follower.yaml, which launch passes after this file.
+# Units: m, rad, s. Keep the decimal point on every number (ROS parameter types are strict).
+/**:
+  ros__parameters:
+    robot: follower
+
+    # ---- speed / acceleration envelope (tracker + gate) ----
+    max_linear_speed: 0.20
+    max_reverse_speed: 0.0
+    max_angular_speed: 1.0
+    max_linear_accel: 0.30
+    max_linear_decel: 0.50
+    max_linear_jerk: 2.0
+    max_angular_accel: 4.0
+
+    # ---- pure pursuit ----
+    control_rate_hz: 20.0
+    lookahead_time_s: 1.0         # Ld 0.20 m at full speed, as the leader (1.5 cut the run-in
+                                  # corner: ~3 deg heading error at the goal)
+    lookahead_min: 0.18
+    lookahead_max: 0.40
+    max_curvature: 15.0
+    heading_free_rad: 0.35
+    heading_slow_rad: 0.90
+    turn_speed: 0.04
+    runin_heading_gain: 0.0       # [1/m] heading feedback on the final run-in (leader uses it)
+    # Integral of the cross-track error over distance driven, fed back as curvature: removes
+    # the sideways offset a constant heading-estimate bias leaves (0 = off).
+    xtrack_integral_gain: 0.0     # [1/m^3] off: 50 made the follower weave (+-12 deg, 7.5 s
+                                  #   period) or miss by 16.5 cm; off: 1.7 / 3.3 cm over 1.8 m
+    xtrack_integral_limit: 1.5    # [1/m] largest curvature the term may add
+
+    # ---- speed limiters ----
+    max_lateral_accel: 0.15
+    curvature_preview_m: 0.30
+    goal_decel: 0.15
+    approach_speed: 0.03
+    runin_lookaheads: 0.0         # see leader.yaml; at 0.20 m/s the lookahead is 0.20 m, twice
+                                  # into the 0.40 m run-in. The speed preset sets 2.0.
+    goal_stop_margin: 0.01
+    # Gap to the lead rover: two definitions, never mix them.
+    #   free gap (GAP_LIDAR): my front edge -> lead's rear surface, measured by my LiDAR
+    #     (safety_gate -> /follower/lead_gap). Wanted: gap_free_target.
+    #   path gap (GAP): my tracked point -> lead's relayed position, along my path (centre to
+    #     centre). Wanted: PathCommand.gap (host mission.yaml platoon.gap). Fallback only,
+    #     while the LiDAR does not see the lead.
+    # path gap = free gap + (my tracked point -> my front edge) + (lead tracked point -> its
+    # rear). Keep platoon.gap >= gap_free_target + both offsets, so the fallback never brings
+    # the rovers closer than the LiDAR target does.
+    gap_gain: 1.5
+    gap_resume_margin: 0.05
+    gap_free_target: 0.20         # wanted free gap, body to body [m]
+    lead_gap_timeout_s: 0.3       # LiDAR free gap older than this (~3 scans): path gap
+    gap_bridge: false             # true = bumpless switch (preset gap_bridge). While the LiDAR
+                                  # sees the lead, d = path error - LiDAR error is stored; while
+                                  # it does not, GAP_BRIDGED = path error - d (no stop on the
+                                  # flip), trusted for one PathCommand.gap of travel, then plain
+                                  # GAP. false = plain conservative path gap. Measure d across a
+                                  # blind stretch before turning it on: its change must stay well
+                                  # inside gap_free_target - gap_hard_min (0.12 m).
+    lead_timeout_s: 0.5
+    lead_off_path_tol: 0.30
+    lead_back_window: 0.5
+    degraded_speed: 0.05
+    quality_default: GOOD
+
+    # ---- freshness ----
+    pose_timeout_s: 0.5
+    cmd_timeout_s: 1.5
+    input_timeout_s: 0.5
+    gate_timeout_s: 1.0
+
+    # ---- monitors ----
+    jump_speed_factor: 2.0
+    jump_slack_m: 0.10
+    jump_reacquire_s: 0.5
+    off_path_max: 0.25
+    stuck_cmd_dist: 0.20
+    stuck_min_ratio: 0.2
+    projection_window: 0.5
+    init_tie_margin: 0.05
+    default_goal_pos_tol: 0.05
+    arrival_settle_s: 0.4
+
+    # ---- heading alignment manoeuvre ----
+    # Speed must stay above the host filter's course gate or the heading never anchors; it
+    # needs 3 course samples 0.15 m apart, so at least 0.45 m.
+    align_speed: 0.12
+    align_max_dist: 0.8
+    align_pass_speed: 0.13
+    align_pass_omega: 0.02
+
+    # ---- front obstacle stop on the LiDAR scan (geometry: config/hardware/rover_follower.yaml) ----
+    lidar_enabled: true
+    scan_timeout_s: 0.5
+    lidar_stop_base: 0.12         # clearance kept ahead of the front edge
+    lidar_brake_decel: 0.50
+    lidar_reaction_s: 0.20
+    lidar_resume_s: 1.0           # after a front stop: must stay clear this long to move again
+    lidar_front_half_angle: 0.60  # forward sector +-34 deg
+    lidar_half_width: 0.15        # half the swept width + margin (0 = whole sector)
+    lidar_min_valid_beams: 5      # fewer returns in the sector = LIDAR_BLIND
+    lidar_blind_speed: 0.10       # speed cap while blind (0.0 = stop)
+    lidar_exclude_lead: true      # gap control: the lead rover ahead is not an obstacle
+    lidar_lead_radius: 0.30       # scan points this close to the lead's relayed position are
+                                  # the lead (left out of the front stop, give the free gap).
+                                  # Must reach its rear surface from its tracked point plus
+                                  # pose error + relay delay.
+    lidar_lead_min_points: 10     # fewer lead points = free gap not measured (the G6 sees a
+                                  # 0.2 m wide rear at 1 m with ~60 beams)
+    gap_hard_min: 0.08            # free gap the gate never lets the lead close below. Speed must
+                                  # stop this short of the lead's rear if it stopped dead
+                                  # (lidar_reaction_s, lidar_brake_decel): 0.20 m/s needs
+                                  # 0.16 m, so at gap_free_target the gate never interferes.
+                                  # Also the tracker's stop gap: its gap speed is 0 there.
+    front_lost_stops: true       # returns vanished while an object was close: stop
+    front_lost_near_m: 0.35
+    front_distance_topic: ''      # set = use a Float32 distance instead of the scan
+    front_memory: false           # leader depth camera only (see leader.yaml); needs
+    depth_scan_topic: ''          #   front_distance_topic and a depth scan
+    front_path: false             # stop zone along the rest of the path command instead of
+                                  # straight ahead while the rover follows it (see leader.yaml);
+                                  # every scan point counts there, not only the front sector.
+                                  # Before turning it on, make sure the LiDAR sees no own-
+                                  # structure return ahead within lidar_half_width (outside the
+                                  # sector it never counted; here it stops the rover for good).
+                                  # Preset: front_path
+
+    # ---- leading pivot (a path may START with an in-place rotation; never at the goal) ----
+    pivot_omega: 0.5             # rad/s, largest pivot rate
+    pivot_min_omega: 0.1         # rad/s, smallest pivot rate
+    pivot_gain: 1.0               # 1/s, rate = gain * heading error
+    pivot_tol: 0.05               # rad, pivot done -> track the path
+    pivot_pos_tol: 0.10           # m, pivot only when standing this close to its position
+    pivot_timeout_s: 30.0         # not done by then: STOPPED STUCK (host re-plans)
+    # The heading must follow the commanded rotation, else STOPPED STUCK at once (IMU lost,
+    # wheels not turning, wrong angular_sign) instead of spinning blind until the timeout.
+    pivot_min_turn_ratio: 0.25    # half the worst executed/commanded yaw rate
+    pivot_check_rad: 0.8          # commanded rad before judging; must clear the rotation hidden
+                                  # in the pose delay (0.4 s x 0.5 rad/s = 0.2 rad) by noise
+    pivot_slack_rad: 0.5          # commanded-rotation budget = |initial error| / ratio + this
+
+    # ---- pick approach ----
+    pick_approach_dist: 0.6       # pick_at_goal + this close to the goal: /{robot}/approach_active
+    front_pick_exempt: true       # gate: no front stop while approach_active
+    approach_timeout_s: 1.0
+
+    # ---- square up to the fixture face (leader only, see leader.yaml) ----
+    face_align: false
+    face_align_tol_rad: 0.026
+    face_align_max_rad: 0.6
+    face_align_window: 0.20
+    face_align_range: [0.15, 0.90]
+    face_align_min_points: 8
+    face_align_timeout_s: 10.0
+    face_align_memory_s: 15.0
+
+    # ---- command watchdog (the follower base has no command timeout) ----
+    watchdog_timeout_s: 0.5       # gate heartbeat silent this long -> zero Twist on /cmd_vel
+    watchdog_rate_hz: 10.0
+    alive_rate_hz: 10.0           # gate heartbeat /follower/gate_alive
+    alive_topic: ''
+
+    # ---- rates ----
+    feedback_rate_hz: 5.0
+    gate_rate_hz: 50.0
+    state_rate_hz: 5.0
+
+    # ---- topics ('' = derived from robot) ----
+    cmd_vel_topic: ''             # tracker output      -> /follower/cmd_vel
+    input_topic: ''               # gate input          -> /follower/cmd_vel
+    output_topic: /cmd_vel        # gate output to the base
+    estop_topic: /estop
+    approach_topic: ''            # -> /follower/approach_active
+    safety_state_topic: ''        # -> /follower/safety_state
+    lead_gap_topic: ''            # gate -> tracker LiDAR free gap -> /follower/lead_gap

@@ -1,0 +1,6 @@
+# .venv_yolo (perception). torch/torchvision are installed separately by setup.sh from the cu124 index; listing them here could pull CPU wheels.
+# Versions pinned to match the host for reproducibility. numpy 2.x is fine here because perception avoids cv_bridge.
+ultralytics==8.4.60
+numpy==2.2.6
+opencv-python==4.13.0.92
+scipy==1.15.3

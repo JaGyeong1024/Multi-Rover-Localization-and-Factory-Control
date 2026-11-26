@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ros:
+    runs-on: ubuntu-22.04
+    container: ros:humble-ros-base
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq python3-pytest python3-numpy python3-yaml python3-serial \
+            python3-opencv python3-scipy
+          rosdep update -q
+          rosdep install -y -q --from-paths host_ws/src rover_ws/src/rover_drive --ignore-src
+
+      - name: Build
+        run: |
+          source /opt/ros/humble/setup.bash
+          (cd host_ws && colcon build --symlink-install --event-handlers console_direct-)
+          source host_ws/install/setup.bash
+          (cd rover_ws && colcon build --symlink-install --packages-select rover_drive --event-handlers console_direct-)
+
+      - name: Unit tests
+        run: |
+          source /opt/ros/humble/setup.bash
+          source host_ws/install/setup.bash
+          source rover_ws/install/setup.bash
+          status=0
+          for pkg in host_ws/src/host_localization host_ws/src/host_mission host_ws/src/host_planning \
+                     host_ws/src/host_sim rover_ws/src/rover_drive; do
+            echo "::group::$pkg"
+            (cd "$pkg" && python3 -m pytest test -q -p no:cacheprovider) || status=1
+            echo "::endgroup::"
+          done
+          exit $status
+
+  dashboard:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+      - run: npm ci
+      - run: npm run build

@@ -1,0 +1,6 @@
+# Use when: speed_015 passed the straight and box-stop checks, 3 m straight at 0.20 m/s still keeps them with no track slip on starts and stops (drive_check distance ratio), and the headings are aligned before the mission starts.
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="speed_020", launch: presets:=speed_020). Use together with the follower's speed_025: the follower must be able to drive faster than the leader to close its gap.
+/**:
+  ros__parameters:
+    max_linear_speed: 0.20
+    runin_lookaheads: 2.0

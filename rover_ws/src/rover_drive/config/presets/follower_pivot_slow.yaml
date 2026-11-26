@@ -1,0 +1,5 @@
+# Use when: the follower overshoots its pivot heading.
+# Overlay on config/follower.yaml, only the keys below change (start: PRESETS="pivot_slow", launch: presets:=pivot_slow).
+/**:
+  ros__parameters:
+    pivot_omega: 0.35

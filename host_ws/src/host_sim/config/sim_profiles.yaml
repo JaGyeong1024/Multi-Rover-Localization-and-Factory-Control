@@ -1,0 +1,47 @@
+# Named overlays of sim-world keys (host_sim.config.apply_profile). A profile is merged
+# key by key into a world config such as sim_default.yaml: dicts merge, other values
+# replace. Units: m, rad, s.
+
+# Site conditions: the real fusion in the loop (mode fused), the UWB offset from the camera
+# frame and the ceiling camera losing a rover that stands next to the other one.
+field_site:
+  robots:
+    leader:
+      localization:
+        mode: fused
+        fused:
+          uwb: &site_uwb
+            offset_x: 1.27      # m, UWB minus camera position
+            offset_y: 1.23
+          camera:
+            occlusion_dist: 0.34  # m between rover centres: the follower was lost at 0.338, back at 0.320
+            jitter_std: 0.011   # m, parked leader: x std 11 mm (y 4-5 mm)
+          imu: &site_imu
+            yaw_rate_scale: 0.965   # IMU yaw / true yaw change (follower in-place turn: IMU
+                                    # 87.8 deg against 91 deg by the camera box; the leader is
+                                    # assumed the same)
+            gyro_noise_std: 0.0007  # rad/s, follower at rest
+    follower:
+      localization:
+        mode: fused
+        fused:
+          uwb: *site_uwb
+          camera:
+            occlusion_dist: 0.34
+          imu: *site_imu
+
+# Site procedure before a demo run: with the rovers powered on, each does the heading
+# alignment (a straight stretch) and is brought back to its start; the mission starts with
+# both headings valid. Overlay on a fused profile, e.g. 'field_site,aligned_start'.
+# Without it a run is a cold start: no heading, hence no obstacle map, until the first
+# straight stretch is driven.
+aligned_start:
+  robots:
+    leader:
+      localization:
+        fused:
+          start: {aligned: true}
+    follower:
+      localization:
+        fused:
+          start: {aligned: true}

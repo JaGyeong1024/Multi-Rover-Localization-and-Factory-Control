@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>host_sim</name>
+  <version>0.1.0</version>
+  <description>2D kinematic simulator for two rovers: stands in for the rover bases and the host localization (slip, lag, noise, fault injection, fake LiDAR scan) so drive and mission code can be tested without hardware.</description>
+  <maintainer email="user@example.com">user</maintainer>
+  <license>Apache-2.0</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <!-- localization.mode fused runs host_localization's ROS-free fusion front-end -->
+  <exec_depend>host_localization</exec_depend>
+
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

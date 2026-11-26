@@ -1,0 +1,34 @@
+# Ceiling camera (Logitech BRIO) device settings for global_cam_node. The v4l2
+# exposure/gain/white-balance table is not repeated here: it comes from
+# camera_io.DEFAULT_CONTROLS, so calibration and runtime frames match pixel for pixel.
+# Runtime node: full freeze (geometric + photometric, manual exposure) and camera_info (K, D).
+# A control can be overridden here by adding its key.
+global_cam_node:
+  ros__parameters:
+    device: "/dev/global_cam"
+    width: 1920
+    height: 1080
+    fps: 30
+    compressed_topic: "/global_cam/image_raw/compressed"
+    camera_info_topic: "/global_cam/camera_info"
+    jpeg_quality: 80
+    frame_id: "global_cam"
+    # Intrinsics (K, D) from the charuco calibration, used for camera_info. setup.sh copies
+    # the files from data/calibration/ to ~/.factory_calibration; the node expands the user path.
+    intrinsic_path: "~/.factory_calibration/charuco_intrinsics.npz"
+
+    # Processing stages raw -> rect -> bev -> processed. bev/processed need the extrinsic
+    # calibration outputs (remap + calibration.yaml).
+    remap_path: "~/.factory_calibration/remap.npz"
+    calibration_path: "~/.factory_calibration/calibration.yaml"
+    rect_topic: "/global_cam/image_rect"            # undistorted, uncompressed Image
+    bev_topic: "/global_cam/bev"                    # ground warp (undistort + H), uncompressed
+    processed_topic: "/global_cam/processed/compressed"  # ROI crop, the only compressed stage
+    # An uncompressed 1080p rect is the heaviest stage (overall fps drops to ~21): disable if unused.
+    publish_rect: true
+    publish_bev: true
+    publish_processed: true
+    # Processed crop ROI (world metres, uwb_global): the whole floor inside the pipes where a
+    # rover can be. Re-measure when the pipes move.
+    roi_x: [0.25, 5.10]
+    roi_y: [0.35, 3.10]

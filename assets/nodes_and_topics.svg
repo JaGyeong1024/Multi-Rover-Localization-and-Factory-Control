@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 1200" width="1380" height="1200" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#374151"/></marker><marker id="a0" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#374151"/></marker><style>.band{font-size:17px;font-weight:700;fill:#111827}.n{font-size:15px;font-weight:600;fill:#111827;text-anchor:middle}.s{font-size:12.5px;fill:#374151;text-anchor:middle}.e{font-size:13px;fill:#1f2937;paint-order:stroke;stroke:#ffffff;stroke-width:3px;stroke-linejoin:round}.lg{font-size:13px;fill:#374151}</style></defs>
+<rect width="1380" height="1200" fill="#ffffff"/>
+<rect x="150" y="16" width="1220" height="670" rx="10" fill="#fffbeb"/>
+<text x="164" y="40" class="band">Host PC  (ROS domain 30)</text>
+<rect x="20" y="262" width="120" height="266" rx="10" fill="#fff1f2"/>
+<text x="34" y="286" class="band">Sensors</text>
+<rect x="20" y="700" width="1350" height="450" rx="10" fill="#ecfeff"/>
+<text x="34" y="724" class="band">Rovers</text>
+<rect x="90" y="740" width="790" height="395" rx="10" fill="none" stroke="#cbd5e1" stroke-dasharray="5 4"/>
+<text x="104" y="1123" class="lg" font-weight="700">Leader  (domain 25)</text>
+<rect x="895" y="740" width="465" height="395" rx="10" fill="none" stroke="#cbd5e1" stroke-dasharray="5 4"/>
+<text x="909" y="1123" class="lg" font-weight="700">Follower  (domain 73)</text>
+<polyline points="130.0,340.0 168.0,340.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="332.0,340.0 368.0,340.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="130.0,470.0 168.0,470.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="332.0,470.0 360.0,470.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="560.0,470.0 596.0,470.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="532.0,340.0 638.7,340.0 638.7,442.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="681.3,442.0 681.3,250.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="820.0,230.0 970.0,230.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="900.0,442.0 900.0,248.7 970.0,248.7" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="250.0,312.0 250.0,165.0 566.0,165.0 566.0,117.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="716.0,210.0 716.0,117.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="1092.0,211.3 1092.0,165.0 866.0,165.0 866.0,117.0" fill="none" stroke="#374151" stroke-width="1.4" marker-start="url(#a0)" marker-end="url(#a1)"/>
+<polyline points="660.0,633.0 660.0,498.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="750.7,250.0 750.7,633.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="900.0,633.0 900.0,498.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="1092.0,267.3 1092.0,633.0" fill="none" stroke="#374151" stroke-width="1.4" marker-start="url(#a0)" marker-end="url(#a1)"/>
+<polyline points="580.0,833.0 580.0,895.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="515.0,915.0 425.0,915.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="360.0,833.0 360.0,895.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="295.0,915.0 255.0,915.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="673.0,805.0 728.0,805.0 728.0,1007.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="664.0,1035.0 565.0,1035.0" fill="none" stroke="#374151" stroke-width="1.4" marker-start="url(#a0)" marker-end="url(#a1)"/>
+<polyline points="375.0,1035.0 185.0,1035.0 185.0,943.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="980.0,915.0 1020.0,915.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="1085.0,833.0 1085.0,895.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="1150.0,915.0 1195.0,915.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="1085.0,935.0 1085.0,1015.0" fill="none" stroke="#374151" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#a1)"/>
+<polyline points="1137.0,1035.0 1260.0,1035.0 1260.0,943.0" fill="none" stroke="#374151" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#a1)"/>
+<polyline points="185.0,887.0 185.0,667.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="360.0,777.0 360.0,667.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="580.0,777.0 580.0,667.0" fill="none" stroke="#374151" stroke-width="1.4" marker-start="url(#a0)" marker-end="url(#a1)"/>
+<polyline points="792.0,1007.0 792.0,667.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="935.0,887.0 935.0,667.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<polyline points="1085.0,777.0 1085.0,667.0" fill="none" stroke="#374151" stroke-width="1.4" marker-start="url(#a0)" marker-end="url(#a1)"/>
+<polyline points="1260.0,887.0 1260.0,667.0" fill="none" stroke="#374151" stroke-width="1.4" marker-end="url(#a1)"/>
+<rect x="416.0" y="63.0" width="600.0" height="54.0" rx="8" fill="#eef0f3"/>
+<text x="716.0" y="85.0" class="n">Web dashboard</text>
+<text x="716.0" y="105.0" class="s">rosbridge :9090  ·  web_video_server :8080</text>
+<rect x="612.0" y="210.0" width="208.0" height="40.0" rx="8" fill="#dbeafe"/>
+<text x="716.0" y="235.0" class="n">global_position_node</text>
+<rect x="970.0" y="211.3" width="244.0" height="56.0" rx="8" fill="#ede9fe"/>
+<text x="1092.0" y="234.3" class="n">mission_coordinator_node</text>
+<text x="1092.0" y="254.3" class="s">tasks · paths · platooning</text>
+<rect x="30.0" y="312.0" width="100.0" height="56.0" rx="8" fill="#eef0f3"/>
+<text x="80.0" y="335.0" class="n">Ceiling</text>
+<text x="80.0" y="355.0" class="n">camera</text>
+<rect x="168.0" y="312.0" width="164.0" height="56.0" rx="8" fill="#dbeafe"/>
+<text x="250.0" y="335.0" class="n">global_cam_node</text>
+<text x="250.0" y="355.0" class="s">top-down view</text>
+<rect x="368.0" y="312.0" width="164.0" height="56.0" rx="8" fill="#dbeafe"/>
+<text x="450.0" y="335.0" class="n">perception_node</text>
+<text x="450.0" y="355.0" class="s">YOLO11n-OBB</text>
+<rect x="30.0" y="442.0" width="100.0" height="56.0" rx="8" fill="#eef0f3"/>
+<text x="80.0" y="465.0" class="n">UWB</text>
+<text x="80.0" y="485.0" class="n">anchors</text>
+<rect x="168.0" y="442.0" width="164.0" height="56.0" rx="8" fill="#dbeafe"/>
+<text x="250.0" y="465.0" class="n">uwb_reader_node</text>
+<text x="250.0" y="485.0" class="s">tag positions</text>
+<rect x="360.0" y="442.0" width="200.0" height="56.0" rx="8" fill="#dbeafe"/>
+<text x="460.0" y="465.0" class="n">uwb_correction_node</text>
+<text x="460.0" y="485.0" class="s">affine correction</text>
+<rect x="596.0" y="442.0" width="128.0" height="56.0" rx="8" fill="#dbeafe"/>
+<text x="660.0" y="465.0" class="n">fusion_node</text>
+<text x="660.0" y="485.0" class="s">EKF per rover</text>
+<rect x="796.0" y="442.0" width="208.0" height="56.0" rx="8" fill="#ede9fe"/>
+<text x="900.0" y="465.0" class="n">obstacle_mapper_node</text>
+<text x="900.0" y="485.0" class="s">box map</text>
+<rect x="160.0" y="633.0" width="1200.0" height="34.0" rx="8" fill="#e2e8f0"/>
+<text x="760.0" y="655.0" class="n">domain_bridge   ·   host 30  ↔  leader 25 / follower 73</text>
+<rect x="487.0" y="777.0" width="186.0" height="56.0" rx="8" fill="#dcfce7"/>
+<text x="580.0" y="800.0" class="n">path_tracker_node</text>
+<text x="580.0" y="820.0" class="s">pure pursuit</text>
+<rect x="273.0" y="777.0" width="174.0" height="56.0" rx="8" fill="#dcfce7"/>
+<text x="360.0" y="800.0" class="n">depth_front_node</text>
+<text x="360.0" y="820.0" class="s">front distance</text>
+<rect x="115.0" y="887.0" width="140.0" height="56.0" rx="8" fill="#eef0f3"/>
+<text x="185.0" y="910.0" class="n">base</text>
+<text x="185.0" y="930.0" class="s">ros2_control · IMU</text>
+<rect x="295.0" y="895.0" width="130.0" height="40.0" rx="8" fill="#dcfce7"/>
+<text x="360.0" y="920.0" class="n">safety_gate</text>
+<rect x="515.0" y="895.0" width="130.0" height="40.0" rx="8" fill="#ffedd5"/>
+<text x="580.0" y="920.0" class="n">cmd_vel_mux</text>
+<rect x="664.0" y="1007.0" width="192.0" height="56.0" rx="8" fill="#ffedd5"/>
+<text x="760.0" y="1030.0" class="n">arm_signal_adapter</text>
+<text x="760.0" y="1050.0" class="s">HOLDING → pick</text>
+<rect x="375.0" y="1007.0" width="190.0" height="56.0" rx="8" fill="#ffedd5"/>
+<text x="470.0" y="1030.0" class="n">v6 pick &amp; place</text>
+<text x="470.0" y="1050.0" class="s">EEF camera · policy</text>
+<rect x="992.0" y="777.0" width="186.0" height="56.0" rx="8" fill="#dcfce7"/>
+<text x="1085.0" y="800.0" class="n">path_tracker_node</text>
+<text x="1085.0" y="820.0" class="s">pure pursuit</text>
+<rect x="890.0" y="887.0" width="90.0" height="56.0" rx="8" fill="#eef0f3"/>
+<text x="935.0" y="910.0" class="n">LiDAR</text>
+<text x="935.0" y="930.0" class="s">/scan</text>
+<rect x="1020.0" y="895.0" width="130.0" height="40.0" rx="8" fill="#dcfce7"/>
+<text x="1085.0" y="920.0" class="n">safety_gate</text>
+<rect x="1195.0" y="887.0" width="130.0" height="56.0" rx="8" fill="#eef0f3"/>
+<text x="1260.0" y="910.0" class="n">base</text>
+<text x="1260.0" y="930.0" class="s">motors · IMU</text>
+<rect x="1033.0" y="1015.0" width="104.0" height="40.0" rx="8" fill="#dcfce7"/>
+<text x="1085.0" y="1040.0" class="n">watchdog</text>
+<text x="675" y="300" class="e" text-anchor="end">/{r}/pose</text>
+<text x="895" y="221" class="e" text-anchor="middle">/{r}/global/position</text>
+<text x="906" y="380" class="e" text-anchor="start">/mission/mapped_obstacles</text>
+<text x="256" y="262" class="e" text-anchor="start">camera stream</text>
+<text x="722" y="182" class="e" text-anchor="start">positions</text>
+<text x="1098" y="180" class="e" text-anchor="start">queue · state ↑</text>
+<text x="1098" y="196" class="e" text-anchor="start">task/add · estop ↓</text>
+<text x="666" y="590" class="e" text-anchor="start">/{r}/imu</text>
+<text x="757" y="590" class="e" text-anchor="start">/{r}/global/position</text>
+<text x="906" y="590" class="e" text-anchor="start">scan · depth_scan</text>
+<text x="1098" y="560" class="e" text-anchor="start">/{r}/path_cmd · /estop ↓</text>
+<text x="1098" y="576" class="e" text-anchor="start">/{r}/nav_feedback ↑</text>
+<text x="1098" y="592" class="e" text-anchor="start">work_state ↑</text>
+<text x="1098" y="608" class="e" text-anchor="start">pick_place_done ↑</text>
+<text x="734" y="960" class="e" text-anchor="end">nav_feedback</text>
+<text x="615" y="1026" class="e" text-anchor="middle">start ↓ status ↑</text>
+<text x="240" y="1026" class="e" text-anchor="start">arm trajectory</text>
+<text x="1091" y="992" class="e" text-anchor="start">alive</text>
+<text x="1250" y="1028" class="e" text-anchor="end">stop</text>
+<text x="191" y="696" class="e" text-anchor="start">imu</text>
+<text x="366" y="696" class="e" text-anchor="start">depth_scan</text>
+<text x="586" y="696" class="e" text-anchor="start">path_cmd · global/position ↓</text>
+<text x="586" y="712" class="e" text-anchor="start">nav_feedback ↑</text>
+<text x="798" y="696" class="e" text-anchor="start">work_state</text>
+<text x="798" y="712" class="e" text-anchor="start">pick_place_done</text>
+<text x="941" y="696" class="e" text-anchor="start">scan</text>
+<text x="1091" y="696" class="e" text-anchor="start">path_cmd ↓</text>
+<text x="1091" y="712" class="e" text-anchor="start">global/position ↓</text>
+<text x="1091" y="728" class="e" text-anchor="start">nav_feedback ↑</text>
+<text x="1266" y="696" class="e" text-anchor="start">imu</text>
+<rect x="30" y="1172" width="14" height="12" rx="2" fill="#dbeafe"/><text x="50" y="1183" class="lg">host_localization</text>
+<rect x="203.8" y="1172" width="14" height="12" rx="2" fill="#ede9fe"/><text x="223.8" y="1183" class="lg">host_mission</text>
+<rect x="340.6" y="1172" width="14" height="12" rx="2" fill="#dcfce7"/><text x="360.6" y="1183" class="lg">rover_drive</text>
+<rect x="470.0" y="1172" width="14" height="12" rx="2" fill="#ffedd5"/><text x="490.0" y="1183" class="lg">leader manipulator</text>
+<rect x="651.2" y="1172" width="14" height="12" rx="2" fill="#eef0f3"/><text x="671.2" y="1183" class="lg">devices · web · third party</text>
+<rect x="899.0" y="1172" width="14" height="12" rx="2" fill="#e2e8f0"/><text x="919.0" y="1183" class="lg">domain_bridge</text>
+</svg>

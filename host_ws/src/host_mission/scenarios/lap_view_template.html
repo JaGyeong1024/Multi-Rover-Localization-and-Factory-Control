@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>랩 뷰어</title>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --ink: #1c2230; --muted: #5d6677; --line: #d5d9e2;
+  --grid: #e3e6ed; --arena: #ffffff; --wall: #39414f;
+  --leader: #1a4fa3; --follower: #f0a020; --shelf: #8a8f99; --box: #b9895a;
+  --mapped: #c0197a; --goal: #1b8a4b; --stop: rgba(214, 48, 49, .35); --limit: rgba(240, 180, 20, .55);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12151b; --panel: #1b2029; --ink: #e6e9f0; --muted: #98a1b3; --line: #343b49;
+    --grid: #262c37; --arena: #161a22; --wall: #aeb6c6;
+    --leader: #5b9bff; --follower: #ffd166; --shelf: #6f7683; --box: #a7794d;
+    --mapped: #ff6fb5; --goal: #4fd18a; --stop: rgba(255, 90, 90, .40); --limit: rgba(255, 200, 60, .45);
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 14px/1.45 system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif; }
+main { max-width: 1280px; margin: 0 auto; padding: 12px 16px 24px; }
+h1 { font-size: 18px; margin: 0 0 2px; }
+#meta { color: var(--muted); font-size: 12px; margin-bottom: 10px; overflow-wrap: anywhere; }
+#layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 12px; align-items: start; }
+@media (max-width: 900px) { #layout { grid-template-columns: minmax(0, 1fr); } }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+canvas { display: block; width: 100%; }
+#controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 4px; }
+#controls input[type=range] { flex: 1 1 200px; min-width: 120px; }
+button, select { font: inherit; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; }
+#time { font-variant-numeric: tabular-nums; min-width: 9em; }
+#legend, #stripLegend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.sw { display: inline-block; width: 14px; height: 10px; margin-right: 4px; border: 2px solid var(--ink); vertical-align: -1px; }
+.card { border: 1px solid var(--line); border-radius: 6px; padding: 8px; margin-bottom: 8px; }
+.card h2 { font-size: 14px; margin: 0 0 4px; }
+.card h2 i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; border-radius: 2px; vertical-align: -1px; }
+.kv { display: grid; grid-template-columns: 7.5em 1fr; gap: 1px 8px; font-size: 13px; }
+.kv span:nth-child(odd) { color: var(--muted); }
+.kv span:nth-child(even) { font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+#events { margin: 4px 0 0; padding: 0; list-style: none; font-size: 12px; font-variant-numeric: tabular-nums; }
+#events li { overflow-wrap: anywhere; }
+.err { color: #c0392b; font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>랩 뷰어 (시뮬레이션 1회 재생)</h1>
+  <div id="meta"></div>
+  <div id="layout">
+    <div>
+      <div class="box">
+        <canvas id="arena"></canvas>
+        <div id="controls">
+          <button id="play" type="button">재생</button>
+          <input id="slider" type="range" min="0" max="0" step="1" value="0" aria-label="시간">
+          <select id="speed" aria-label="배속">
+            <option value="1">1×</option><option value="2">2×</option>
+            <option value="5">5×</option><option value="10">10×</option>
+          </select>
+          <span id="time"></span>
+        </div>
+        <canvas id="strip"></canvas>
+        <div id="stripLegend">
+          <span><span class="sw" style="border-color:var(--leader)"></span>리더 속도</span>
+          <span><span class="sw" style="border-color:var(--follower)"></span>팔로워 속도</span>
+          <span><span class="sw" style="background:var(--stop);border-color:var(--stop)"></span>정지 (TRACKING 중 v=0)</span>
+          <span><span class="sw" style="background:var(--limit);border-color:var(--limit)"></span>게이트 제한 (상태 != OK)</span>
+        </div>
+        <div id="legend"></div>
+      </div>
+    </div>
+    <div class="box" id="side"></div>
+  </div>
+</main>
+<script>
+"use strict";
+const DATA = /*LAP_DATA*/null;
+const $ = (id) => document.getElementById(id);
+const ROVERS = [['leader', '리더', 'L'], ['follower', '팔로워', 'F']];
+const STOP_V = 0.005;            // m/s: below this a TRACKING rover counts as stopped
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+}
+function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function wrap(a) { return Math.atan2(Math.sin(a), Math.cos(a)); }
+
+if (!DATA) {
+  document.body.innerHTML = '<main><p class="err">데이터가 없습니다 (템플릿 자리표시자가 채워지지 않음).</p></main>';
+} else {
+  start(DATA);
+}
+
+function start(D) {
+  const N = D.t.length;
+  const S = D.static, A = S.arena;
+  const names = ROVERS.map((r) => r[0]);
+  const period = D.meta.sample_period;
+  let idx = 0, playing = false, speed = 1, last = 0, acc = 0;       // acc: simulated seconds into idx
+
+  $('meta').textContent = `${D.meta.layout} / ${D.meta.parts.join('+')} / 프로파일 ${D.meta.profile} / seed ${D.meta.seed}` +
+    ` / ${N} 샘플 (${(1 / period).toFixed(0)} Hz) / ${D.meta.result}`;
+  $('slider').max = N - 1;
+
+  // ---- derived per-sample classification and per-rover path/state lookups
+  const cls = {};       // rover -> Array of 0 normal, 1 gate limited, 2 stopped while tracking
+  let vmax = 0.05;
+  names.forEach((n) => {
+    cls[n] = D.rovers[n].map((r) => {
+      vmax = Math.max(vmax, Math.abs(r[12]));
+      if (r[8] === 'TRACKING' && Math.abs(r[12]) < STOP_V) return 2;
+      return r[10] !== 'OK' ? 1 : 0;
+    });
+  });
+  const lastAt = (list, t, key) => {          // last list entry with time <= t (key: time getter)
+    let best = null;
+    for (const e of list) { if (key(e) <= t + 1e-9) best = e; else break; }
+    return best;
+  };
+
+  // ---- legend with footprint note
+  $('legend').innerHTML = [
+    ['var(--leader)', '리더 (실제 위치, 채움)'], ['var(--follower)', '팔로워 (실제 위치, 채움)'],
+    ['transparent', '위치추정 (빈 윤곽; 점선 원 = 헤딩 미정렬)'], ['var(--mapped)', '장애물(지도)'],
+    ['var(--box)', '상자(실제)'], ['var(--shelf)', '선반'], ['var(--goal)', '목표']
+  ].map(([c, t]) => `<span><span class="sw" style="background:${c}"></span>${t}</span>`).join('') +
+    '<span>차체 크기 = 미션 설정 plan.footprint (추적점 기준), 장애물(지도)는 inflation 포함</span>';
+
+  // ---- arena canvas
+  const cv = $('arena'), ctx = cv.getContext('2d');
+  const PAD = 0.35;                                    // m margin around the arena for labels
+  const wx0 = A.x_min - PAD, wx1 = A.x_max + PAD, wy0 = A.y_min - PAD, wy1 = A.y_max + PAD;
+  cv.style.aspectRatio = `${wx1 - wx0} / ${wy1 - wy0}`;
+  let sc = 1, W = 0, H = 0;
+  const sx = (x) => (x - wx0) * sc, sy = (y) => (wy1 - y) * sc;      // screen y is flipped, data is not
+
+  function resizeCanvas(c) {
+    const dpr = window.devicePixelRatio || 1;
+    const w = c.clientWidth, h = c.clientHeight;
+    c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+    c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    return [w, h];
+  }
+
+  function polyRect(cx, cy, w, h, yaw) {      // rectangle corners (data frame) -> screen path
+    const c = Math.cos(yaw), s = Math.sin(yaw);
+    ctx.beginPath();
+    [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]].forEach(([u, v], i) => {
+      const X = sx(cx + c * u - s * v), Y = sy(cy + s * u + c * v);
+      if (i) ctx.lineTo(X, Y); else ctx.moveTo(X, Y);
+    });
+    ctx.closePath();
+  }
+
+  function bodyRect(rover, x, y, th) {        // footprint: front, rear, half width from the tracked point
+    const [front, rear, half] = S.footprint[rover];
+    polyRect(x + Math.cos(th) * (front - rear) / 2, y + Math.sin(th) * (front - rear) / 2,
+             front + rear, 2 * half, th);
+  }
+
+  function drawScene() {
+    [W, H] = [cv.clientWidth, cv.clientHeight];
+    sc = W / (wx1 - wx0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.fillStyle = css('--arena'); ctx.fillRect(sx(A.x_min), sy(A.y_max), (A.x_max - A.x_min) * sc, (A.y_max - A.y_min) * sc);
+    // metre grid and axis labels
+    ctx.lineWidth = 1; ctx.fillStyle = css('--muted'); ctx.strokeStyle = css('--grid');
+    for (let x = Math.ceil(A.x_min); x <= A.x_max; x++) {
+      ctx.beginPath(); ctx.moveTo(sx(x), sy(A.y_min)); ctx.lineTo(sx(x), sy(A.y_max)); ctx.stroke();
+      ctx.textAlign = 'center'; ctx.fillText(String(x), sx(x), sy(A.y_min) + 13);
+    }
+    for (let y = Math.ceil(A.y_min); y <= A.y_max; y++) {
+      ctx.beginPath(); ctx.moveTo(sx(A.x_min), sy(y)); ctx.lineTo(sx(A.x_max), sy(y)); ctx.stroke();
+      ctx.textAlign = 'right'; ctx.fillText(String(y), sx(A.x_min) - 4, sy(y) + 4);
+    }
+    ctx.textAlign = 'right'; ctx.fillText('x [m] →', sx(A.x_max), sy(A.y_min) + 26);
+    ctx.textAlign = 'left'; ctx.fillText('↑ y [m]', sx(A.x_min) + 4, sy(A.y_max) - 6);
+    ctx.fillText('(0, 0) 원점은 화면 밖', sx(A.x_min) + 4, sy(A.y_min) + 26);
+    ctx.strokeStyle = css('--wall'); ctx.lineWidth = S.walls ? 3 : 1;
+    ctx.strokeRect(sx(A.x_min), sy(A.y_max), (A.x_max - A.x_min) * sc, (A.y_max - A.y_min) * sc);
+
+    const t = D.t[idx];
+    // shelves, true boxes
+    ctx.fillStyle = css('--shelf'); ctx.strokeStyle = css('--ink'); ctx.lineWidth = 1;
+    S.shelves.forEach((o) => { polyRect(o.x, o.y, o.w, o.h, o.yaw); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = css('--ink'); ctx.textAlign = 'center'; ctx.fillText('선반', sx(o.x), sy(o.y) + 4); ctx.fillStyle = css('--shelf'); });
+    const boxes = lastAt(D.boxes, t, (e) => e.t);
+    if (boxes) boxes.shapes.forEach((o) => {
+      if (o.name.startsWith('shelf')) return;
+      ctx.fillStyle = css('--box'); ctx.globalAlpha = 0.85;
+      if (o.kind === 'circle') { ctx.beginPath(); ctx.arc(sx(o.x), sy(o.y), o.r * sc, 0, 7); } else polyRect(o.x, o.y, o.w, o.h, o.yaw);
+      ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
+      ctx.fillStyle = css('--ink'); ctx.textAlign = 'center'; ctx.fillText('상자', sx(o.x), sy(o.y) + 4);
+    });
+    // mapper obstacles (outline, dashed)
+    const mapped = lastAt(D.mapped, t, (e) => e.t);
+    ctx.strokeStyle = css('--mapped'); ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+    if (mapped) mapped.shapes.forEach(([x, y, pad, w, h, yaw]) => { polyRect(x, y, w + 2 * pad, h + 2 * pad, yaw); ctx.stroke(); });
+    ctx.setLineDash([]);
+    // goals
+    ctx.strokeStyle = css('--goal'); ctx.fillStyle = css('--goal'); ctx.lineWidth = 1.5; ctx.textAlign = 'left';
+    Object.entries(S.goals).forEach(([n, g]) => {
+      const X = sx(g.x), Y = sy(g.y);
+      ctx.beginPath(); ctx.moveTo(X - 4, Y); ctx.lineTo(X + 4, Y); ctx.moveTo(X, Y - 4); ctx.lineTo(X, Y + 4);
+      ctx.moveTo(X, Y); ctx.lineTo(X + 12 * Math.cos(g.theta), Y - 12 * Math.sin(g.theta)); ctx.stroke();
+      ctx.fillText(n, X + 5, Y - 5);
+    });
+    ROVERS.forEach(([n, label, letter]) => {
+      const colour = css('--' + n), row = D.rovers[n][idx];
+      // current path
+      const p = lastAt(D.paths.filter((e) => e.rover === n), t, (e) => e.t);
+      if (p && p.pts.length > 1) {
+        ctx.strokeStyle = colour; ctx.lineWidth = 2; ctx.globalAlpha = 0.7; ctx.setLineDash([2, 3]);
+        ctx.beginPath(); p.pts.forEach(([x, y], i) => { if (i) ctx.lineTo(sx(x), sy(y)); else ctx.moveTo(sx(x), sy(y)); });
+        ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+      }
+      // faint trail of the true track
+      ctx.strokeStyle = colour; ctx.globalAlpha = 0.35; ctx.lineWidth = 1.5; ctx.beginPath();
+      for (let i = 0; i <= idx; i++) { const r = D.rovers[n][i]; if (i) ctx.lineTo(sx(r[0]), sy(r[1])); else ctx.moveTo(sx(r[0]), sy(r[1])); }
+      ctx.stroke(); ctx.globalAlpha = 1;
+      // reported pose: hollow outline
+      if (row[3] !== null) {
+        ctx.strokeStyle = colour; ctx.lineWidth = 2; ctx.setLineDash([3, 2]);
+        if (row[6]) { bodyRect(n, row[3], row[4], row[5]); ctx.stroke(); }
+        else { ctx.beginPath(); ctx.arc(sx(row[3]), sy(row[4]), 0.12 * sc, 0, 7); ctx.stroke(); }
+        ctx.setLineDash([]);
+      }
+      // true pose: filled body, heading tick, letter
+      ctx.fillStyle = colour; ctx.globalAlpha = 0.9; bodyRect(n, row[0], row[1], row[2]); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = css('--ink'); ctx.lineWidth = 1.5; ctx.stroke();
+      const tick = S.footprint[n][0] + 0.08;
+      ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(sx(row[0]), sy(row[1]));
+      ctx.lineTo(sx(row[0] + tick * Math.cos(row[2])), sy(row[1] + tick * Math.sin(row[2]))); ctx.stroke();
+      ctx.fillStyle = css('--ink'); ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui, sans-serif';
+      ctx.fillText(letter, sx(row[0]), sy(row[1]) + 4); ctx.font = '11px system-ui, sans-serif';
+    });
+  }
+
+  // ---- speed strip
+  const sv = $('strip'), sctx = sv.getContext('2d');
+  sv.style.height = '120px';
+  function drawStrip() {
+    const [w, h] = [sv.clientWidth, sv.clientHeight], lane = (h - 6) / 2;
+    sctx.clearRect(0, 0, w, h);
+    const X = (i) => (N > 1 ? i / (N - 1) : 0) * (w - 1);
+    ROVERS.forEach(([n, label], k) => {
+      const y0 = 3 + k * (lane + 0), base = y0 + lane - 2, top = y0 + 12;
+      sctx.fillStyle = css('--panel'); sctx.fillRect(0, y0, w, lane);
+      const bw = Math.max(1, w / N + 0.5);
+      cls[n].forEach((c, i) => {
+        if (c === 2) { sctx.fillStyle = css('--stop'); sctx.fillRect(X(i), y0, bw, lane); }
+        else if (c === 1) { sctx.fillStyle = css('--limit'); sctx.fillRect(X(i), y0 + lane / 2, bw, lane / 2); }
+      });
+      sctx.strokeStyle = css('--' + n); sctx.lineWidth = 1.5; sctx.beginPath();
+      D.rovers[n].forEach((r, i) => { const y = base - (Math.abs(r[12]) / vmax) * (base - top); if (i) sctx.lineTo(X(i), y); else sctx.moveTo(X(i), y); });
+      sctx.stroke();
+      sctx.fillStyle = css('--muted'); sctx.font = '11px system-ui, sans-serif'; sctx.textAlign = 'left';
+      sctx.fillText(`${label} 속도 (0 – ${vmax.toFixed(2)} m/s)`, 4, y0 + 10);
+      sctx.strokeStyle = css('--line'); sctx.lineWidth = 1; sctx.strokeRect(0.5, y0 + 0.5, w - 1, lane - 1);
+    });
+    sctx.strokeStyle = css('--ink'); sctx.lineWidth = 1.5; sctx.beginPath();
+    sctx.moveTo(X(idx), 0); sctx.lineTo(X(idx), h); sctx.stroke();
+  }
+
+  // ---- side panel
+  function drawPanel() {
+    const t = D.t[idx];
+    let html = '';
+    ROVERS.forEach(([n, label]) => {
+      const r = D.rovers[n][idx];
+      const dist = r[3] === null ? null : Math.hypot(r[3] - r[0], r[4] - r[1]);
+      const dth = r[3] === null || !r[6] ? null : Math.abs(wrap(r[5] - r[2])) * 180 / Math.PI;
+      html += `<div class="card"><h2><i style="background:var(--${n})"></i>${label} (${n})</h2><div class="kv">` +
+        `<span>상태</span><span>${esc(r[8])}${r[9] ? ' / ' + esc(r[9]) : ''}</span>` +
+        `<span>게이트</span><span>${esc(r[10])}${r[11].length ? ' [' + esc(r[11].join(', ')) + ']' : ''}</span>` +
+        `<span>속도 v / w</span><span>${r[12].toFixed(3)} m/s / ${r[13].toFixed(2)} rad/s</span>` +
+        `<span>위치추정</span><span>${r[7] === null ? '-' : esc(r[7]) + ', aligned=' + r[6]}</span>` +
+        `<span>위치 오차</span><span>${dist === null ? '-' : (dist * 100).toFixed(1) + ' cm'}</span>` +
+        `<span>헤딩 오차</span><span>${dth === null ? '- (미정렬)' : dth.toFixed(1) + '°'}</span>` +
+        `<span>경로</span><span>${pathText(n, t)}</span></div></div>`;
+    });
+    const ms = lastAt(D.states, t, (e) => e[0]);
+    html += `<div class="card"><h2>미션</h2><div class="kv"><span>상태</span><span>${ms ? esc(ms[1]) : '-'}</span></div>` +
+      '<ul id="events">' + D.events.filter((e) => e[0] <= t + 1e-9).slice(-6).reverse()
+        .map((e) => `<li>${e[0].toFixed(1)} s  ${esc(e[1])} ${esc(e[2])}</li>`).join('') + '</ul></div>';
+    $('side').innerHTML = html;
+  }
+  function pathText(n, t) {
+    const p = lastAt(D.paths.filter((e) => e.rover === n), t, (e) => e.t);
+    return p ? `cmd ${p.cmd_id} ${p.mode || ''}, ${p.pts.length} 점` : '-';
+  }
+
+  function render() {
+    $('slider').value = idx;
+    $('time').textContent = `시간 ${D.t[idx].toFixed(1)} / ${D.t[N - 1].toFixed(1)} s`;
+    drawScene(); drawStrip(); drawPanel();
+  }
+  function layoutCanvases() { resizeCanvas(cv); resizeCanvas(sv); render(); }
+
+  // ---- playback and input
+  function setPlaying(on) { playing = on; $('play').textContent = on ? '일시정지' : '재생'; last = 0; }
+  function seek(i) { idx = Math.max(0, Math.min(N - 1, i)); acc = 0; render(); }
+  function frame(ts) {
+    if (playing) {
+      if (last) {
+        acc += Math.min(0.1, (ts - last) / 1000) * speed;
+        const steps = Math.floor(acc / period);
+        if (steps > 0) { acc -= steps * period; idx = Math.min(N - 1, idx + steps); render(); }
+        if (idx >= N - 1) setPlaying(false);
+      }
+      if (playing) last = ts;
+    }
+    requestAnimationFrame(frame);
+  }
+  $('play').addEventListener('click', () => { if (!playing && idx >= N - 1) seek(0); setPlaying(!playing); $('play').blur(); });
+  $('slider').addEventListener('input', (e) => seek(+e.target.value));
+  $('speed').addEventListener('change', (e) => { speed = +e.target.value; e.target.blur(); });
+  const stripSeek = (e) => seek(Math.round((e.clientX - sv.getBoundingClientRect().left) / sv.clientWidth * (N - 1)));
+  sv.addEventListener('pointerdown', (e) => { sv.setPointerCapture(e.pointerId); stripSeek(e); });
+  sv.addEventListener('pointermove', (e) => { if (sv.hasPointerCapture(e.pointerId)) stripSeek(e); });
+  document.addEventListener('keydown', (e) => {
+    const keys = {' ': 0, ArrowLeft: -1, ArrowRight: 1};
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+    if (e.key === ' ') { if (!playing && idx >= N - 1) seek(0); setPlaying(!playing); }
+    else seek(idx + keys[e.key] * Math.round(1 / period));
+  });
+  window.addEventListener('resize', layoutCanvases);
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+  layoutCanvases();
+  const at = /[#&]t=([0-9.]+)/.exec(location.hash);       // page.html#t=60 opens at 60 s
+  if (at) seek(Math.round(+at[1] / period));
+  requestAnimationFrame(frame);
+}
+</script>
+</body>
+</html>

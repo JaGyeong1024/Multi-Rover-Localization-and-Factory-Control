@@ -1,0 +1,22 @@
+# Host -> leader: global position (the rover's control input), domain 30 -> 25.
+# Same as bridge_host_to_follower.yaml.
+name: host_to_leader
+from_domain: 30
+to_domain: 25
+topics:
+  leader/global/position:
+    type: geometry_msgs/msg/PoseStamped
+    qos:
+      reliability: reliable
+  # Heading alignment state (course-over-ground anchor), latched.
+  leader/heading_aligned:
+    type: std_msgs/msg/Bool
+    qos:
+      reliability: reliable
+      durability: transient_local
+  # Position quality for the rover speed limit: GOOD | DEGRADED | LOST. Latched.
+  leader/localization_quality:
+    type: std_msgs/msg/String
+    qos:
+      reliability: reliable
+      durability: transient_local

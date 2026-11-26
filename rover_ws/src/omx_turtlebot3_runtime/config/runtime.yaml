@@ -1,0 +1,92 @@
+schema_version: 1
+model_version: omx_turtlebot3_v6
+# Independent runtime validation. The immutable checkpoint manifest is not rewritten.
+commissioning:
+  joint_mapping_verified: false
+  camera_extrinsics_verified: false
+  marker_mount_verified: false
+  scene_alignment_verified: false
+  grasp_thresholds_verified: false
+  placement_thresholds_verified: false
+  hardware_watchdog_verified: false
+  evidence_directory: ''
+serial:
+  device: /dev/ttyACM0
+  baudrate: 1000000
+  id: 200
+  model_number: 20480
+  joint_zero_ticks: [2048, 2048, 2048, 2048]
+  joint_signs: [1, 1, 1, 1]
+  gripper_zero_tick: 2048
+  gripper_m_per_rad: -0.015
+  arm_profile_acceleration: 5
+  arm_profile_velocity: 5
+  gripper_profile_acceleration: 5
+  gripper_profile_velocity: 5
+  gripper_goal_current_raw: 40  # Provisional, not a calibrated force in newtons.
+control:
+  command_route: mp_control_equivalent
+  period_s: 0.05
+  max_cycle_s: 0.15
+  joint_velocity_rad_s: 0.12
+  joint_acceleration_rad_s2: 0.3
+  gripper_velocity_m_s: 0.006
+  max_tracking_error_rad: 0.12
+  start_stay_tolerance_rad: 0.08
+  # Native startup reaches the immutable training Stay before accepting a mission.
+  stay_min_duration_s: 3.0
+  stay_timeout_s: 60.0
+  stay_position_tolerance_rad: 0.025
+  stay_velocity_tolerance_rad_s: 0.03
+  pose_timeout_s: 0.5
+  deadman_timeout_s: 0.5
+  phase_timeout_s: 60.0
+  task_timeout_s: 360.0
+  stable_s: 0.30
+  voltage_range: [10.8, 13.2]
+  current_abort_raw: 100
+vision:
+  image_topic: /omx_v6/eef_camera/image_raw
+  camera_info_topic: /omx_v6/eef_camera/camera_info
+  optical_frame: eef_usb_camera_optical_frame
+  dictionary: DICT_4X4_50
+  physical_ids: [0, 1]
+  policy_labels: [1, 2]
+  marker_size_m: 0.040
+  marker_size_confirmed: true
+  max_image_age_s: 0.4
+  joint_sync_tolerance_s: 0.06
+  max_reprojection_error_px: 1.5
+  minimum_marker_side_px: 12.0
+  # Robot Xacro expanded with the EEF camera mount (0.02 0 0.065, rpy 0 pi/2 0 on dummy_mimic_fix).
+  # This is a verified software-frame contract, NOT a completed physical calibration.
+  robot_urdf_asset: robot_real.urdf
+  robot_urdf_sha256: 974e495931827e1cfe24bd4e51087543afcf74a6ac153a3eebf716f3624c4324
+  lens_position_in_link5: [0.020, 0.0, 0.065]
+  optical_rotation_in_link5: [[0.0, -1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, -1.0]]
+  # Marker on the front of a 50mm cube, with canonical print orientation.
+  object_to_marker_rotation: [[0.0, 0.0, -1.0], [1.0, 0.0, 0.0], [0.0, -1.0, 0.0]]
+  object_to_marker_translation: [-0.0254, 0.0, 0.0]
+estimation:
+  current_idle_raw: null
+  current_grip_delta_raw: null
+  current_release_delta_raw: null
+  finger_base_half_gap_m: 0.021
+  object_width_m: 0.050
+  grip_width_tolerance_m: 0.008
+  grip_stall_velocity_m_s: 0.001
+  grip_min_position_above_closed_m: 0.002
+  contact_confirm_s: 0.3
+  visual_follow_samples: 3
+  proof_lift_m: 0.010
+  follow_error_m: 0.008
+  grip_lost_s: 0.25
+  release_confirm_s: 0.6
+  release_min_frames: 5
+  place_position_tolerance_m: 0.010
+  place_speed_m_s: 0.012
+  place_angular_speed_rad_s: 0.12
+  deck_center_xy: [-0.116, -0.320]
+  deck_half_size_xy: [0.133, 0.133]
+  deck_top_z: 0.070
+  deck_inset_m: 0.015

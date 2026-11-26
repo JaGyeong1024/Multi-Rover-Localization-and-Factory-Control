@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<!-- Modified for the leader rover: ported to Gazebo Sim plugins. -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="turtlebot3_waffle_pi_gazebo" params="prefix">
+
+  <xacro:property name="laser_visual"  value="true"/>
+  <xacro:property name="camera_visual" value="true"/>
+  <xacro:property name="imu_visual"    value="true"/>
+
+  <gazebo reference="${prefix}base_link">
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}wheel_left_link">
+    <mu1>10000</mu1>
+    <mu2>10000</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}wheel_right_link">
+    <mu1>10000</mu1>
+    <mu2>10000</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}caster_back_right_link">
+    <mu1>0.1</mu1>
+    <mu2>0.1</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}caster_back_left_link">
+    <mu1>0.1</mu1>
+    <mu2>0.1</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}support_front_left_link">
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}support_front_right_link">
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}support_back_left_link">
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}support_back_right_link">
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}upper_waffle_plate">
+    <material>
+      <ambient>0.175 0.175 0.175 1.0</ambient>
+      <diffuse>0.175 0.175 0.175 1.0</diffuse>
+    </material>
+  </gazebo>
+
+  <gazebo reference="${prefix}imu_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+      <update_rate>100.0</update_rate>
+      <visualize>${imu_visual}</visualize>
+      <topic>imu</topic>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="ignition-gazebo-diff-drive-system" name="ignition::gazebo::systems::DiffDrive">
+      <left_joint>wheel_left_joint</left_joint>
+      <right_joint>wheel_right_joint</right_joint>
+      <wheel_separation>0.287</wheel_separation>
+      <wheel_radius>0.033</wheel_radius>
+      <max_linear_acceleration>1.0</max_linear_acceleration>
+      <topic>cmd_vel</topic>
+      <odom_topic>odom</odom_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="${prefix}base_scan">
+    <sensor type="gpu_lidar" name="lds_lfcd_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <always_on>true</always_on>
+      <update_rate>5.0</update_rate>
+      <visualize>${laser_visual}</visualize>
+      <topic>scan</topic>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>0.0</min_angle>
+            <max_angle>6.28319</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.120</min>
+          <max>3.5</max>
+          <resolution>0.015</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="${prefix}camera_rgb_frame">
+    <sensor type="camera" name="pi_camera">
+      <update_rate>30</update_rate>
+      <always_on>true</always_on>
+      <visualize>${camera_visual}</visualize>
+      <topic>camera/image_raw</topic>
+      <camera_info_topic>camera/camera_info</camera_info_topic>
+      <camera>
+          <horizontal_fov>1.085595</horizontal_fov>
+          <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+          </image>
+          <clip>
+              <near>0.03</near>
+              <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+      </camera>
+    </sensor>
+  </gazebo>
+
+  </xacro:macro>
+
+</robot>

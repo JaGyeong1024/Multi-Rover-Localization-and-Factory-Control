@@ -1,0 +1,32 @@
+# rover_drive, follower hardware keys (ROS parameter file, passed after
+# rover_drive/config/follower.yaml, before the presets). Keys that change when a motor,
+# driver, sensor or its mount changes; speeds, gains and thresholds stay in follower.yaml.
+# Units: m, rad, s. Keep the decimal point on every number (ROS parameter types are strict).
+/**:
+  ros__parameters:
+    # ---- base drive ----
+    omega_quantum: 0.0            # angular resolution of the base (0 = continuous)
+    omega_quantize: round         # round | truncate (only used when omega_quantum > 0)
+    omega_truncate_margin: 0.3
+    angular_sign: 1.0             # +omega turns counter-clockwise
+    ref_offset_x: -0.063          # tracked point 6.3 cm BEHIND the rotation centre (circle fit
+                                  # of a 180 deg pivot, fused and raw camera agree, rms 0.5 cm)
+
+    # ---- LiDAR (YDLIDAR G6 on /scan: frame base_scan, ~9.7 Hz, 1830 beams, sensor-data QoS) ----
+    # Angle 0 = ahead, +90 deg = left. Beams without a return are 0.0 (neither obstacle nor
+    # free space).
+    lidar_to_front: 0.08          # LiDAR centre to the rover's front edge
+    lidar_min_range: 0.05         # the scan's own range_min is used if larger
+    lidar_yaw_offset: -0.5236     # scan 0 points 30 deg right of body +x (4 standing views of
+                                  # two boxes + shelf agree only at -30 deg)
+    lidar_ignore_sectors: [0.0, 0.0]  # [from, to] pairs in rad, CCW, body frame (own structure
+                                  # seen by the LiDAR). from == to: nothing.
+
+    # depth-band keys (front_path with a front_distance_topic; unused with the LiDAR)
+    depth_col_min: 0.30
+    depth_col_max: 0.70
+    depth_hfov: 1.019
+
+    # ---- device topics ----
+    imu_topic: /imu
+    scan_topic: /scan

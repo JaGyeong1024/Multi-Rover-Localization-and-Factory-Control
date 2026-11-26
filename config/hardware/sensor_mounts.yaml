@@ -1,0 +1,15 @@
+# obstacle_mapper_node, sensor mounts (ROS parameter file, passed after the package's
+# obstacle_mapper.yaml). The only place the mounts are set. Pose of each sensor in its rover's
+# body frame (x forward, y left from the tracked point). Units: m, rad.
+obstacle_mapper_node:
+  ros__parameters:
+    follower_lidar:                # YDLIDAR G6
+      mount_x: 0.10                # scan sharpest 0.10 ahead of the tracked point (5 pivots, 0.08-0.12)
+      mount_y: 0.0
+      mount_yaw: -0.5236           # scan angle 0 vs body +x (= rover_drive lidar_yaw_offset):
+                                   # -30 deg, 4 standing views agree on both boxes and the shelf
+    leader_depth:                  # Astra Mini depth camera
+      mount_x: 0.045               # camera 0.045 ahead of base_link (URDF); base_link vs the
+                                   # tracked point (ref_offset_x) is not measured
+      mount_y: 0.0
+      mount_yaw: 0.0               # URDF: straight ahead

@@ -1,0 +1,29 @@
+# Site overlay for mission.yaml (plain YAML, merged over it): the arena as measured on the
+# floor. Frame uwb_global (origin: outer corner of calibration tag 4 = 0.50, 0.50). Units: m, rad.
+
+# Heading an idle rover turns to at its home goal (clockwise in-place steps from the home
+# goals' west heading, host_mission/idle_turn.py); arrival at home stays the straight run-in
+# facing west. East = into the arena. null = no idle turn.
+idle_heading: 0.0
+
+# Area the tracked point must stay in: the AprilTag outer edge (x 0.50..4.94, y 0.50..2.94,
+# tag centres in calibration_points.yaml +-0.0745) minus the follower's half width (0.155)
+# and 0.005. ymin 0.66 is also needed by the drop point (-0.38) and the gear load pose (y 0.75).
+bounds: {xmin: 0.66, xmax: 4.78, ymin: 0.66, ymax: 2.78}
+
+# Known static obstacles, exact oriented rectangles {name, x, y, width, height, yaw} in
+# uwb_global. The planner keeps the footprint clearance from them and the obstacle mapper does
+# not map their returns again. REQUIRED: without the shelves the leader stops about 0.5 m
+# before one (front stop), the shelf spot is mapped as an obstacle and the pick goal lies
+# inside it, so no path exists. The coordinator warns at start-up for every pick goal without
+# a fixture in front of it.
+fixtures:
+  # Two shelves, each 0.285 deep (x) x 0.365 wide (y); x is in the frame the rovers localize in.
+  - {name: shelf_gear, x: 4.77, y: 1.18, width: 0.285, height: 0.365, yaw: 0.0}
+  - {name: shelf_bolt, x: 4.817, y: 2.14, width: 0.285, height: 0.365, yaw: 0.0}
+  # Outside the arena: the pipe ring has rounded corners that cut across the corners of the
+  # bounds rectangle, so there the rectangle reaches past the pipe. These blocks cut the corners
+  # off (planner keeps out, the obstacle map ignores the pipe there). The east corners lie
+  # beyond the shelves.
+  - {name: outside_sw, x: 0.665, y: 0.875, width: 0.37, height: 0.25, yaw: 0.0}
+  - {name: outside_nw, x: 0.68, y: 2.58, width: 0.40, height: 0.36, yaw: 0.0}

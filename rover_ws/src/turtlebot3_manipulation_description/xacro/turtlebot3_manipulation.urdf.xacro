@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<!-- Modified for the leader rover: upper deck plate and supports (arm mount raised),
+     end-effector USB camera frames, Gazebo Sim plugin. -->
+<robot name="turtlebot3_manipulation" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="prefix" default="" />
+  <xacro:arg name="use_sim" default="false" />
+
+  <xacro:arg name="use_fake_hardware" default="false" />
+  <xacro:arg name="fake_sensor_commands" default="false" />
+  <xacro:arg name="use_camera_driver_tf" default="false" />
+  <xacro:arg name="use_eef_usb_camera" default="true" />
+  <xacro:arg name="eef_usb_camera_parent" default="dummy_mimic_fix" />
+  <xacro:arg name="eef_usb_camera_xyz" default="0.02 0.0 0.065" />
+  <xacro:arg name="eef_usb_camera_rpy" default="0.0 0.0 0.0" />
+
+  <xacro:include filename="$(find turtlebot3_manipulation_description)/gazebo/materials.xacro" />
+
+  <xacro:include filename="$(find turtlebot3_manipulation_description)/xacro/turtlebot3_waffle_pi.urdf.xacro" />
+
+  <xacro:include filename="$(find turtlebot3_manipulation_description)/gazebo/turtlebot3_waffle_pi.gazebo.xacro" />
+
+  <xacro:include filename="$(find turtlebot3_manipulation_description)/xacro/open_manipulator_x.urdf.xacro" />
+
+  <xacro:include filename="$(find turtlebot3_manipulation_description)/gazebo/open_manipulator_x.gazebo.xacro" />
+
+  <xacro:include filename="$(find turtlebot3_manipulation_description)/ros2_control/turtlebot3_manipulation_system.ros2_control.xacro" />
+
+  <xacro:turtlebot3_waffle_pi
+    prefix="$(arg prefix)"
+    use_camera_driver_tf="$(arg use_camera_driver_tf)" />
+  <xacro:turtlebot3_waffle_pi_gazebo prefix="$(arg prefix)" />
+
+  <xacro:property name="support_radius" value="0.005" />
+  <xacro:property name="support_length" value="0.055" />
+  <xacro:property name="support_center_z" value="0.145" />
+
+  <xacro:macro name="plate_support" params="name x y">
+    <link name="$(arg prefix)${name}_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="${support_length}" radius="${support_radius}"/>
+        </geometry>
+        <material name="dark_grey">
+          <color rgba="0.2 0.2 0.2 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="${support_length}" radius="${support_radius}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.01"/>
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+      </inertial>
+    </link>
+    <joint name="$(arg prefix)${name}_joint" type="fixed">
+      <parent link="$(arg prefix)base_link"/>
+      <child link="$(arg prefix)${name}_link"/>
+      <origin xyz="${x} ${y} ${support_center_z}" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:plate_support name="support_front_left" x="0.043" y="0.05"/>
+  <xacro:plate_support name="support_front_right" x="0.043" y="-0.05"/>
+  <xacro:plate_support name="support_back_left" x="-0.182" y="0.05"/>
+  <xacro:plate_support name="support_back_right" x="-0.182" y="-0.05"/>
+
+  <link name="$(arg prefix)upper_waffle_plate">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.290 0.136 0.01"/>
+      </geometry>
+      <material name="dark_grey">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.290 0.136 0.01"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <joint name="$(arg prefix)upper_waffle_plate_joint" type="fixed">
+    <parent link="$(arg prefix)base_link"/>
+    <child link="$(arg prefix)upper_waffle_plate"/>
+    <origin xyz="-0.092 0.0 0.1775" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="$(arg prefix)base_fixed" type="fixed">
+    <parent link="$(arg prefix)base_link"/>
+    <child link="$(arg prefix)link1"/>
+    <origin xyz="-0.092 0.0 0.178" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:open_manipulator_x prefix="$(arg prefix)" />
+  <xacro:open_manipulator_x_gazebo prefix="$(arg prefix)" />
+
+  <xacro:if value="$(arg use_eef_usb_camera)">
+    <joint name="$(arg prefix)eef_usb_camera_joint" type="fixed">
+      <parent link="$(arg eef_usb_camera_parent)"/>
+      <child link="$(arg prefix)eef_usb_camera_link"/>
+      <origin xyz="$(arg eef_usb_camera_xyz)" rpy="$(arg eef_usb_camera_rpy)"/>
+    </joint>
+
+    <link name="$(arg prefix)eef_usb_camera_link">
+      <visual>
+        <origin xyz="0.025 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.05 0.09 0.045"/>
+        </geometry>
+        <material name="dark_grey">
+          <color rgba="0.1 0.1 0.1 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0.025 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.05 0.09 0.045"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0.025 0 0" rpy="0 0 0"/>
+        <mass value="0.02"/>
+        <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001"/>
+      </inertial>
+    </link>
+
+    <joint name="$(arg prefix)eef_usb_camera_optical_joint" type="fixed">
+      <parent link="$(arg prefix)eef_usb_camera_link"/>
+      <child link="$(arg prefix)eef_usb_camera_optical_frame"/>
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+
+    <link name="$(arg prefix)eef_usb_camera_optical_frame"/>
+
+    <xacro:if value="$(arg use_sim)">
+      <xacro:include filename="$(find turtlebot3_manipulation_description)/xacro/gz_sensor.urdf.xacro" ns="gz_sensor" />
+      <xacro:gz_sensor.camera
+        reference="$(arg prefix)eef_usb_camera_link"
+        name="$(arg prefix)eef_usb_camera"
+        topic="eef_camera/image_raw"
+        frame_id="$(arg prefix)eef_usb_camera_optical_frame"
+        frequency="30"
+        width="640"
+        height="480"
+        fov="${60.0/180.0*pi}" />
+    </xacro:if>
+  </xacro:if>
+
+  <xacro:turtlebot3_manipulation_system
+    name="TurtleBot3ManipulationSystem" prefix="$(arg prefix)" use_sim="$(arg use_sim)"
+    use_fake_hardware="$(arg use_fake_hardware)"
+    fake_sensor_commands="$(arg fake_sensor_commands)"/>
+
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <robot_param_node>robot_state_publisher_gz</robot_param_node>
+      <parameters>$(find turtlebot3_manipulation_bringup)/config/gazebo_controller_manager.yaml</parameters>
+    </plugin>
+  </gazebo>
+  
+</robot>

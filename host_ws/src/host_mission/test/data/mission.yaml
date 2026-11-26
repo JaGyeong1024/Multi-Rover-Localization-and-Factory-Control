@@ -1,0 +1,127 @@
+# Test copy of the path-mode mission settings. Unit tests read this file, never the field
+# config, so tuning the field does not break logic tests.
+# Plain YAML (not a ROS parameter file), loaded by host_mission.settings.load_settings.
+# Units: m, rad, s, m/s.
+
+tick_rate: 5.0          # Hz, mission logic
+republish_rate: 2.0     # Hz, PathCommand keep-alive (same cmd_id)
+start_grace: 2.0        # s, dispatches arriving within this window form one batch
+idle_go_home: false     # false: rovers stay stopped until a mission is dispatched
+
+# Area the tracked point must stay in (uwb_global): ceiling-camera visible range shrunk by a
+# safety margin.
+bounds: {xmin: 1.44, xmax: 5.83, ymin: 2.17, ymax: 4.46}
+
+platoon:
+  enabled: true
+  lead_robot: leader
+  follower: follower
+  gap: 0.60             # PATH gap, centre to centre along the path (tracked points).
+                        # Fallback only: while the follower LiDAR sees the leader it keeps the
+                        # FREE gap (body to body) rover_drive follower.yaml gap_free_target
+                        # (0.20) instead. Keep gap >= gap_free_target + follower point->front
+                        # edge + leader point->rear, so the fallback never comes closer.
+  conflict_dist: 0.50   # rover radii sum + tracking margin. A follower path that cannot share
+                        # the leader path waits while it would come this close to ANY pose of
+                        # the leader's remaining path (purely spatial: the leader may stop
+                        # anywhere on it). Keep it BELOW the pick-goal / load-goal spacing, or
+                        # the follower always waits until the leader has parked.
+  avoid_parked_peer: true   # a standing rover is an obstacle circle for the other's plan
+  peer_radius: 0.20     # that circle's radius. Goal poses of the two rovers must be farther
+                        # apart than peer_radius + robot_radius + clearance
+
+freshness:              # judged on the host's own receive time
+  pose_timeout: 0.5
+  feedback_timeout: 2.0   # NavFeedback is published at >= 2 Hz
+  safety_timeout: 2.0
+
+supervisor:             # supervisor rules, host side
+  hold_pause_s: 5.0               # STALE_POSE, STALE_LEAD and quality LOST pause for this long
+  off_path_max_replans: 3         # replans allowed for an off-path rover
+  stuck_max_replans: 1            # replans allowed for a stuck rover
+  goal_miss_max_reentries: 2      # re-entry attempts after a missed goal
+  goal_miss_confirm_s: 2.0        # host-side miss must persist this long before re-entry
+  reentry_approach_len: 0.60      # straight run-in used for the re-entry path
+  lidar_block_s: 3.0              # LIDAR_STOP this long -> obstacle + re-plan
+  # A front stop reports one face point; the obstacle behind it is assumed to be a box this
+  # deep (along the rover heading) and this wide (across, centred on the point). Use the
+  # largest box side in use (same value as the mapper's box_depth). The leader's depth camera
+  # reports the point ON its heading line (body (d, 0)), so the box may sit up to the band
+  # half-width to either side of it; widen the width to cover.
+  assumed_obstacle_depth: 0.50
+  assumed_obstacle_width: 0.50
+  lidar_obstacle_ttl: 30.0        # dropped this long after the last stop at it (a rover still
+                                  # stopped there keeps refreshing it)
+  plan_retry_period: 2.0          # re-plan attempt period while no path exists
+  max_consecutive_pick_failures: 2
+
+pick:
+  picker: leader
+  gate_on_phase: true   # leader gets pick_at_goal (-> HOLDING -> pick) only once the
+                        # follower stands at its load goal too
+  picking_states: [PICKING]
+  error_states: [ERROR]
+  # The arm drops the part at this point of the leader's pick-goal frame (forward, left), m.
+  # The follower stands on the leader's right; 0.55 m is the fixed load offset. The follower's
+  # load goal is then every pose whose cargo area (robots.follower.cargo) holds this point
+  # drop_margin inside (best one chosen).
+  drop_point: [0.0, -0.55]
+  drop_margin: 0.03
+
+# Known static obstacles (shelves), exact oriented rectangles {name, x, y, width, height,
+# yaw} in uwb_global. The planner keeps the footprint clearance from them and the obstacle
+# mapper does not map their returns again.
+# Must be measured on site. Left empty, the leader stops about 0.5 m before the shelf (front
+# stop), the shelf spot is mapped as an obstacle 3 s later and the pick goal lies inside it:
+# no path, the mission stops. The node warns at start-up per pick goal without a fixture in
+# front of it.
+fixtures: []
+
+# Clearance model: footprint rectangle (plan.footprint) vs exact obstacle shapes, and ONE
+# safety margin, plan.clearance, which covers this rover's localization + tracking error.
+# Obstacle sizes carry no margin of their own except the mapper's ``inflation`` (mapping
+# error of the scanning rover) and the assumed unseen box depth.
+robots:
+  leader:               # 4WD skid-steer + manipulator
+    speed_cap: 0.0          # 0 = rover default
+    goal_pos_tol: 0.05      # sent to the rover
+    goal_yaw_tol: 0.10
+    arrive_pos_tol: 0.08    # host arrival check (rover tolerance + localization noise)
+    arrive_yaw_tol: 0.15
+    front_exempt_reach: 0.30  # a fixture this close ahead of the goal's front = the goal's
+                              # target: final run-in exempt from the front stop
+    plan:
+      spacing: 0.05
+      min_turn_radius: 0.30   # skid-steer turning ability
+      # (front, rear, half_width) from the tracked point. Simulator body: 0.18 m around the
+      # body origin, tracked point 0.05 ahead of it. Measure the body (tracks + manipulator
+      # base) and ref_offset_x on site.
+      footprint: [0.13, 0.23, 0.18]
+      clearance: 0.05         # localization (~0.02-0.03) + tracking (~0.02-0.03)
+      approach_len: 0.40
+      # Departure pivot: a path may START with an in-place rotation (never at the goal).
+      pivot_step: 0.2618      # 15 deg candidate turns (0 = off)
+      pivot_cost: 0.5         # m of path a 1 rad turn is worth (prefer driving)
+      pivot_offset: 0.0       # rotation centre behind the tracked point (= rover ref_offset_x)
+  follower:             # differential drive
+    speed_cap: 0.0
+    goal_pos_tol: 0.05
+    goal_yaw_tol: 0.10
+    arrive_pos_tol: 0.08
+    arrive_yaw_tol: 0.15
+    front_exempt_reach: 0.30  # a fixture this close ahead of the goal's front = the goal's
+                              # target: final run-in exempt from the front stop
+    cargo: [0.0, 0.0, 0.20, 0.20]   # usable cargo area (x, y, length, width) in the tracked-point
+                                    # frame: centred, ~0.20 x 0.20 usable
+    plan:
+      spacing: 0.05
+      min_turn_radius: 0.30
+      # TurtleBot3 Waffle body 0.281 x 0.306. Rotation centre (tracked point) position along the
+      # body is not measured, so a centred 0.30 x 0.31 box.
+      footprint: [0.15, 0.15, 0.155]
+      clearance: 0.05         # as the leader
+      approach_len: 0.40
+      # Departure pivot: a path may START with an in-place rotation (never at the goal).
+      pivot_step: 0.2618      # 15 deg candidate turns (0 = off)
+      pivot_cost: 0.5         # m of path a 1 rad turn is worth (prefer driving)
+      pivot_offset: 0.0       # rotation centre behind the tracked point (= rover ref_offset_x)

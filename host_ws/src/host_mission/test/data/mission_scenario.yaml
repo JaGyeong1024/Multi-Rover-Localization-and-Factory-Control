@@ -1,0 +1,15 @@
+# Test copy of the path-mode mission scenario (see mission.yaml here). Every stop is a NAMED
+# goal pose from goals.yaml (no lane-graph node ids). Loaded by host_mission.settings.load_scenario.
+leader_standby: leader_standby     # leader wait pose
+follower_unload: follower_unload   # follower drop-off (unload) pose
+# follower_home: follower_home     # optional separate follower wait pose (default: unload)
+capacity: 2            # parts carried per trip
+pick_cooldown: 30.0    # s, per pick goal (a human refills the shelf); 0 = off
+pick_dwell: 80.0       # s, no pick result within this -> the pick is marked FAILED.
+                       # Must exceed the worst-case pick&place time and stay below phase_timeout.
+phase_timeout: 120.0   # s, any other phase waiting longer -> FAULT (operator resumes)
+
+# id / coord must match dashboard map.json shelves[].part ("fetch:<id>" dispatch).
+parts:
+  - {id: gear_01, x: 5.3864, y: 2.6859, leader_goal: pick_gear, follower_goal: load_gear}
+  - {id: bolt_01, x: 5.3864, y: 4.1274, leader_goal: pick_bolt, follower_goal: load_bolt}

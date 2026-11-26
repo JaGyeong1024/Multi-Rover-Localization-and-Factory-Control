@@ -1,0 +1,13 @@
+# FROZEN test copy of config/goals.yaml (see mission.yaml here).
+# Named goal poses (uwb_global; x, y in m, theta in rad, CCW positive).
+# EXAMPLE VALUES for the simulator. On site, park each rover at the spot and teach it:
+#   ros2 topic pub --once /mission/teach_goal std_msgs/String "data: 'leader:pick_gear'"
+# The coordinator overwrites this file on every teach (comments are not preserved).
+frame_id: uwb_global
+goals:
+  leader_standby: {x: 2.6, y: 3.3, theta: 0.0}
+  follower_unload: {x: 2.3, y: 2.6, theta: 0.0}
+  pick_gear: {x: 4.9, y: 2.9, theta: 0.0}
+  load_gear: {x: 4.9, y: 2.35, theta: 0.0}
+  pick_bolt: {x: 4.9, y: 4.1, theta: 0.0}
+  load_bolt: {x: 4.9, y: 3.55, theta: 0.0}

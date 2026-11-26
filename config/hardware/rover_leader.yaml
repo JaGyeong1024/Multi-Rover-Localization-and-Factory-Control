@@ -1,0 +1,52 @@
+# rover_drive, leader hardware keys (ROS parameter file, passed after
+# rover_drive/config/leader.yaml, before the presets). Keys that change when a motor,
+# driver, sensor or its mount changes; speeds, gains and thresholds stay in leader.yaml.
+# Units: m, rad, s. Keep the decimal point on every number (ROS parameter types are strict).
+/**:
+  ros__parameters:
+    # ---- base drive ----
+    # The base cuts omega toward zero in steps of 0.0697 rad/s (0.02-0.06 -> 0, 0.08-0.10 ->
+    # 0.07, 0.30 -> 0.28; measured with the wheels off the ground). The tracker picks whole
+    # steps (error diffusion keeps the mean) and sends (k + margin) * quantum so the cut lands
+    # on step k. Linear speed is cut the same way in 0.0014 m/s steps: too small to matter.
+    omega_quantum: 0.0697
+    omega_quantize: truncate      # round | truncate
+    omega_truncate_margin: 0.3    # fraction of a step added before sending
+    angular_sign: -1.0            # +omega turns the base clockwise (gyro and ceiling camera
+                                  # agree). Re-check after any change to the base controller yaml.
+    ref_offset_x: 0.0             # tracked point ahead of the rotation centre = radius of the
+                                  # circle the tracked point draws when turning in place. If
+                                  # unsure, round DOWN: too large an offset costs goal heading,
+                                  # too small only adds heading damping.
+
+    # ---- front stop geometry (distance comes from the depth camera, no LiDAR) ----
+    lidar_to_front: 0.0           # camera to the rover's front edge
+    # scan-only keys (unused with front_distance_topic)
+    lidar_min_range: 0.05
+    lidar_yaw_offset: 0.0
+    lidar_ignore_sectors: [0.0, 0.0]
+
+    # ---- depth camera (Orbbec Astra Mini) ----
+    depth_topic: /camera/depth/image_raw   # 16UC1 mm (32FC1 m also read)
+    depth_camera_info_topic: /camera/depth/camera_info   # '' = depth_hfov only
+    depth_hfov: 1.019             # rad, 58.4 deg (Astra Mini spec), used without camera_info
+    depth_valid_min_m: 0.30
+    depth_valid_max_m: 6.0
+    # Front-distance band: rows as a fraction of the image height (the lower edge must stay
+    # above the floor), columns = rover width at the stop distance.
+    depth_row_min: 0.35
+    depth_row_max: 0.55
+    depth_col_min: 0.30
+    depth_col_max: 0.70
+    # Depth scan (own rows, all columns) -> /leader/depth_scan -> host obstacle map. Frame =
+    # camera (x forward, y left); the camera mount is set on the host only
+    # (config/hardware/sensor_mounts.yaml, source leader_depth). Camera ~0.12 m high: the lower
+    # row edge must stay above the horizon (row 0.50 when level), else the floor 3-5 m ahead is
+    # mapped as a box.
+    depth_scan_frame: camera_depth_frame
+    depth_scan_row_min: 0.30
+    depth_scan_row_max: 0.48
+
+    # ---- device topics ----
+    imu_topic: /imu_broadcaster/imu   # yaw rate, REP-103
+    scan_topic: /scan

@@ -1,0 +1,42 @@
+# Leader (25) -> host (30): nav and pick&place feedback, the leader's planned route and its
+# platooning control topics (the host relays them on to the follower via 30 -> 73, so the host
+# is the single bridging authority).
+name: mission_25_to_30
+from_domain: 25
+to_domain: 30
+topics:
+  leader/nav_feedback:
+    type: host_mission_interfaces/msg/NavFeedback
+    # Reliable end to end: a best_effort relay is incompatible with the reliable subscriber.
+    qos: {reliability: reliable}
+  pnp/working:
+    type: std_msgs/msg/Bool
+    qos: {reliability: reliable}
+  leader/route:
+    type: host_mission_interfaces/msg/LeaderRoute
+    qos: {reliability: reliable, durability: transient_local}
+  leader/follower_enable:
+    type: std_msgs/msg/Bool
+    qos: {reliability: reliable, durability: transient_local}
+  leader/platoon_mode:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  leader/task_state:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  leader/heartbeat:
+    type: std_msgs/msg/Bool
+    qos: {reliability: best_effort}
+  # ---- path mode (nav_mode: path); the entries above serve nav_mode: lane ----
+  leader/safety_state:
+    type: host_mission_interfaces/msg/SafetyState
+    qos: {reliability: reliable, history: keep_last, depth: 10}
+  # Latched. The host accepts a result only after it saw the work state go PICKING ->
+  # DONE/ERROR during its own PICKING phase, so a latched replay after a bridge respawn cannot
+  # complete a pick.
+  leader/pick_place_done:
+    type: std_msgs/msg/Bool
+    qos: {reliability: reliable, durability: transient_local}
+  leader/work_state:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}

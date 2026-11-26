@@ -1,0 +1,303 @@
+{
+  "model_version": "omx_turtlebot3_v6",
+  "source_checkpoint": "omx_turtlebot3_v6.zip",
+  "source_sha256": "6d8fc7f6607cc49a654dc577260e61947aa9e1b8fe23f6160330c15e0558c8c1",
+  "observation_size": 69,
+  "action_size": 4,
+  "fields": [
+    {
+      "name": "joint_position",
+      "start": 0,
+      "size": 4
+    },
+    {
+      "name": "joint_velocity",
+      "start": 4,
+      "size": 4
+    },
+    {
+      "name": "finger_position",
+      "start": 8,
+      "size": 2
+    },
+    {
+      "name": "eef_position",
+      "start": 10,
+      "size": 3
+    },
+    {
+      "name": "joint_goal",
+      "start": 13,
+      "size": 4
+    },
+    {
+      "name": "phase_onehot",
+      "start": 17,
+      "size": 9
+    },
+    {
+      "name": "waypoint_fraction",
+      "start": 26,
+      "size": 1
+    },
+    {
+      "name": "perceived_object_positions",
+      "start": 27,
+      "size": 6
+    },
+    {
+      "name": "perception_valid",
+      "start": 33,
+      "size": 2
+    },
+    {
+      "name": "requested_id_onehot",
+      "start": 35,
+      "size": 2
+    },
+    {
+      "name": "selected_position",
+      "start": 37,
+      "size": 3
+    },
+    {
+      "name": "selected_minus_eef",
+      "start": 40,
+      "size": 3
+    },
+    {
+      "name": "place_position",
+      "start": 43,
+      "size": 3
+    },
+    {
+      "name": "bilateral_and_deck_contact",
+      "start": 46,
+      "size": 2
+    },
+    {
+      "name": "previous_action",
+      "start": 48,
+      "size": 4
+    },
+    {
+      "name": "perceived_object_quaternions_xyzw",
+      "start": 52,
+      "size": 8
+    },
+    {
+      "name": "pnp_reprojection_error_px",
+      "start": 60,
+      "size": 2
+    },
+    {
+      "name": "time_since_live_target_plan",
+      "start": 62,
+      "size": 1
+    },
+    {
+      "name": "recognition_stage_onehot",
+      "start": 63,
+      "size": 2
+    },
+    {
+      "name": "currently_visible",
+      "start": 65,
+      "size": 2
+    },
+    {
+      "name": "pose_cache_age",
+      "start": 67,
+      "size": 2
+    }
+  ],
+  "hidden_layers": [
+    128,
+    128
+  ],
+  "action_semantics": "bounded_joint_residual_not_absolute_angles",
+  "hardware_execution_enabled": false,
+  "hardware_motion_validated": false,
+  "requires_runtime_port": true,
+  "missing_physical_contracts": [
+    "bilateral_finger_contact",
+    "follower_deck_contact",
+    "camera_extrinsics_and_marker_calibration",
+    "phase_planner_and_collision_gates"
+  ],
+  "onnx": {
+    "file": "actor.onnx",
+    "opset": 13,
+    "ir_version": 8,
+    "input": "observation",
+    "output": "action",
+    "max_abs_error": 6.556510925292969e-07
+  },
+  "parity_samples": 973,
+  "rollout_episodes": 10,
+  "rollout_successes": 7,
+  "rollout_results": [
+    {
+      "seed": 8000,
+      "target_id": 1,
+      "success": true,
+      "reason": "",
+      "steps": 1525,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH",
+        "GRIP",
+        "RETRACT",
+        "ROTATE_RIGHT",
+        "EXTEND_LOWER",
+        "PLACE",
+        "RETURN_STAY"
+      ]
+    },
+    {
+      "seed": 8001,
+      "target_id": 1,
+      "success": true,
+      "reason": "",
+      "steps": 1400,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH",
+        "GRIP",
+        "RETRACT",
+        "ROTATE_RIGHT",
+        "EXTEND_LOWER",
+        "PLACE",
+        "RETURN_STAY"
+      ]
+    },
+    {
+      "seed": 8002,
+      "target_id": 1,
+      "success": true,
+      "reason": "",
+      "steps": 1366,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH",
+        "GRIP",
+        "RETRACT",
+        "ROTATE_RIGHT",
+        "EXTEND_LOWER",
+        "PLACE",
+        "RETURN_STAY"
+      ]
+    },
+    {
+      "seed": 8003,
+      "target_id": 1,
+      "success": false,
+      "reason": "stale_rgb_target",
+      "steps": 1086,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH"
+      ]
+    },
+    {
+      "seed": 8004,
+      "target_id": 1,
+      "success": false,
+      "reason": "stale_rgb_target",
+      "steps": 1066,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH"
+      ]
+    },
+    {
+      "seed": 8005,
+      "target_id": 1,
+      "success": true,
+      "reason": "",
+      "steps": 1381,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH",
+        "GRIP",
+        "RETRACT",
+        "ROTATE_RIGHT",
+        "EXTEND_LOWER",
+        "PLACE",
+        "RETURN_STAY"
+      ]
+    },
+    {
+      "seed": 8006,
+      "target_id": 2,
+      "success": true,
+      "reason": "",
+      "steps": 1326,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH",
+        "GRIP",
+        "RETRACT",
+        "ROTATE_RIGHT",
+        "EXTEND_LOWER",
+        "PLACE",
+        "RETURN_STAY"
+      ]
+    },
+    {
+      "seed": 8007,
+      "target_id": 2,
+      "success": false,
+      "reason": "stale_rgb_target",
+      "steps": 1066,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH"
+      ]
+    },
+    {
+      "seed": 8008,
+      "target_id": 2,
+      "success": true,
+      "reason": "",
+      "steps": 1449,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH",
+        "GRIP",
+        "RETRACT",
+        "ROTATE_RIGHT",
+        "EXTEND_LOWER",
+        "PLACE",
+        "RETURN_STAY"
+      ]
+    },
+    {
+      "seed": 8009,
+      "target_id": 2,
+      "success": true,
+      "reason": "",
+      "steps": 1368,
+      "phases": [
+        "RECOGNIZE",
+        "OPEN",
+        "REACH",
+        "GRIP",
+        "RETRACT",
+        "ROTATE_RIGHT",
+        "EXTEND_LOWER",
+        "PLACE",
+        "RETURN_STAY"
+      ]
+    }
+  ]
+}

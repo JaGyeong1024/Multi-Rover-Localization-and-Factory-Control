@@ -1,0 +1,5 @@
+# Use when: the arm cannot grasp because the leader stands skewed to the shelf at a pick goal; it then squares up to the face with its depth camera and gyro before reporting HOLDING (leader.yaml face_align). Check the tracker log for "FACE_ALIGNED" / "FACE_ALIGN_FAILED" and the fitted angle.
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="face_align", launch: presets:=face_align). Needs the depth scan: always FACE_ALIGN_FAILED (no turn) together with depth_scan_off.
+/**:
+  ros__parameters:
+    face_align: true

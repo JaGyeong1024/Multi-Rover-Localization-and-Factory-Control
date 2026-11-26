@@ -1,0 +1,35 @@
+# Obstacle layouts for the full-lap scenarios. Rects are host_sim obstacles (x, y = centre).
+# Shelves are known fixtures: the runner also passes them to the mission settings (planner)
+# and to the obstacle mapper, which ignores returns on them.
+# Arena frame. Shelves 0.4 x 0.4, west face at x = 4.60. Boxes are test obstacles.
+shelves:
+  - {type: rect, x: 4.80, y: 1.24, width: 0.40, height: 0.40, yaw: 0.0, name: shelf_gear}
+  - {type: rect, x: 4.80, y: 2.45, width: 0.40, height: 0.40, yaw: 0.0, name: shelf_bolt}
+boxes:
+  empty: []
+  box1:
+    - {type: rect, x: 2.60, y: 1.60, width: 0.40, height: 0.40, yaw: 0.0, name: box1}
+  box2:
+    - {type: rect, x: 2.20, y: 1.25, width: 0.45, height: 0.30, yaw: 0.0, name: box1}
+    - {type: rect, x: 2.90, y: 2.40, width: 0.40, height: 0.40, yaw: 0.0, name: box2}
+# Production site layout (run_layout('site', ...)): shelves from config/mission.yaml, taught
+# goals from config/goals.yaml, and the rovers parked at their home goals. Copy the shelves
+# again when the production fixtures change.
+site:
+  shelves:
+    - {type: rect, x: 4.77, y: 1.18, width: 0.285, height: 0.365, yaw: 0.0, name: shelf_gear}
+    - {type: rect, x: 4.817, y: 2.14, width: 0.285, height: 0.365, yaw: 0.0, name: shelf_bolt}
+  boxes: []
+  boxes_two:                  # 'site_two': two floor boxes (camera / mapper checks)
+    - {type: rect, x: 3.40, y: 2.28, width: 0.40, height: 0.40, yaw: 0.1, name: box_n}
+    - {type: rect, x: 2.37, y: 1.12, width: 0.40, height: 0.40, yaw: 0.26, name: box_s}
+  boxes_s3:                   # 'site_s3' demo scenario 3 (two boxes, bolt). Real boxes 0.44 x 0.30.
+                              # Box centres west of x 3.0 and east of x 2.2.
+    - {type: rect, x: 2.80, y: 2.30, width: 0.44, height: 0.30, yaw: 0.0, name: box_n}
+    - {type: rect, x: 2.37, y: 1.12, width: 0.44, height: 0.30, yaw: 0.0, name: box_s}
+  boxes_s4:                   # 'site_s4' demo scenario 4 (boxes moved, gear)
+    - {type: rect, x: 2.60, y: 2.10, width: 0.44, height: 0.30, yaw: 0.0, name: box_n}
+    - {type: rect, x: 2.90, y: 1.40, width: 0.44, height: 0.30, yaw: 0.0, name: box_s}
+  start:                      # body origin x, y, theta, at the home goals. Start theta is not
+    leader: [0.86, 1.45, 0.0]   # measured: 0 (facing the shelves) keeps the alignment creep
+    follower: [0.86, 1.95, 0.0] # from driving into the wall. Existing laps also start facing east.

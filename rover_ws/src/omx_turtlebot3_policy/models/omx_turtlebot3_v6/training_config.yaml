@@ -1,0 +1,105 @@
+name: omx_turtlebot3_v6
+schema_version: 3
+scene: assets/mjcf/omx_turtlebot3_v6/scene.xml
+stay: [0.104311, 0.027612, -0.001534, -1.638291]
+physics_timestep: 0.002
+frame_skip: 10
+joint_step: 0.012
+residual_scale: 0.12
+gripper_open: 0.019
+gripper_close: -0.010
+gripper_force_limit: 2.0
+joint_margin: 0.015
+max_episode_steps: 4500
+phase_timeout_steps: 900
+position_tolerance: 0.007
+grasp_offset_z: 0.006
+joint_tolerance: 0.040
+stable_steps: 12
+seed: 642
+
+scene_layout:
+  shelf_position: [0.300, 0.0, 0.100]
+  shelf_stack_pitch: 0.156
+  support_size: [0.400, 0.400, 0.100]
+  follower_position: [-0.052, -0.320, 0.0]
+  follower_deck_z: 0.070
+  object_count: 2
+  active_shelf_level: 2
+  object_size: [0.050, 0.050, 0.050]
+  object_mass: 0.035
+  object_friction: 0.9
+  object_x: 0.237
+  object_y: [-0.055, 0.055]
+
+base:
+  fixed: true
+  position: [0.0, 0.0, 0.0]
+
+motion:
+  scan_pose: [0.0, -1.0, 0.8, 0.6]
+  upper_pick_pitch: 0.0
+  upper_lift: 0.025
+  rotation_height_tolerance: 0.006
+  rotation_yaw_tolerance: 0.02
+  rotation_velocity_tolerance: 0.03
+
+perception:
+  mode: rgb_corner_pnp_pose_surrogate
+  marker_ids: [1, 2]
+  marker_size: 0.040
+  camera_info_source: turtlebot3_manipulation_bringup/config/eef_usb_camera.yaml
+  image_size: [320, 240]
+  # Rectified projection P from the robot camera YAML; distortion is not rendered.
+  intrinsics: [301.875153, 436.170105, 181.997119, 113.619615]
+  lens_position: [0.057, 0.0, 0.0]  # In camera body; outside its collision envelope.
+  frame_margin_px: 3
+  min_marker_side_px: 12
+  position_noise_std: 0.001
+  dropout_probability: 0.01
+  stable_frames: 3
+  cache_max_age_seconds: 40.0
+  sample_every_steps: 5
+  corner_noise_px: 0.12
+  reprojection_limit_px: 1.5
+  replan_min_interval_s: 0.25
+  replan_position_change_m: 0.002
+  pose_max_age_before_reach_s: 15.0
+  depth_range: [0.04, 1.2]  # RGB projection's Z range only; no depth camera input.
+
+curriculum:
+  target_levels: [2]
+  require_reachable_target: true
+
+ppo:
+  total_timesteps: 200000
+  n_envs: 4
+  n_steps: 512
+  batch_size: 256
+  n_epochs: 5
+  learning_rate: 0.00015
+  gamma: 0.995
+  gae_lambda: 0.95
+  ent_coef: 0.002
+  net_arch: [128, 128]
+  device: auto
+  checkpoint_steps: 20000
+
+randomization:
+  # Candidate ranges, conditioned on reach/trajectory clearance and RGB overview.
+  upper_x: [0.212, 0.238]
+  negative_y: [-0.090, -0.035]
+  positive_y: [0.035, 0.090]
+  upper_support_height: [0.0, 0.040]
+  object_yaw_degrees: [-12.0, 12.0]
+  pedestal_half_width: 0.017
+  reset_attempts: 100
+  path_check_samples: 7
+  minimum_object_gap: 0.010
+  reset_frame_margin_px: 8
+
+control_speed:
+  travel_multiplier: 1.20
+  precision_multiplier: 1.00
+  reach_precision_waypoints: 2
+  preserve_absolute_residual_step: true

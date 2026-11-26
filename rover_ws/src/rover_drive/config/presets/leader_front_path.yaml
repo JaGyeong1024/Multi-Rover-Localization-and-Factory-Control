@@ -1,0 +1,6 @@
+# Use when: the leader stops for things beside its curved path or beyond the goal (the straight front zone).
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="front_path", launch: presets:=front_path). Includes front_memory: the band distance has no bearing, so only the depth scan's remembered points can lie beside the path; needs the depth scan (no effect of the memory together with depth_scan_off).
+/**:
+  ros__parameters:
+    front_path: true
+    front_memory: true

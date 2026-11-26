@@ -1,0 +1,14 @@
+# Floor marker positions for the ceiling-camera calibration (unified_calibrator).
+# Frame uwb_global: origin = outer corner of tag 4 = (0.50, 0.50); x along the long side
+# (tag 4 -> 2), y along the short side (tag 4 -> 1). Coordinates are TAG CENTRES (the detector
+# uses the mean of the four corners). Markers: AprilTag tag36h11 IDs 1-4, 14.9 cm square.
+# Matched by ID (ID i <-> i-th entry). As seen by the camera:
+#   ID 1 (top left)      ID 3 (top right)
+#   ID 4 (bottom left)   ID 2 (bottom right)
+# Rectangle shape from the camera intrinsics + tag detection; scale from a tape measure
+# (outer edge tag 1 to outer edge tag 3 = 4.44 m, +-1-2 cm; centre spacing 4.288 x 2.291 m).
+calibration_markers:
+  - {id: 1, x: 0.5745, y: 2.8653}
+  - {id: 2, x: 4.8628, y: 0.5745}
+  - {id: 3, x: 4.8628, y: 2.8653}
+  - {id: 4, x: 0.5745, y: 0.5745}

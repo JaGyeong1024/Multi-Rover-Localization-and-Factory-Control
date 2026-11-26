@@ -1,0 +1,43 @@
+# Leader front depth camera (Orbbec Astra Mini), passed to the upstream
+# astra_camera driver by launch/astra_mini.launch.py.
+camera_name : "camera"
+color_width: 640
+color_height: 480
+color_fps: 30
+enable_color: true
+
+ir_width: 640
+ir_height: 480
+ir_fps: 30
+enable_ir: false
+depth_width: 640
+depth_height: 480
+depth_fps: 30
+enable_depth: true
+
+# hardware depth-to-color alignment
+depth_align: true
+# needed only with several cameras
+serial_number: ""
+number_of_devices: 1
+# separate UVC color camera (other Orbbec models only)
+uvc_camera.enable: false
+uvc_camera.format: "mjpeg"
+uvc_camera.vid: 0x0
+uvc_camera.pid: 0x0
+uvc_camera.retry_count: 100
+# crop for alignment at other resolutions (-1 = off)
+color_roi.x : -1
+color_roi.y : -1
+color_roi.width: -1
+color_roi.height: -1
+depth_roi.x : -1
+depth_roi.y : -1
+depth_roi.width: -1
+depth_roi.height: -1
+depth_scale : 1
+# camera-internal frames are published once (static), not at a rate
+publish_tf: true
+tf_publish_rate: 0.0
+camera_link_frame_id: "camera_link"
+reconnect_timeout: 6.0

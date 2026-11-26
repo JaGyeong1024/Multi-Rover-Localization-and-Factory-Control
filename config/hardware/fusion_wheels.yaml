@@ -1,0 +1,12 @@
+# fusion_node, wheel hardware (ROS parameter file, passed by pipeline.launch.py): wheel radius
+# [m] (travel since the last camera fix) and the wheel joint names in /{robot}/joint_states.
+fusion_node:
+  ros__parameters:
+    leader:
+      wheel_radius: 0.037
+      wheel_joint_left: wheel_left_joint
+      wheel_joint_right: wheel_right_joint
+    follower:
+      wheel_radius: 0.032
+      wheel_joint_left: wheel_left_joint
+      wheel_joint_right: wheel_right_joint

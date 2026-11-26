@@ -1,0 +1,18 @@
+# Mission scenario: the parts and their goals. Every stop is a named goal pose from goals.yaml.
+# Loaded by host_mission.settings.load_scenario.
+leader_standby: leader_standby     # leader wait pose
+follower_unload: follower_unload   # follower drop-off pose
+# follower_home: follower_home     # optional separate follower wait pose (default: unload)
+capacity: 2            # parts carried per trip
+pick_cooldown: 30.0    # s, per pick goal (a human refills the shelf); 0 = off
+pick_dwell: 150.0      # s, no pick result within this -> the pick counts as failed. Must exceed
+                       # the worst-case pick-and-place time and stay below phase_timeout.
+pick_timeout_is_failure: false  # false: when the arm reports no result, the part counts as
+                       # loaded after pick_dwell (set pick_dwell to the measured pick-and-place
+                       # time plus margin)
+phase_timeout: 180.0  # s, any other phase waiting longer -> FAULT (the operator resumes)
+
+# id / x / y must match the dashboard map shelves[].part ("fetch:<id>" dispatch).
+parts:
+  - {id: gear_01, x: 5.3864, y: 2.6859, leader_goal: pick_gear, follower_goal: load_gear}
+  - {id: bolt_01, x: 5.3864, y: 4.1274, leader_goal: pick_bolt, follower_goal: load_bolt}

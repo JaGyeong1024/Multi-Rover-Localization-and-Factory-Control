@@ -1,0 +1,43 @@
+# Rover -> host sensor bridge: leader (domain 25 -> 30).
+# The bridge runs on the host; the rover is not modified. The leader runs the ros2_control
+# (turtlebot3_manipulation) 4WD stack, whose broadcasters publish different names and QoS than
+# the classic turtlebot3_node (all reliable, ~14 Hz):
+#   IMU (raw)  -> /imu_broadcaster/imu  (sensor_msgs/Imu)
+#   wheel enc. -> /joint_states         (wheel_left_joint, wheel_right_joint + arm joints)
+#   wheel odom -> /odom: not bridged; host fusion uses the raw /joint_states + /imu.
+# Re-published as /leader/imu and /leader/joint_states on domain 30.
+# (The follower runs the classic node with bare /imu, see bridge_follower.yaml.)
+name: rover_bridge_leader
+from_domain: 25
+to_domain: 30
+topics:
+  imu_broadcaster/imu:
+    type: sensor_msgs/msg/Imu
+    remap: leader/imu
+    # ros2_control imu_sensor_broadcaster publishes RELIABLE.
+    qos:
+      reliability: reliable
+  joint_states:
+    type: sensor_msgs/msg/JointState
+    remap: leader/joint_states
+    qos:
+      reliability: reliable
+  # Battery state (1 Hz), for bag recording.
+  battery_state:
+    type: sensor_msgs/msg/BatteryState
+    remap: leader/battery_state
+    # The publisher (leader_battery_state_relay) is best_effort; a reliable subscription would
+    # receive nothing from it, so best_effort is used.
+    qos:
+      reliability: best_effort
+  # Depth camera planar scan (rover_drive depth_front_node: Astra Mini, frame
+  # camera_depth_frame, 80 beams over ~58 deg, 10 Hz) for the host obstacle mapper (source
+  # leader_depth). Already namespaced as /leader/depth_scan, so the name is kept.
+  # Sensor-data QoS; ~4 KB/s over the rover link.
+  leader/depth_scan:
+    type: sensor_msgs/msg/LaserScan
+    remap: leader/depth_scan
+    qos:
+      reliability: best_effort
+      history: keep_last
+      depth: 5

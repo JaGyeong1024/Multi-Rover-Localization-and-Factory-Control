@@ -1,0 +1,25 @@
+# Host -> follower: global position (the rover's control input), domain 30 -> 73.
+# global_position_node publishes /follower/global/position (PoseStamped: x, y + heading) on the
+# host domain; this bridge forwards it. Reliable: delivery matters more than rate (~10 Hz).
+name: host_to_follower
+from_domain: 30
+to_domain: 73
+topics:
+  follower/global/position:
+    type: geometry_msgs/msg/PoseStamped
+    qos:
+      reliability: reliable
+  # Heading alignment state (course-over-ground anchor): false = the rover drives straight to
+  # bootstrap it, true = it may stand. Latched, so a late rover gets the current state.
+  follower/heading_aligned:
+    type: std_msgs/msg/Bool
+    qos:
+      reliability: reliable
+      durability: transient_local
+  # Position quality for the rover speed limit: GOOD | DEGRADED | LOST. Latched like
+  # heading_aligned; fusion_node republishes at 1 Hz.
+  follower/localization_quality:
+    type: std_msgs/msg/String
+    qos:
+      reliability: reliable
+      durability: transient_local

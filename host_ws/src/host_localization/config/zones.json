@@ -1,0 +1,51 @@
+{
+  "frame_id": "uwb_global",
+  "bev_meta": {
+    "bev_image": "bev.png",
+    "bev_width": 906,
+    "bev_height": 594,
+    "scale_x": 0.005,
+    "scale_y": 0.005,
+    "real_origin_x": 1.4144999999999999,
+    "real_origin_y": 1.8844999999999998,
+    "frame_id": "uwb_global",
+    "synthetic": false,
+    "active_zone": {
+      "x_min": 1.4144999999999999,
+      "x_max": 5.9445,
+      "y_min": 1.8844999999999998,
+      "y_max": 4.8545
+    }
+  },
+  "zones": [
+    {
+      "name": "zone_1",
+      "points": [
+        {
+          "px": 43.1,
+          "py": 42.9,
+          "x": 1.63,
+          "y": 4.64
+        },
+        {
+          "px": 43.1,
+          "py": 550.9,
+          "x": 1.63,
+          "y": 2.1
+        },
+        {
+          "px": 863.1,
+          "py": 550.9,
+          "x": 5.73,
+          "y": 2.1
+        },
+        {
+          "px": 863.1,
+          "py": 42.9,
+          "x": 5.73,
+          "y": 4.64
+        }
+      ]
+    }
+  ]
+}

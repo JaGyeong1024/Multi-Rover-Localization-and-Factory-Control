@@ -1,0 +1,13 @@
+# Goal poses in the uwb_global arena frame. Taught poses (/mission/teach_goal) replace these.
+# Shelves 0.4 x 0.4 (layouts.yaml): gear centre (4.80, 1.24), bolt centre (4.80, 2.45); west
+# face at x = 4.60.
+# Pick: leader faces the shelf (east), 0.30 m from the shelf face. Load: follower on the leader's
+# right, 0.55 m apart, defined relative to the pick goal.
+frame_id: uwb_global
+goals:
+  leader_standby: {x: 0.86, y: 1.45, theta: 3.14159}
+  follower_unload: {x: 0.86, y: 2.05, theta: 3.14159}
+  pick_gear: {x: 4.30, y: 1.24, theta: 0.0}
+  load_gear: {relative_to: pick_gear, dx: 0.0, dy: -0.55, dtheta: 0.0}
+  pick_bolt: {x: 4.30, y: 2.45, theta: 0.0}
+  load_bolt: {relative_to: pick_bolt, dx: 0.0, dy: -0.55, dtheta: 0.0}

@@ -1,0 +1,807 @@
+<mujoco model="omx_turtlebot3_v6">
+  <compiler angle="radian" autolimits="true" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" iterations="60" noslip_iterations="5" />
+  <default>
+    <geom friction=".9 .005 .0001" solref=".008 1" solimp=".95 .99 .001" condim="4" />
+  </default>
+  <statistic center="0 -.10 .20" extent=".85" />
+  <visual>
+    <global azimuth="135" elevation="-25" offwidth="1280" offheight="960" />
+    <headlight ambient=".4 .4 .4" diffuse=".6 .6 .6" />
+  </visual>
+  <asset>
+    <mesh name="mesh_0" file="meshes/mesh_0_lower_plate.stl" scale="1 1 1" />
+    <mesh name="mesh_1" file="meshes/mesh_1_camera_plate.stl" scale="1 1 1" />
+    <mesh name="mesh_2" file="meshes/mesh_2_track.stl" scale="1 1 1" />
+    <mesh name="mesh_3" file="meshes/mesh_3_motor_left.stl" scale="1 1 1" />
+    <mesh name="mesh_4" file="meshes/mesh_4_sprocket.stl" scale="1 1 1" />
+    <mesh name="mesh_5" file="meshes/mesh_5_motor_right.stl" scale="1 1 1" />
+    <mesh name="mesh_6" file="meshes/mesh_6_upper_plate.stl" scale="1 1 1" />
+    <mesh name="mesh_7" file="meshes/mesh_7_link1.stl" scale="0.001 0.001 0.001" />
+    <mesh name="mesh_8" file="meshes/mesh_8_base.stl" scale="0.001 0.001 0.000551" />
+    <mesh name="mesh_9" file="meshes/mesh_9_left_tire.stl" scale="0.001 0.001 0.001" />
+    <mesh name="mesh_10" file="meshes/mesh_10_right_tire.stl" scale="0.001 0.001 0.001" />
+    <material name="floor_mat" rgba="0.18 0.19 0.20 1" />
+    <material name="dark_mat" rgba="0.2 0.2 0.2 1" />
+    <material name="base_mat" rgba="0.4 0.4 0.4 1" />
+    <material name="camera_mat" rgba="0.6 0.6 0.6 1" />
+    <material name="eef_camera_mat" rgba="0.08 0.08 0.08 1" />
+    <material name="tower_mat" rgba="0.32 0.36 0.40 1" />
+    <material name="object_mat" rgba="0.9 0.25 0.08 1" />
+    <mesh name="link2" file="meshes/arm_link2.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link3" file="meshes/arm_link3.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link4" file="meshes/arm_link4.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link5" file="meshes/arm_link5.stl" scale="0.001 0.001 0.001" />
+    <mesh name="gripper_left_palm" file="meshes/arm_gripper_left_palm.stl" scale="0.001 0.001 0.001" />
+    <mesh name="gripper_right_palm" file="meshes/arm_gripper_right_palm.stl" scale="0.001 0.001 0.001" />
+    <mesh name="marker_front_mesh" vertex="-0.0001 0.02 -0.02 -0.0001 -0.02 -0.02 -0.0001 -0.02 0.02 -0.0001 0.02 0.02 0.0001 0.02 -0.02 0.0001 -0.02 -0.02 0.0001 -0.02 0.02 0.0001 0.02 0.02" face="0 1 2 0 2 3 4 7 6 4 6 5 0 4 5 0 5 1 1 5 6 1 6 2 2 6 7 2 7 3 3 7 4 3 4 0" texcoord="0 0 1 0 1 1 0 1 0 0 1 0 1 1 0 1" />
+    <texture name="aruco_1" type="2d" file="markers/aruco_1.png" hflip="true" />
+    <material name="aruco_1_material" texture="aruco_1" texuniform="false" texrepeat="1 1" emission=".5" />
+    <texture name="aruco_2" type="2d" file="markers/aruco_2.png" hflip="true" />
+    <material name="aruco_2_material" texture="aruco_2" texuniform="false" texrepeat="1 1" emission=".5" />
+  </asset>
+  <worldbody>
+    <light pos="0 -1 2" dir="0 .2 -1" />
+    <body name="mobile_base" pos="0 0 0">
+      <inertial pos="-.06 0 .10" mass="6.0" diaginertia=".06 .08 .09" />
+      <geom name="leader_base_link_visual_0" pos="-0.064 0 0.02025" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.34 0.39 0.46 1" group="2" type="mesh" mesh="mesh_0" />
+      <geom name="leader_base_link_visual_1" pos="-0.064 0 0.06925" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.34 0.39 0.46 1" group="2" type="mesh" mesh="mesh_0" />
+      <geom name="leader_base_link_collision_0" pos="-0.064 0 0.02025" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.100775 0.068775 0.0045" />
+      <geom name="leader_base_link_collision_1" pos="-0.064 0 0.063" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.100775 0.068775 0.047" />
+      <geom name="leader_camera_plate_link_visual_0" pos="-0.064 0 0.13325" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.34 0.39 0.46 1" group="2" type="mesh" mesh="mesh_1" />
+      <geom name="leader_camera_plate_link_collision_0" pos="-0.064 0 0.13325" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.100775 0.068775 0.0045" />
+      <geom name="leader_camera_astra_visual_frame_visual_0" pos="0.01391121495 0 0.1773294393" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.02056074766 0.06939252336 0.01542056075" />
+      <geom name="leader_camera_astra_visual_frame_visual_1" pos="0.01391121495 0.06939252336 0.1773294393" quat="0.7071067812 0 0.7071067812 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="cylinder" size="0.01542056075 0.02056074766" />
+      <geom name="leader_camera_astra_visual_frame_visual_2" pos="0.01391121495 -0.06939252336 0.1773294393" quat="0.7071067812 0 0.7071067812 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="cylinder" size="0.01542056075 0.02056074766" />
+      <geom name="leader_camera_astra_visual_frame_visual_3" pos="0.004658878505 0 0.1498294393" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.0308411215 0.0308411215 0.01207943925" />
+      <geom name="leader_camera_astra_visual_frame_collision_0" pos="0.01391121495 0 0.1773294393" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.02056074766 0.08481308411 0.01542056075" />
+      <geom name="leader_camera_astra_visual_frame_collision_1" pos="0.004658878505 0 0.1498294393" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.0308411215 0.0308411215 0.01207943925" />
+      <geom name="leader_camera_astra_visual_frame__visual_1_visual_0" pos="0.03498598131 0.04626168224 0.1773294393" quat="0.7071067812 0 0.7071067812 0" contype="0" conaffinity="0" rgba="0.04 0.37 0.58 1" group="2" type="cylinder" size="0.008224299065 0.0005140186916" />
+      <geom name="leader_camera_astra_visual_frame__visual_1_visual_1" pos="0.03498598131 -0.01747663551 0.1773294393" quat="0.7071067812 0 0.7071067812 0" contype="0" conaffinity="0" rgba="0.04 0.37 0.58 1" group="2" type="cylinder" size="0.008224299065 0.0005140186916" />
+      <geom name="leader_camera_astra_visual_frame__visual_1_visual_2" pos="0.03498598131 -0.04626168224 0.1773294393" quat="0.7071067812 0 0.7071067812 0" contype="0" conaffinity="0" rgba="0.04 0.37 0.58 1" group="2" type="cylinder" size="0.005140186916 0.0005140186916" />
+      <geom name="leader_jetson_orin_nano_link_visual_0" pos="-0.09 0 0.14455" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.04 0.46 0.36 1" group="2" type="box" size="0.05 0.0395 0.0008" />
+      <geom name="leader_jetson_orin_nano_link_collision_0" pos="-0.09 0 0.15525" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.05 0.0395 0.0175" />
+      <geom name="leader_jetson_orin_nano_link__visual_1_visual_0" pos="-0.046 0.033 0.14075" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.0025 0.003" />
+      <geom name="leader_jetson_orin_nano_link__visual_1_visual_1" pos="-0.046 -0.033 0.14075" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.0025 0.003" />
+      <geom name="leader_jetson_orin_nano_link__visual_1_visual_2" pos="-0.134 0.033 0.14075" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.0025 0.003" />
+      <geom name="leader_jetson_orin_nano_link__visual_1_visual_3" pos="-0.134 -0.033 0.14075" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.0025 0.003" />
+      <geom name="leader_jetson_orin_nano_link__visual_2_visual_0" pos="-0.084 0 0.14735" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.04 0.46 0.36 1" group="2" type="box" size="0.024 0.021 0.002" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_0" pos="-0.084 0 0.15085" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.023 0.0015" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_1" pos="-0.084 0.0208 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_2" pos="-0.084 0.017 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_3" pos="-0.084 0.0132 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_4" pos="-0.084 0.0094 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_5" pos="-0.084 0.0056 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_6" pos="-0.084 0.0018 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_7" pos="-0.084 -0.002 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_8" pos="-0.084 -0.0058 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_9" pos="-0.084 -0.0096 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_10" pos="-0.084 -0.0134 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_11" pos="-0.084 -0.0172 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_12" pos="-0.084 -0.021 0.15905" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.026 0.00075 0.0067" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_13" pos="-0.084 0 0.16775" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="cylinder" size="0.02 0.002" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_14" pos="-0.046 0 0.14935" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.0025 0.0255 0.004" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_15" pos="-0.1396 0.014 0.15235" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.00025 0.0055 0.0045" />
+      <geom name="leader_jetson_orin_nano_link__visual_3_visual_16" pos="-0.062 0.034 0.15035" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.0055 0.0045 0.005" />
+      <geom name="leader_jetson_orin_nano_link__visual_4_visual_0" pos="-0.084 0 0.17025" quat="1 0 0 -1.224646799e-16" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="box" size="0.018 0.001 0.0005" />
+      <geom name="leader_jetson_orin_nano_link__visual_4_visual_1" pos="-0.084 0 0.17025" quat="0.9009688679 0 0 -0.4338837391" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="box" size="0.018 0.001 0.0005" />
+      <geom name="leader_jetson_orin_nano_link__visual_4_visual_2" pos="-0.084 0 0.17025" quat="-0.6234898019 0 0 0.7818314825" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="box" size="0.018 0.001 0.0005" />
+      <geom name="leader_jetson_orin_nano_link__visual_4_visual_3" pos="-0.084 0 0.17025" quat="-0.222520934 0 0 0.9749279122" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="box" size="0.018 0.001 0.0005" />
+      <geom name="leader_jetson_orin_nano_link__visual_4_visual_4" pos="-0.084 0 0.17025" quat="0.222520934 0 0 0.9749279122" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="box" size="0.018 0.001 0.0005" />
+      <geom name="leader_jetson_orin_nano_link__visual_4_visual_5" pos="-0.084 0 0.17025" quat="0.6234898019 0 0 0.7818314825" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="box" size="0.018 0.001 0.0005" />
+      <geom name="leader_jetson_orin_nano_link__visual_4_visual_6" pos="-0.084 0 0.17025" quat="0.9009688679 0 0 0.4338837391" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="box" size="0.018 0.001 0.0005" />
+      <geom name="leader_jetson_orin_nano_link__visual_5_visual_0" pos="-0.084 0 0.17175" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="cylinder" size="0.007 0.001" />
+      <geom name="leader_jetson_orin_nano_link__visual_5_visual_1" pos="-0.131 -0.027 0.15335" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="box" size="0.0085 0.007 0.008" />
+      <geom name="leader_jetson_orin_nano_link__visual_5_visual_2" pos="-0.131 -0.007 0.15335" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="box" size="0.0085 0.007 0.008" />
+      <geom name="leader_jetson_orin_nano_link__visual_5_visual_3" pos="-0.131 0.014 0.15235" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="box" size="0.0085 0.0085 0.007" />
+      <geom name="leader_jetson_orin_nano_link__visual_5_visual_4" pos="-0.134 0.032 0.14785" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="box" size="0.006 0.007 0.0025" />
+      <geom name="leader_jetson_orin_nano_link__visual_5_visual_5" pos="-0.05 -0.033 0.14685" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="box" size="0.0035 0.004 0.0015" />
+      <geom name="leader_jetson_orin_nano_link__visual_6_visual_0" pos="-0.1396 -0.027 0.14975" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.04 0.23 0.65 1" group="2" type="box" size="0.00025 0.0055 0.002" />
+      <geom name="leader_jetson_orin_nano_link__visual_6_visual_1" pos="-0.1396 -0.027 0.15675" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.04 0.23 0.65 1" group="2" type="box" size="0.00025 0.0055 0.002" />
+      <geom name="leader_jetson_orin_nano_link__visual_6_visual_2" pos="-0.1396 -0.007 0.14975" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.04 0.23 0.65 1" group="2" type="box" size="0.00025 0.0055 0.002" />
+      <geom name="leader_jetson_orin_nano_link__visual_6_visual_3" pos="-0.1396 -0.007 0.15675" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.04 0.23 0.65 1" group="2" type="box" size="0.00025 0.0055 0.002" />
+      <geom name="leader_track_left_link_visual_0" pos="0 0.0925 0.039" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.055 0.065 0.08 1" group="2" type="mesh" mesh="mesh_2" />
+      <geom name="leader_track_left_link_collision_0" pos="-0.06925 0.0925 0.039" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.10875 0.021 0.0395" />
+      <geom name="leader_motor_front_left_link_visual_0" pos="0 0.0925 0.039" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.24 0.40 0.55 1" group="2" type="mesh" mesh="mesh_3" />
+      <geom name="leader_motor_front_left_link_collision_0" pos="-0.012 0.0677 0.039" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.02325 0.0202 0.01425" />
+      <geom name="leader_sprocket_front_left_link_visual_0" pos="0 0.0925 0.039" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="mesh" mesh="mesh_4" />
+      <geom name="leader_sprocket_front_left_link__visual_1_visual_0" pos="0 0.0885 0.039" quat="0.7071067812 0.7071067812 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="cylinder" size="0.008 0.006" />
+      <geom name="leader_motor_rear_left_link_visual_0" pos="-0.1385 0.0925 0.039" quat="6.123233996e-17 0 1 0" contype="0" conaffinity="0" rgba="0.24 0.40 0.55 1" group="2" type="mesh" mesh="mesh_3" />
+      <geom name="leader_motor_rear_left_link_collision_0" pos="-0.1265 0.0677 0.039" quat="6.123233996e-17 0 1 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.02325 0.0202 0.01425" />
+      <geom name="leader_sprocket_rear_left_link_visual_0" pos="-0.1385 0.0925 0.039" quat="6.123233996e-17 0 1 0" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="mesh" mesh="mesh_4" />
+      <geom name="leader_sprocket_rear_left_link__visual_1_visual_0" pos="-0.1385 0.0885 0.039" quat="4.329780281e-17 4.329780281e-17 0.7071067812 -0.7071067812" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="cylinder" size="0.008 0.006" />
+      <geom name="leader_track_right_link_visual_0" pos="0 -0.0925 0.039" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.055 0.065 0.08 1" group="2" type="mesh" mesh="mesh_2" />
+      <geom name="leader_track_right_link_collision_0" pos="-0.06925 -0.0925 0.039" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.10875 0.021 0.0395" />
+      <geom name="leader_motor_front_right_link_visual_0" pos="0 -0.0925 0.039" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.24 0.40 0.55 1" group="2" type="mesh" mesh="mesh_5" />
+      <geom name="leader_motor_front_right_link_collision_0" pos="-0.012 -0.0677 0.039" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.02325 0.0202 0.01425" />
+      <geom name="leader_sprocket_front_right_link_visual_0" pos="0 -0.0925 0.039" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="mesh" mesh="mesh_4" />
+      <geom name="leader_sprocket_front_right_link__visual_1_visual_0" pos="0 -0.0885 0.039" quat="0.7071067812 0.7071067812 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="cylinder" size="0.008 0.006" />
+      <geom name="leader_motor_rear_right_link_visual_0" pos="-0.1385 -0.0925 0.039" quat="6.123233996e-17 0 1 0" contype="0" conaffinity="0" rgba="0.24 0.40 0.55 1" group="2" type="mesh" mesh="mesh_5" />
+      <geom name="leader_motor_rear_right_link_collision_0" pos="-0.1265 -0.0677 0.039" quat="6.123233996e-17 0 1 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.02325 0.0202 0.01425" />
+      <geom name="leader_sprocket_rear_right_link_visual_0" pos="-0.1385 -0.0925 0.039" quat="6.123233996e-17 0 1 0" contype="0" conaffinity="0" rgba="0.50 0.54 0.61 1" group="2" type="mesh" mesh="mesh_4" />
+      <geom name="leader_sprocket_rear_right_link__visual_1_visual_0" pos="-0.1385 -0.0885 0.039" quat="4.329780281e-17 4.329780281e-17 0.7071067812 -0.7071067812" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="cylinder" size="0.008 0.006" />
+      <geom name="leader_opencr_link_visual_0" pos="-0.032 0 0.08055" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.06 0.48 0.24 1" group="2" type="box" size="0.0525 0.0375 0.0008" />
+      <geom name="leader_opencr_link_collision_0" pos="-0.032 0 0.08275" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.0525 0.0375 0.009" />
+      <geom name="leader_opencr_link__visual_1_visual_0" pos="0.014 0.03 0.07675" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.0025 0.003" />
+      <geom name="leader_opencr_link__visual_1_visual_1" pos="0.014 -0.03 0.07675" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.0025 0.003" />
+      <geom name="leader_opencr_link__visual_1_visual_2" pos="-0.078 0.03 0.07675" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.0025 0.003" />
+      <geom name="leader_opencr_link__visual_1_visual_3" pos="-0.078 -0.03 0.07675" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.0025 0.003" />
+      <geom name="leader_opencr_link__visual_2_visual_0" pos="-0.032 0 0.08235" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.007 0.007 0.001" />
+      <geom name="leader_opencr_link__visual_2_visual_1" pos="-0.032 -0.03 0.08535" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.0315 0.0025 0.004" />
+      <geom name="leader_opencr_link__visual_2_visual_2" pos="-0.032 0.016 0.08535" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.025 0.0025 0.004" />
+      <geom name="leader_opencr_link__visual_2_visual_3" pos="-0.077 -0.013 0.08635" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.12 0.14 0.17 1" group="2" type="box" size="0.0055 0.006 0.005" />
+      <geom name="leader_opencr_link__visual_3_visual_0" pos="-0.066 0.031 0.08435" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.87 0.89 0.83 1" group="2" type="box" size="0.005 0.003 0.003" />
+      <geom name="leader_opencr_link__visual_3_visual_1" pos="-0.053 0.031 0.08435" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.87 0.89 0.83 1" group="2" type="box" size="0.006 0.003 0.003" />
+      <geom name="leader_opencr_link__visual_3_visual_2" pos="-0.038 0.031 0.08435" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.87 0.89 0.83 1" group="2" type="box" size="0.005 0.003 0.003" />
+      <geom name="leader_opencr_link__visual_3_visual_3" pos="-0.025 0.031 0.08435" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.87 0.89 0.83 1" group="2" type="box" size="0.006 0.003 0.003" />
+      <geom name="leader_opencr_link__visual_3_visual_4" pos="-0.01 0.031 0.08435" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.87 0.89 0.83 1" group="2" type="box" size="0.005 0.003 0.003" />
+      <geom name="leader_opencr_link__visual_3_visual_5" pos="0.003 0.031 0.08435" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.87 0.89 0.83 1" group="2" type="box" size="0.006 0.003 0.003" />
+      <geom name="leader_opencr_link__visual_4_visual_0" pos="0.015 0 0.08335" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="box" size="0.0045 0.004 0.002" />
+      <geom name="leader_opencr_link__visual_4_visual_1" pos="-0.062 -0.013 0.08535" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.80 0.84 0.89 1" group="2" type="cylinder" size="0.0035 0.004" />
+      <geom name="leader_support_front_left_link_visual_0" pos="-0.018 0.05 0.16525" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.65 0.67 0.69 1" group="2" type="cylinder" size="0.005 0.0275" />
+      <geom name="leader_support_front_left_link_collision_0" pos="-0.018 0.05 0.16525" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="cylinder" size="0.005 0.0275" />
+      <geom name="leader_support_front_right_link_visual_0" pos="-0.018 -0.05 0.16525" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.65 0.67 0.69 1" group="2" type="cylinder" size="0.005 0.0275" />
+      <geom name="leader_support_front_right_link_collision_0" pos="-0.018 -0.05 0.16525" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="cylinder" size="0.005 0.0275" />
+      <geom name="leader_support_back_left_link_visual_0" pos="-0.146 0.05 0.16525" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.65 0.67 0.69 1" group="2" type="cylinder" size="0.005 0.0275" />
+      <geom name="leader_support_back_left_link_collision_0" pos="-0.146 0.05 0.16525" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="cylinder" size="0.005 0.0275" />
+      <geom name="leader_support_back_right_link_visual_0" pos="-0.146 -0.05 0.16525" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.65 0.67 0.69 1" group="2" type="cylinder" size="0.005 0.0275" />
+      <geom name="leader_support_back_right_link_collision_0" pos="-0.146 -0.05 0.16525" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="cylinder" size="0.005 0.0275" />
+      <geom name="leader_upper_waffle_plate_visual_0" pos="-0.064 0 0.19725" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.34 0.39 0.46 1" group="2" type="mesh" mesh="mesh_6" />
+      <geom name="leader_upper_waffle_plate_collision_0" pos="-0.064 0 0.19725" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.100775 0.068775 0.0045" />
+      <geom name="leader_upper_waffle_plate__visual_1_visual_0" pos="0.013 0 0.20425" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.06 0.48 0.24 1" group="2" type="box" size="0.015 0.013 0.002" />
+      <geom name="leader_link1_visual_0" pos="-0.128 0 0.19775" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.46 0.51 0.58 1" group="2" type="mesh" mesh="mesh_7" />
+      <geom name="leader_link1_collision_0" pos="-0.128 0 0.19775" quat="1 0 0 0" contype="8" conaffinity="6" rgba="0 0 0 0" group="3" type="box" size="0.025 0.025 0.025" />
+      <geom name="leader_base_link__visual_1_visual_0" pos="0.018 0.04 0.04475" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.003 0.02" />
+      <geom name="leader_base_link__visual_1_visual_1" pos="0.018 -0.04 0.04475" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.003 0.02" />
+      <geom name="leader_base_link__visual_1_visual_2" pos="0.018 0.05 0.10125" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.003 0.0275" />
+      <geom name="leader_base_link__visual_1_visual_3" pos="0.018 -0.05 0.10125" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.003 0.0275" />
+      <geom name="leader_base_link__visual_1_visual_4" pos="-0.146 0.04 0.04475" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.003 0.02" />
+      <geom name="leader_base_link__visual_1_visual_5" pos="-0.146 -0.04 0.04475" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.003 0.02" />
+      <geom name="leader_base_link__visual_1_visual_6" pos="-0.146 0.05 0.10125" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.003 0.0275" />
+      <geom name="leader_base_link__visual_1_visual_7" pos="-0.146 -0.05 0.10125" quat="1 0 0 0" contype="0" conaffinity="0" rgba="0.88 0.64 0.24 1" group="2" type="cylinder" size="0.003 0.0275" />
+      <body name="link2" pos="-0.116 0 0.21475">
+        <inertial pos="-0.000301849 0.000540437 0.0474335" quat="0.999915 0.000960074 0.0122201 -0.00449872" mass="0.0984068" diaginertia="3.4553e-05 3.26892e-05 1.88409e-05" />
+        <joint name="joint1" pos="0 0 0" axis="0 0 1" range="-2.82743 2.82743" actuatorfrcrange="-4 4" damping="0.35" armature="0.002" />
+        <geom name="link2_mesh" pos="0 0 0.019" type="mesh" mesh="link2" contype="2" conaffinity="7" rgba=".28 .31 .36 1" />
+        <body name="link3" pos="0 0 0.0595">
+          <inertial pos="0.0103084 0.000377434 0.101702" quat="0.71133 0.0466763 0.0513691 0.699423" mass="0.138509" diaginertia="0.000342915 0.000335932 5.49578e-05" />
+          <joint name="joint2" pos="0 0 0" axis="0 1 0" range="-1.79071 1.5708" actuatorfrcrange="-4 4" damping="0.45" armature="0.003" />
+          <geom name="link3_mesh" type="mesh" mesh="link3" contype="2" conaffinity="7" rgba=".28 .31 .36 1" />
+          <body name="link4" pos="0.024 0 0.128">
+            <inertial pos="0.0909096 0.000389298 0.000224133" quat="-0.00162881 0.706672 0.0026348 0.707535" mass="0.132746" diaginertia="0.000251551 0.000242311 3.06462e-05" />
+            <joint name="joint3" pos="0 0 0" axis="0 1 0" range="-0.942478 1.3823" actuatorfrcrange="-4 4" damping="0.45" armature="0.003" />
+            <geom name="link4_mesh" type="mesh" mesh="link4" contype="2" conaffinity="7" rgba=".28 .31 .36 1" />
+            <body name="link5" pos="0.124 0 0">
+              <inertial pos="0.0442068 3.684e-07 0.00891422" quat="0.479052 0.479052 -0.520105 0.520105" mass="0.143276" diaginertia="9.3211e-05 8.07871e-05 7.59805e-05" />
+              <joint name="joint4" pos="0 0 0" axis="0 1 0" range="-1.79071 2.04204" actuatorfrcrange="-4 4" damping="0.35" armature="0.002" />
+              <geom name="link5_mesh" type="mesh" mesh="link5" contype="2" conaffinity="7" rgba=".28 .31 .36 1" />
+              <site name="end_effector" pos="0.126 0 0" size="0.008" rgba="0 0 0 0" />
+              <body name="eef_usb_camera_link" pos="0.02 0 0.065">
+                <geom name="eef_usb_camera_body" pos="0.025 0 0" type="box" size="0.025 0.045 0.0225" material="eef_camera_mat" contype="2" conaffinity="7" rgba=".28 .31 .36 1" />
+                <geom name="eef_usb_camera_lens" pos="0.052 0 0" quat="0.707107 0 0.707107 0" type="cylinder" size="0.012 0.004" rgba=".28 .31 .36 1" contype="2" conaffinity="7" />
+                <site name="eef_usb_camera_optical_frame" pos="0 0 0" euler="-1.57079632679 0 -1.57079632679" size="0.006" rgba="0 0 0 0" />
+                <camera name="eef_usb_camera" pos="0.057 0 0" xyaxes="0 -1 0 0 0 1" sensorsize="320 240" resolution="320 240" focalpixel="301.875153 436.170105" principalpixel="-21.997119 6.380385" />
+                <inertial pos=".025 0 0" mass=".020" diaginertia=".00001 .00001 .00001" />
+              </body>
+              <body name="gripper_left_link" pos="0.0817 0.021 0">
+                <inertial pos="0 0 0" mass="0.001" diaginertia="1e-06 1e-06 1e-06" />
+                <joint name="gripper_left_joint" pos="0 0 0" axis="0 1 0" type="slide" range="-0.01 0.019" actuatorfrcrange="-2 2" damping="0.15" />
+                <geom name="gripper_left_mesh" type="mesh" mesh="gripper_left_palm" contype="0" conaffinity="0" rgba=".28 .31 .36 1" />
+                <geom name="left_finger_pad" type="box" pos="0.0443 0.001 0" size=".020 .003 .014" rgba=".09 .09 .09 1" contype="2" conaffinity="7" friction="1.2 .01 .005" condim="6" />
+              </body>
+              <body name="gripper_right_link" pos="0.0817 -0.021 0">
+                <inertial pos="0 0 0" mass="0.001" diaginertia="1e-06 1e-06 1e-06" />
+                <joint name="gripper_right_joint" pos="0 0 0" axis="0 -1 0" type="slide" range="-0.01 0.019" actuatorfrcrange="-2 2" damping="0.15" />
+                <geom name="gripper_right_mesh" type="mesh" mesh="gripper_right_palm" contype="0" conaffinity="0" rgba=".28 .31 .36 1" />
+                <geom name="right_finger_pad" type="box" pos="0.0443 -0.001 0" size=".020 .003 .014" rgba=".09 .09 .09 1" contype="2" conaffinity="7" friction="1.2 .01 .005" condim="6" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+    <geom name="ground" type="plane" size="1 1 .02" rgba=".15 .17 .20 1" contype="1" conaffinity="6" />
+    <geom name="shelf_shelf_support_visual_0" pos="0.3 0 0.05" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".48 .32 .19 1" group="2" type="box" size="0.2 0.2 0.05" />
+    <geom name="shelf_shelf_support_collision_0" pos="0.3 0 0.05" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.2 0.2 0.05" />
+    <geom name="shelf_shelf_level_1_visual_0" pos="0.3 0 0.126" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.1825 0.002" />
+    <geom name="shelf_shelf_level_1_visual_1" pos="0.1675 -0.1745 0.112" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_1_visual_2" pos="0.1675 0.1745 0.112" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_1_visual_3" pos="0.4325 -0.1745 0.112" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_1_visual_4" pos="0.4325 0.1745 0.112" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_1_visual_5" pos="0.1675 0 0.131" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.1825 0.003" />
+    <geom name="shelf_shelf_level_1_visual_6" pos="0.3 -0.1795 0.132" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_7" pos="0.3 -0.1795 0.168" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_8" pos="0.3 -0.1795 0.204" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_9" pos="0.3 -0.1795 0.24" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_10" pos="0.3 -0.1795 0.276" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_11" pos="0.1615 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_12" pos="0.1615 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_13" pos="0.1615 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_14" pos="0.1615 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_15" pos="0.1768888889 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_16" pos="0.1768888889 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_17" pos="0.1768888889 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_18" pos="0.1768888889 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_19" pos="0.1922777778 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_20" pos="0.1922777778 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_21" pos="0.1922777778 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_22" pos="0.1922777778 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_23" pos="0.2076666667 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_24" pos="0.2076666667 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_25" pos="0.2076666667 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_26" pos="0.2076666667 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_27" pos="0.2230555556 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_28" pos="0.2230555556 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_29" pos="0.2230555556 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_30" pos="0.2230555556 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_31" pos="0.2384444444 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_32" pos="0.2384444444 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_33" pos="0.2384444444 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_34" pos="0.2384444444 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_35" pos="0.2538333333 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_36" pos="0.2538333333 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_37" pos="0.2538333333 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_38" pos="0.2538333333 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_39" pos="0.2692222222 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_40" pos="0.2692222222 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_41" pos="0.2692222222 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_42" pos="0.2692222222 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_43" pos="0.2846111111 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_44" pos="0.2846111111 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_45" pos="0.2846111111 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_46" pos="0.2846111111 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_47" pos="0.3 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_48" pos="0.3 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_49" pos="0.3 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_50" pos="0.3 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_51" pos="0.3153888889 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_52" pos="0.3153888889 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_53" pos="0.3153888889 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_54" pos="0.3153888889 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_55" pos="0.3307777778 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_56" pos="0.3307777778 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_57" pos="0.3307777778 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_58" pos="0.3307777778 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_59" pos="0.3461666667 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_60" pos="0.3461666667 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_61" pos="0.3461666667 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_62" pos="0.3461666667 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_63" pos="0.3615555556 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_64" pos="0.3615555556 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_65" pos="0.3615555556 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_66" pos="0.3615555556 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_67" pos="0.3769444444 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_68" pos="0.3769444444 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_69" pos="0.3769444444 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_70" pos="0.3769444444 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_71" pos="0.3923333333 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_72" pos="0.3923333333 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_73" pos="0.3923333333 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_74" pos="0.3923333333 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_75" pos="0.4077222222 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_76" pos="0.4077222222 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_77" pos="0.4077222222 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_78" pos="0.4077222222 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_79" pos="0.4231111111 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_80" pos="0.4231111111 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_81" pos="0.4231111111 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_82" pos="0.4231111111 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_83" pos="0.4385 -0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_84" pos="0.4385 -0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_85" pos="0.4385 -0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_86" pos="0.4385 -0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_87" pos="0.3 0.1795 0.132" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_88" pos="0.3 0.1795 0.168" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_89" pos="0.3 0.1795 0.204" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_90" pos="0.3 0.1795 0.24" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_91" pos="0.3 0.1795 0.276" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_1_visual_92" pos="0.1615 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_93" pos="0.1615 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_94" pos="0.1615 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_95" pos="0.1615 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_96" pos="0.1768888889 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_97" pos="0.1768888889 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_98" pos="0.1768888889 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_99" pos="0.1768888889 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_100" pos="0.1922777778 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_101" pos="0.1922777778 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_102" pos="0.1922777778 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_103" pos="0.1922777778 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_104" pos="0.2076666667 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_105" pos="0.2076666667 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_106" pos="0.2076666667 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_107" pos="0.2076666667 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_108" pos="0.2230555556 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_109" pos="0.2230555556 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_110" pos="0.2230555556 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_111" pos="0.2230555556 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_112" pos="0.2384444444 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_113" pos="0.2384444444 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_114" pos="0.2384444444 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_115" pos="0.2384444444 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_116" pos="0.2538333333 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_117" pos="0.2538333333 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_118" pos="0.2538333333 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_119" pos="0.2538333333 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_120" pos="0.2692222222 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_121" pos="0.2692222222 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_122" pos="0.2692222222 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_123" pos="0.2692222222 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_124" pos="0.2846111111 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_125" pos="0.2846111111 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_126" pos="0.2846111111 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_127" pos="0.2846111111 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_128" pos="0.3 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_129" pos="0.3 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_130" pos="0.3 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_131" pos="0.3 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_132" pos="0.3153888889 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_133" pos="0.3153888889 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_134" pos="0.3153888889 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_135" pos="0.3153888889 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_136" pos="0.3307777778 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_137" pos="0.3307777778 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_138" pos="0.3307777778 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_139" pos="0.3307777778 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_140" pos="0.3461666667 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_141" pos="0.3461666667 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_142" pos="0.3461666667 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_143" pos="0.3461666667 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_144" pos="0.3615555556 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_145" pos="0.3615555556 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_146" pos="0.3615555556 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_147" pos="0.3615555556 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_148" pos="0.3769444444 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_149" pos="0.3769444444 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_150" pos="0.3769444444 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_151" pos="0.3769444444 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_152" pos="0.3923333333 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_153" pos="0.3923333333 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_154" pos="0.3923333333 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_155" pos="0.3923333333 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_156" pos="0.4077222222 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_157" pos="0.4077222222 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_158" pos="0.4077222222 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_159" pos="0.4077222222 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_160" pos="0.4231111111 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_161" pos="0.4231111111 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_162" pos="0.4231111111 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_163" pos="0.4231111111 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_164" pos="0.4385 0.1795 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_165" pos="0.4385 0.1795 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_166" pos="0.4385 0.1795 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_167" pos="0.4385 0.1795 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_1_visual_168" pos="0.4395 0 0.132" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_1_visual_169" pos="0.4395 0 0.168" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_1_visual_170" pos="0.4395 0 0.204" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_1_visual_171" pos="0.4395 0 0.24" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_1_visual_172" pos="0.4395 0 0.276" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_1_visual_173" pos="0.4395 -0.1785 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_174" pos="0.4395 -0.1785 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_175" pos="0.4395 -0.1785 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_176" pos="0.4395 -0.1785 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_177" pos="0.4395 -0.1629782609 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_178" pos="0.4395 -0.1629782609 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_179" pos="0.4395 -0.1629782609 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_180" pos="0.4395 -0.1629782609 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_181" pos="0.4395 -0.1474565217 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_182" pos="0.4395 -0.1474565217 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_183" pos="0.4395 -0.1474565217 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_184" pos="0.4395 -0.1474565217 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_185" pos="0.4395 -0.1319347826 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_186" pos="0.4395 -0.1319347826 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_187" pos="0.4395 -0.1319347826 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_188" pos="0.4395 -0.1319347826 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_189" pos="0.4395 -0.1164130435 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_190" pos="0.4395 -0.1164130435 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_191" pos="0.4395 -0.1164130435 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_192" pos="0.4395 -0.1164130435 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_193" pos="0.4395 -0.1008913043 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_194" pos="0.4395 -0.1008913043 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_195" pos="0.4395 -0.1008913043 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_196" pos="0.4395 -0.1008913043 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_197" pos="0.4395 -0.08536956522 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_198" pos="0.4395 -0.08536956522 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_199" pos="0.4395 -0.08536956522 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_200" pos="0.4395 -0.08536956522 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_201" pos="0.4395 -0.06984782609 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_202" pos="0.4395 -0.06984782609 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_203" pos="0.4395 -0.06984782609 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_204" pos="0.4395 -0.06984782609 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_205" pos="0.4395 -0.05432608696 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_206" pos="0.4395 -0.05432608696 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_207" pos="0.4395 -0.05432608696 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_208" pos="0.4395 -0.05432608696 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_209" pos="0.4395 -0.03880434783 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_210" pos="0.4395 -0.03880434783 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_211" pos="0.4395 -0.03880434783 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_212" pos="0.4395 -0.03880434783 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_213" pos="0.4395 -0.0232826087 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_214" pos="0.4395 -0.0232826087 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_215" pos="0.4395 -0.0232826087 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_216" pos="0.4395 -0.0232826087 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_217" pos="0.4395 -0.007760869565 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_218" pos="0.4395 -0.007760869565 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_219" pos="0.4395 -0.007760869565 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_220" pos="0.4395 -0.007760869565 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_221" pos="0.4395 0.007760869565 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_222" pos="0.4395 0.007760869565 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_223" pos="0.4395 0.007760869565 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_224" pos="0.4395 0.007760869565 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_225" pos="0.4395 0.0232826087 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_226" pos="0.4395 0.0232826087 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_227" pos="0.4395 0.0232826087 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_228" pos="0.4395 0.0232826087 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_229" pos="0.4395 0.03880434783 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_230" pos="0.4395 0.03880434783 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_231" pos="0.4395 0.03880434783 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_232" pos="0.4395 0.03880434783 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_233" pos="0.4395 0.05432608696 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_234" pos="0.4395 0.05432608696 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_235" pos="0.4395 0.05432608696 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_236" pos="0.4395 0.05432608696 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_237" pos="0.4395 0.06984782609 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_238" pos="0.4395 0.06984782609 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_239" pos="0.4395 0.06984782609 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_240" pos="0.4395 0.06984782609 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_241" pos="0.4395 0.08536956522 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_242" pos="0.4395 0.08536956522 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_243" pos="0.4395 0.08536956522 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_244" pos="0.4395 0.08536956522 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_245" pos="0.4395 0.1008913043 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_246" pos="0.4395 0.1008913043 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_247" pos="0.4395 0.1008913043 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_248" pos="0.4395 0.1008913043 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_249" pos="0.4395 0.1164130435 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_250" pos="0.4395 0.1164130435 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_251" pos="0.4395 0.1164130435 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_252" pos="0.4395 0.1164130435 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_253" pos="0.4395 0.1319347826 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_254" pos="0.4395 0.1319347826 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_255" pos="0.4395 0.1319347826 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_256" pos="0.4395 0.1319347826 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_257" pos="0.4395 0.1474565217 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_258" pos="0.4395 0.1474565217 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_259" pos="0.4395 0.1474565217 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_260" pos="0.4395 0.1474565217 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_261" pos="0.4395 0.1629782609 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_262" pos="0.4395 0.1629782609 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_263" pos="0.4395 0.1629782609 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_264" pos="0.4395 0.1629782609 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_265" pos="0.4395 0.1785 0.15" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_266" pos="0.4395 0.1785 0.186" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_267" pos="0.4395 0.1785 0.222" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_visual_268" pos="0.4395 0.1785 0.258" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_1_collision_0" pos="0.3 0 0.126" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.1425 0.1825 0.002" />
+    <geom name="shelf_shelf_level_1_collision_1" pos="0.1675 -0.1745 0.112" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_1_collision_2" pos="0.1675 0.1745 0.112" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_1_collision_3" pos="0.4325 -0.1745 0.112" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_1_collision_4" pos="0.4325 0.1745 0.112" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_1_collision_5" pos="0.1675 0 0.131" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.1825 0.003" />
+    <geom name="shelf_shelf_level_1_collision_6" pos="0.3 -0.17425 0.204" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.1425 0.00825 0.076" />
+    <geom name="shelf_shelf_level_1_collision_7" pos="0.3 0.17425 0.204" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.1425 0.00825 0.076" />
+    <geom name="shelf_shelf_level_1_collision_8" pos="0.4325 0 0.204" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.166 0.076" />
+    <geom name="shelf_shelf_level_2_visual_0" pos="0.3 0 0.282" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.1825 0.002" />
+    <geom name="shelf_shelf_level_2_visual_1" pos="0.1675 -0.1745 0.268" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_2_visual_2" pos="0.1675 0.1745 0.268" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_2_visual_3" pos="0.4325 -0.1745 0.268" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_2_visual_4" pos="0.4325 0.1745 0.268" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_2_visual_5" pos="0.1675 0 0.287" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.01 0.1825 0.003" />
+    <geom name="shelf_shelf_level_2_visual_6" pos="0.3 -0.1795 0.288" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_7" pos="0.3 -0.1795 0.324" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_8" pos="0.3 -0.1795 0.36" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_9" pos="0.3 -0.1795 0.396" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_10" pos="0.3 -0.1795 0.432" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_11" pos="0.1615 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_12" pos="0.1615 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_13" pos="0.1615 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_14" pos="0.1615 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_15" pos="0.1768888889 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_16" pos="0.1768888889 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_17" pos="0.1768888889 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_18" pos="0.1768888889 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_19" pos="0.1922777778 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_20" pos="0.1922777778 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_21" pos="0.1922777778 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_22" pos="0.1922777778 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_23" pos="0.2076666667 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_24" pos="0.2076666667 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_25" pos="0.2076666667 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_26" pos="0.2076666667 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_27" pos="0.2230555556 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_28" pos="0.2230555556 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_29" pos="0.2230555556 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_30" pos="0.2230555556 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_31" pos="0.2384444444 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_32" pos="0.2384444444 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_33" pos="0.2384444444 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_34" pos="0.2384444444 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_35" pos="0.2538333333 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_36" pos="0.2538333333 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_37" pos="0.2538333333 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_38" pos="0.2538333333 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_39" pos="0.2692222222 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_40" pos="0.2692222222 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_41" pos="0.2692222222 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_42" pos="0.2692222222 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_43" pos="0.2846111111 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_44" pos="0.2846111111 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_45" pos="0.2846111111 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_46" pos="0.2846111111 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_47" pos="0.3 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_48" pos="0.3 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_49" pos="0.3 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_50" pos="0.3 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_51" pos="0.3153888889 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_52" pos="0.3153888889 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_53" pos="0.3153888889 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_54" pos="0.3153888889 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_55" pos="0.3307777778 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_56" pos="0.3307777778 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_57" pos="0.3307777778 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_58" pos="0.3307777778 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_59" pos="0.3461666667 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_60" pos="0.3461666667 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_61" pos="0.3461666667 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_62" pos="0.3461666667 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_63" pos="0.3615555556 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_64" pos="0.3615555556 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_65" pos="0.3615555556 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_66" pos="0.3615555556 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_67" pos="0.3769444444 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_68" pos="0.3769444444 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_69" pos="0.3769444444 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_70" pos="0.3769444444 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_71" pos="0.3923333333 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_72" pos="0.3923333333 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_73" pos="0.3923333333 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_74" pos="0.3923333333 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_75" pos="0.4077222222 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_76" pos="0.4077222222 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_77" pos="0.4077222222 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_78" pos="0.4077222222 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_79" pos="0.4231111111 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_80" pos="0.4231111111 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_81" pos="0.4231111111 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_82" pos="0.4231111111 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_83" pos="0.4385 -0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_84" pos="0.4385 -0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_85" pos="0.4385 -0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_86" pos="0.4385 -0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_87" pos="0.3 0.1795 0.288" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_88" pos="0.3 0.1795 0.324" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_89" pos="0.3 0.1795 0.36" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_90" pos="0.3 0.1795 0.396" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_91" pos="0.3 0.1795 0.432" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.1425 0.003 0.004" />
+    <geom name="shelf_shelf_level_2_visual_92" pos="0.1615 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_93" pos="0.1615 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_94" pos="0.1615 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_95" pos="0.1615 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_96" pos="0.1768888889 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_97" pos="0.1768888889 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_98" pos="0.1768888889 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_99" pos="0.1768888889 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_100" pos="0.1922777778 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_101" pos="0.1922777778 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_102" pos="0.1922777778 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_103" pos="0.1922777778 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_104" pos="0.2076666667 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_105" pos="0.2076666667 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_106" pos="0.2076666667 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_107" pos="0.2076666667 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_108" pos="0.2230555556 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_109" pos="0.2230555556 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_110" pos="0.2230555556 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_111" pos="0.2230555556 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_112" pos="0.2384444444 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_113" pos="0.2384444444 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_114" pos="0.2384444444 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_115" pos="0.2384444444 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_116" pos="0.2538333333 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_117" pos="0.2538333333 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_118" pos="0.2538333333 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_119" pos="0.2538333333 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_120" pos="0.2692222222 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_121" pos="0.2692222222 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_122" pos="0.2692222222 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_123" pos="0.2692222222 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_124" pos="0.2846111111 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_125" pos="0.2846111111 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_126" pos="0.2846111111 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_127" pos="0.2846111111 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_128" pos="0.3 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_129" pos="0.3 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_130" pos="0.3 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_131" pos="0.3 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_132" pos="0.3153888889 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_133" pos="0.3153888889 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_134" pos="0.3153888889 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_135" pos="0.3153888889 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_136" pos="0.3307777778 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_137" pos="0.3307777778 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_138" pos="0.3307777778 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_139" pos="0.3307777778 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_140" pos="0.3461666667 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_141" pos="0.3461666667 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_142" pos="0.3461666667 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_143" pos="0.3461666667 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_144" pos="0.3615555556 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_145" pos="0.3615555556 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_146" pos="0.3615555556 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_147" pos="0.3615555556 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_148" pos="0.3769444444 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_149" pos="0.3769444444 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_150" pos="0.3769444444 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_151" pos="0.3769444444 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_152" pos="0.3923333333 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_153" pos="0.3923333333 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_154" pos="0.3923333333 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_155" pos="0.3923333333 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_156" pos="0.4077222222 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_157" pos="0.4077222222 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_158" pos="0.4077222222 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_159" pos="0.4077222222 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_160" pos="0.4231111111 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_161" pos="0.4231111111 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_162" pos="0.4231111111 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_163" pos="0.4231111111 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_164" pos="0.4385 0.1795 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_165" pos="0.4385 0.1795 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_166" pos="0.4385 0.1795 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_167" pos="0.4385 0.1795 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.002 0.003 0.014" />
+    <geom name="shelf_shelf_level_2_visual_168" pos="0.4395 0 0.288" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_2_visual_169" pos="0.4395 0 0.324" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_2_visual_170" pos="0.4395 0 0.36" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_2_visual_171" pos="0.4395 0 0.396" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_2_visual_172" pos="0.4395 0 0.432" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.1825 0.004" />
+    <geom name="shelf_shelf_level_2_visual_173" pos="0.4395 -0.1785 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_174" pos="0.4395 -0.1785 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_175" pos="0.4395 -0.1785 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_176" pos="0.4395 -0.1785 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_177" pos="0.4395 -0.1629782609 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_178" pos="0.4395 -0.1629782609 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_179" pos="0.4395 -0.1629782609 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_180" pos="0.4395 -0.1629782609 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_181" pos="0.4395 -0.1474565217 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_182" pos="0.4395 -0.1474565217 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_183" pos="0.4395 -0.1474565217 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_184" pos="0.4395 -0.1474565217 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_185" pos="0.4395 -0.1319347826 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_186" pos="0.4395 -0.1319347826 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_187" pos="0.4395 -0.1319347826 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_188" pos="0.4395 -0.1319347826 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_189" pos="0.4395 -0.1164130435 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_190" pos="0.4395 -0.1164130435 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_191" pos="0.4395 -0.1164130435 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_192" pos="0.4395 -0.1164130435 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_193" pos="0.4395 -0.1008913043 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_194" pos="0.4395 -0.1008913043 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_195" pos="0.4395 -0.1008913043 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_196" pos="0.4395 -0.1008913043 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_197" pos="0.4395 -0.08536956522 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_198" pos="0.4395 -0.08536956522 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_199" pos="0.4395 -0.08536956522 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_200" pos="0.4395 -0.08536956522 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_201" pos="0.4395 -0.06984782609 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_202" pos="0.4395 -0.06984782609 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_203" pos="0.4395 -0.06984782609 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_204" pos="0.4395 -0.06984782609 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_205" pos="0.4395 -0.05432608696 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_206" pos="0.4395 -0.05432608696 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_207" pos="0.4395 -0.05432608696 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_208" pos="0.4395 -0.05432608696 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_209" pos="0.4395 -0.03880434783 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_210" pos="0.4395 -0.03880434783 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_211" pos="0.4395 -0.03880434783 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_212" pos="0.4395 -0.03880434783 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_213" pos="0.4395 -0.0232826087 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_214" pos="0.4395 -0.0232826087 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_215" pos="0.4395 -0.0232826087 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_216" pos="0.4395 -0.0232826087 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_217" pos="0.4395 -0.007760869565 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_218" pos="0.4395 -0.007760869565 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_219" pos="0.4395 -0.007760869565 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_220" pos="0.4395 -0.007760869565 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_221" pos="0.4395 0.007760869565 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_222" pos="0.4395 0.007760869565 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_223" pos="0.4395 0.007760869565 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_224" pos="0.4395 0.007760869565 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_225" pos="0.4395 0.0232826087 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_226" pos="0.4395 0.0232826087 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_227" pos="0.4395 0.0232826087 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_228" pos="0.4395 0.0232826087 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_229" pos="0.4395 0.03880434783 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_230" pos="0.4395 0.03880434783 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_231" pos="0.4395 0.03880434783 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_232" pos="0.4395 0.03880434783 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_233" pos="0.4395 0.05432608696 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_234" pos="0.4395 0.05432608696 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_235" pos="0.4395 0.05432608696 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_236" pos="0.4395 0.05432608696 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_237" pos="0.4395 0.06984782609 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_238" pos="0.4395 0.06984782609 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_239" pos="0.4395 0.06984782609 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_240" pos="0.4395 0.06984782609 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_241" pos="0.4395 0.08536956522 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_242" pos="0.4395 0.08536956522 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_243" pos="0.4395 0.08536956522 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_244" pos="0.4395 0.08536956522 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_245" pos="0.4395 0.1008913043 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_246" pos="0.4395 0.1008913043 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_247" pos="0.4395 0.1008913043 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_248" pos="0.4395 0.1008913043 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_249" pos="0.4395 0.1164130435 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_250" pos="0.4395 0.1164130435 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_251" pos="0.4395 0.1164130435 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_252" pos="0.4395 0.1164130435 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_253" pos="0.4395 0.1319347826 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_254" pos="0.4395 0.1319347826 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_255" pos="0.4395 0.1319347826 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_256" pos="0.4395 0.1319347826 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_257" pos="0.4395 0.1474565217 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_258" pos="0.4395 0.1474565217 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_259" pos="0.4395 0.1474565217 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_260" pos="0.4395 0.1474565217 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_261" pos="0.4395 0.1629782609 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_262" pos="0.4395 0.1629782609 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_263" pos="0.4395 0.1629782609 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_264" pos="0.4395 0.1629782609 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_265" pos="0.4395 0.1785 0.306" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_266" pos="0.4395 0.1785 0.342" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_267" pos="0.4395 0.1785 0.378" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_visual_268" pos="0.4395 0.1785 0.414" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".73 .76 .79 1" group="2" type="box" size="0.003 0.002 0.014" />
+    <geom name="shelf_shelf_level_2_collision_0" pos="0.3 0 0.282" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.1425 0.1825 0.002" />
+    <geom name="shelf_shelf_level_2_collision_1" pos="0.1675 -0.1745 0.268" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_2_collision_2" pos="0.1675 0.1745 0.268" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_2_collision_3" pos="0.4325 -0.1745 0.268" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_2_collision_4" pos="0.4325 0.1745 0.268" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.008 0.012" />
+    <geom name="shelf_shelf_level_2_collision_5" pos="0.1675 0 0.287" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.1825 0.003" />
+    <geom name="shelf_shelf_level_2_collision_6" pos="0.3 -0.17425 0.36" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.1425 0.00825 0.076" />
+    <geom name="shelf_shelf_level_2_collision_7" pos="0.3 0.17425 0.36" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.1425 0.00825 0.076" />
+    <geom name="shelf_shelf_level_2_collision_8" pos="0.4325 0 0.36" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.01 0.166 0.076" />
+    <geom name="follower_follower_base_link_visual_0" pos="-0.116 -0.32 0.01" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".22 .25 .29 1" group="2" type="mesh" mesh="mesh_8" />
+    <geom name="follower_follower_base_link_collision_0" pos="-0.116 -0.32 0.04" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.133 0.133 0.03" />
+    <geom name="follower_follower_wheel_left_link_visual_0" pos="-0.052 -0.176 0.033" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".22 .25 .29 1" group="2" type="mesh" mesh="mesh_9" />
+    <geom name="follower_follower_wheel_left_link_collision_0" pos="-0.052 -0.176 0.033" quat="0.7073882692 -0.7068251811 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="cylinder" size="0.033 0.009" />
+    <geom name="follower_follower_wheel_right_link_visual_0" pos="-0.052 -0.464 0.033" quat="1 0 0 0" contype="0" conaffinity="0" rgba=".22 .25 .29 1" group="2" type="mesh" mesh="mesh_10" />
+    <geom name="follower_follower_wheel_right_link_collision_0" pos="-0.052 -0.464 0.033" quat="0.7073882692 -0.7068251811 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="cylinder" size="0.033 0.009" />
+    <geom name="follower_follower_caster_back_right_link_collision_0" pos="-0.229 -0.3839992037 0.005000000317" quat="0.7073882692 -0.7068251811 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.015 0.0045 0.01" />
+    <geom name="follower_follower_caster_back_left_link_collision_0" pos="-0.229 -0.2559992037 0.005000000317" quat="0.7073882692 -0.7068251811 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.015 0.0045 0.01" />
+    <geom name="follower_follower_camera_link_collision_0" pos="0.026 -0.32 0.056" quat="1 0 0 0" contype="1" conaffinity="14" rgba="0 0 0 0" group="3" type="box" size="0.0075 0.015 0.0135" />
+    <body name="object_1" pos="0.237 -0.055 0.3093000000000001">
+      <freejoint name="object_1_free" />
+      <geom name="object_1_geom" type="box" size="0.025 0.025 0.025" mass="0.035" rgba=".88 .23 .16 1" contype="4" conaffinity="7" friction="0.9 .005 .0001" condim="6" />
+      <geom name="object_1_marker_border" type="box" pos="-0.0251 0 0" size="0.0001 0.024 0.024" rgba=".98 .98 .98 1" contype="0" conaffinity="0" group="2" mass="0" />
+      <geom name="object_1_marker" type="mesh" mesh="marker_front_mesh" pos="-0.0253 0 0" material="aruco_1_material" contype="0" conaffinity="0" group="2" mass="0" />
+    </body>
+    <body name="object_2" pos="0.237 0.055 0.3093000000000001">
+      <freejoint name="object_2_free" />
+      <geom name="object_2_geom" type="box" size="0.025 0.025 0.025" mass="0.035" rgba=".13 .55 .94 1" contype="4" conaffinity="7" friction="0.9 .005 .0001" condim="6" />
+      <geom name="object_2_marker_border" type="box" pos="-0.0251 0 0" size="0.0001 0.024 0.024" rgba=".98 .98 .98 1" contype="0" conaffinity="0" group="2" mass="0" />
+      <geom name="object_2_marker" type="mesh" mesh="marker_front_mesh" pos="-0.0253 0 0" material="aruco_2_material" contype="0" conaffinity="0" group="2" mass="0" />
+    </body>
+    <site name="place_target" pos="-0.116 -0.3 0.095" size=".007" rgba=".2 1 .4 .7" />
+    <body name="pedestal_1" mocap="true" pos="0.237 -0.055 0.259">
+      <geom name="object_1_pedestal" type="box" size=".017 .017 .025" contype="1" conaffinity="14" group="0" rgba=".32 .35 .40 1" friction=".9 .01 .001" />
+    </body>
+    <body name="pedestal_2" mocap="true" pos="0.237 0.055 0.259">
+      <geom name="object_2_pedestal" type="box" size=".017 .017 .025" contype="1" conaffinity="14" group="0" rgba=".32 .35 .40 1" friction=".9 .01 .001" />
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="gripper_mimic" joint1="gripper_right_joint" joint2="gripper_left_joint" polycoef="0 1 0 0 0" solref=".004 1" solimp=".9999 .9999 .0001" />
+  </equality>
+  <actuator>
+    <general name="joint1_position" joint="joint1" gaintype="fixed" gainprm="220" biastype="affine" biasprm="0 -220 0" ctrlrange="-2.82743 2.82743" forcerange="-4 4" />
+    <general name="joint2_position" joint="joint2" gaintype="fixed" gainprm="220" biastype="affine" biasprm="0 -220 0" ctrlrange="-1.79071 1.5708" forcerange="-4 4" />
+    <general name="joint3_position" joint="joint3" gaintype="fixed" gainprm="180" biastype="affine" biasprm="0 -180 0" ctrlrange="-0.942478 1.3823" forcerange="-4 4" />
+    <general name="joint4_position" joint="joint4" gaintype="fixed" gainprm="180" biastype="affine" biasprm="0 -180 0" ctrlrange="-1.79071 2.04204" forcerange="-4 4" />
+    <general name="gripper_position" joint="gripper_left_joint" gaintype="fixed" gainprm="450" biastype="affine" biasprm="0 -450 0" ctrlrange="-0.01 0.019" forcerange="-2 2" />
+  </actuator>
+  <contact>
+    <exclude body1="link5" body2="eef_usb_camera_link" />
+  </contact>
+  <keyframe>
+    <key name="stay" qpos="0.104311 0.027612 -0.001534 -1.638291 0.0 0.0 0.237 -0.055 0.3093000000000001 1.0 0.0 0.0 0.0 0.237 0.055 0.3093000000000001 1.0 0.0 0.0 0.0" ctrl="0.104311 0.027612 -0.001534 -1.638291 0" />
+  </keyframe>
+</mujoco>

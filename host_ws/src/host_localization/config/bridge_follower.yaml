@@ -1,0 +1,42 @@
+# Rover -> host sensor bridge: follower (domain 73 -> 30).
+# Brings the follower's raw proprioceptive sensors onto the host domain for host-side fusion.
+# The rover is not modified: it already publishes these on domain 73 through the classic
+# turtlebot3_node, which uses the bare names /imu and /joint_states.
+#
+# Fusion boundary: take the raw sensors, fuse on the host.
+#   /imu          -> /follower/imu          : gyro + bias, raw full rate
+#   /joint_states -> /follower/joint_states : wheel angles
+# /odom is deliberately not bridged: the rover already fuses the gyro into its yaw
+# (odometry.use_imu), which would double-count with the raw /imu, and its covariance is a
+# placeholder.
+#
+# QoS: a best_effort subscription is compatible with both reliable and best_effort publishers.
+name: rover_bridge_follower
+from_domain: 73
+to_domain: 30
+topics:
+  imu:
+    type: sensor_msgs/msg/Imu
+    remap: follower/imu
+    qos:
+      reliability: best_effort
+  joint_states:
+    type: sensor_msgs/msg/JointState
+    remap: follower/joint_states
+    qos:
+      reliability: best_effort
+  # Battery state (1 Hz), for bag recording.
+  battery_state:
+    type: sensor_msgs/msg/BatteryState
+    remap: follower/battery_state
+    qos:
+      reliability: best_effort
+  # LiDAR (YDLIDAR G6, frame base_scan, ~9.7 Hz, 1830 beams) for the host obstacle mapper.
+  # Sensor-data QoS; ~15 KB per scan, ~150 KB/s over the rover link.
+  scan:
+    type: sensor_msgs/msg/LaserScan
+    remap: follower/scan
+    qos:
+      reliability: best_effort
+      history: keep_last
+      depth: 5

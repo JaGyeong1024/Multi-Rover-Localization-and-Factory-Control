@@ -1,0 +1,28 @@
+# Host (30) -> leader (25): mission state / queue broadcast and the leader's mission commands.
+# /leader/global/position arrives via the host_to_leader localization bridge, not here.
+name: mission_30_to_25
+from_domain: 30
+to_domain: 25
+topics:
+  mission/state:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local}
+  mission/queue:
+    type: host_mission_interfaces/msg/MissionQueue
+    qos: {reliability: reliable, durability: transient_local}
+  leader/target_cmd:
+    type: host_mission_interfaces/msg/TargetCommand
+    qos: {reliability: reliable, durability: transient_local}
+  pnp/start:
+    type: std_msgs/msg/Empty
+    qos: {reliability: reliable, durability: transient_local}
+  estop:
+    type: std_msgs/msg/Bool
+    qos: {reliability: reliable, durability: transient_local}
+  # ---- path mode (nav_mode: path); the entries above serve nav_mode: lane ----
+  leader/path_cmd:
+    type: host_mission_interfaces/msg/PathCommand
+    qos: {reliability: reliable, durability: transient_local, history: keep_last, depth: 1}
+  leader/localization_quality:
+    type: std_msgs/msg/String
+    qos: {reliability: reliable, durability: transient_local, history: keep_last, depth: 1}

@@ -1,0 +1,5 @@
+# Use when: the follower stops for things beside its curved path or beyond the goal (the straight front zone), and its LiDAR sees nothing of the rover itself ahead within lidar_half_width (follower.yaml front_path).
+# Overlay on config/follower.yaml, only the keys below change (start: PRESETS="front_path", launch: presets:=front_path).
+/**:
+  ros__parameters:
+    front_path: true

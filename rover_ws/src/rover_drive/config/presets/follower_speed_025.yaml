@@ -1,0 +1,6 @@
+# Use when: the leader runs speed_015 or speed_020 and the follower's 2 m straight at 0.25 m/s shows no wheel slip on starts and stops (drive_check distance ratio). TurtleBot3 Waffle: 0.26 m/s is the base's own limit.
+# Overlay on config/follower.yaml, only the keys below change (start: PRESETS="speed_025", launch: presets:=speed_025).
+/**:
+  ros__parameters:
+    max_linear_speed: 0.25
+    runin_lookaheads: 2.0

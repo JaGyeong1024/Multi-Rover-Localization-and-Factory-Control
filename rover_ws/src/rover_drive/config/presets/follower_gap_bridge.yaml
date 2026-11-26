@@ -1,0 +1,5 @@
+# Use when: the follower stops each time the LiDAR loses the lead on a curve (GAP_LIDAR -> GAP, e < 0) and d was measured stable on site (follower.yaml gap_bridge).
+# Overlay on config/follower.yaml, only the keys below change (start: PRESETS="gap_bridge", launch: presets:=gap_bridge).
+/**:
+  ros__parameters:
+    gap_bridge: true

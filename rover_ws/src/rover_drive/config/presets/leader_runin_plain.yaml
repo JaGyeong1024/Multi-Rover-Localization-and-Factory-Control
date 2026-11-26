@@ -1,0 +1,5 @@
+# Use when: the leader oscillates in heading on the final run-in to a goal.
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="runin_plain", launch: presets:=runin_plain).
+/**:
+  ros__parameters:
+    runin_heading_gain: 0.0

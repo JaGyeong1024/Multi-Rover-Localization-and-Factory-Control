@@ -1,0 +1,12 @@
+# obstacle_mapper_node, site keys (ROS parameter file, passed after the package's
+# obstacle_mapper.yaml). Frame uwb_global. Units: m.
+obstacle_mapper_node:
+  ros__parameters:
+    # Returns inside these rectangles [xmin, xmax, ymin, ymax] are ignored: one zone over both
+    # shelves and the gap between them (from home the faces are seen at x 4.48-4.53 and a
+    # corner is mapped inside; a return between the shelves would block the load goal). The
+    # rovers never go past the pick spots (x 4.33).
+    ignore_zones: '[[4.36, 5.30, 0.71, 2.45]]'
+    box_depth: 0.44                # largest box side (the site boxes are 0.44 x 0.30 x 0.32):
+                                   # the assumed box extent beyond what was seen (cut where
+                                   # space was seen free)

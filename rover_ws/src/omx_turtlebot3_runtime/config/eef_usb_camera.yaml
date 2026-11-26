@@ -1,0 +1,22 @@
+# Existing eef_usb_camera calibration from turtlebot3_manipulation_bringup.
+# This file does not certify camera extrinsics or complete physical commissioning.
+image_width: 320
+image_height: 240
+camera_name: eef_usb_camera
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [337.853243, 0.0, 178.368987, 0.0, 451.458724, 114.459893, 0.0, 0.0, 1.0]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [-0.389033, 0.118101, -0.000256, -0.000826, 0.0]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [301.875153, 0.0, 181.997119, 0.0, 0.0, 436.170105, 113.619615, 0.0, 0.0, 0.0, 1.0, 0.0]

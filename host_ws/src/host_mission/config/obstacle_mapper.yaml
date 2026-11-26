@@ -1,0 +1,104 @@
+# obstacle_mapper_node (ROS parameter file). Method: host_mission/obstacle_mapper.py.
+# Algorithm tuning only. Site keys (ignore_zones, box_depth) are in config/site/obstacle_mapper.yaml,
+# the sensor mounts in config/hardware/sensor_mounts.yaml; launch passes all three files.
+# The arena is the "bounds" of settings_file (mission.yaml + overlays). Units: m, rad, s.
+# The rovers publish their scans in the sensor frame (follower /scan in base_scan, leader
+# /leader/depth_scan in camera_depth_frame); the mapper places them with the mounts.
+obstacle_mapper_node:
+  ros__parameters:
+    output_topic: /mission/mapped_obstacles
+    settings_file: mission.yaml
+    freeze_while_mission: true     # the map is made before the take (the follower scans the
+                                   # boxes from home) and held fixed while a mission runs:
+                                   # scans count only while /mission/state is IDLE.
+                                   # false = map all the time. Front-stop obstacles
+                                   # (supervisor) are not affected.
+
+    # --- rovers in the arena: a scan never maps another rover (exclusion radius) ---
+    robots: [leader, follower]
+    robot_radius:
+      leader: 0.55                 # body + manipulator + pose error; the arm reaches ~0.3 m
+                                   # behind the tracked point
+      follower: 0.25               # body (0.13) + pose error
+
+    # --- scan sources: each has its own evidence layer, combined by max (one sensor's rays
+    #     never clear another's hits) ---
+    sources: [follower_lidar]       # the leader depth scan is auxiliary: front stop only
+    follower_lidar:                # YDLIDAR G6, bridged 73 -> 30 (bridge_follower.yaml)
+      robot: follower
+      scan_topic: /follower/scan
+      min_range: 0.15              # own structure (the scan's range_min if larger)
+      max_use_range: 3.2           # farther returns only clear free space up to here: from home
+                                   #   (3.5-3.9 m) the shelf faces landed in front of the shelves
+                                   #   (heading error x range); the boxes are 1.5-2.6 m away
+      max_turn_rate: 0.30          # rad/s; faster turning smears the scan: skipped
+      settle_still_s: 2.0          # its heading is held by the camera box axis (fusion
+                                   #   obb_heading): 2 s standing after a turn settle it too
+    leader_depth:                  # Astra Mini depth -> scan on the leader (rover_drive
+      robot: leader                # depth_front_node), bridged 25 -> 30 (bridge_leader.yaml)
+      scan_topic: /leader/depth_scan
+      min_range: 0.6               # Astra Mini spec minimum (closer = no / unstable depth)
+      max_use_range: 4.0           # depth noise grows with range (vendor spec to 5 m)
+      max_turn_rate: 0.30          # rad/s: pose latency x turn rate = bearing error
+
+    # --- grid ---
+    cell_size: 0.05
+    wall_margin: 0.05              # arena shrunk by this; returns outside are not obstacles
+    hit_increment: 1.0
+    miss_decrement: 1.0
+    max_evidence: 5.0
+    occupied_threshold: 3.0        # a cell becomes occupied at this evidence ...
+    release_threshold: 0.0         # ... and stays so until rays clear it to this (hysteresis)
+    clear_stop_short: 0.07         # ray clearing ends this far before the return
+    weight_ref_error: 0.025        # motion weighting: evidence of a return = clip(0.025 /
+                                   #   expected error, 0.1, 1): standing rover, return 1 m away
+                                   #   = 1.0; 2 m = 0.83; driving 0.12 m/s, 2 m = 0.46;
+                                   #   turning 0.3 rad/s = ~0.15
+    pose_sigma: 0.01
+    heading_sigma: 0.0025          # rad: fused heading at rest (camera axis ~0.5 deg)
+    pose_lag_s: 0.2                # s: fused pose behind the gyro
+    min_weight: 0.1
+    speed_window: 0.5
+    decay_per_scan: 0.0            # expiry: a cell no scan hits loses this much per scan.
+                                   #   0 = keep until rays clear it.
+
+    # --- gating ---
+    pose_timeout: 0.25             # carrying rover's pose older than this: scan skipped
+    robot_pose_timeout: 0.5        # any other rover's pose older: no hits added from the scan
+    turn_rate_window: 0.30
+    heading_settle_dist: 0.30      # m of travel after a turn faster than max_turn_rate before
+                                   #   the rover's scans count again. A turn leaves a heading
+                                   #   error of gyro scale x angle (6.3 deg after 180 deg) that
+                                   #   only driving removes; 0.30 = the fusion's heading
+                                   #   alignment distance. 0 = off.
+
+    # --- shapes ---
+    min_cells: 4                   # smaller components are noise
+    link_cells: 2
+    view_side_min: 0.3
+    min_circle_segment: 0.20
+    inflation: 0.10                # mapping error only (scanning rover pose + heading error x
+                                   #   range: 2 deg at 3 m = 0.10 m). Published boxes are exact
+                                   #   rectangles grown by this; the rover's own localization +
+                                   #   tracking error is the planner's plan.clearance. Returns
+                                   #   within this of a known fixture are that fixture and are
+                                   #   not mapped.
+    heading_accuracy:              # rad, stated heading accuracy of each rover carrying a
+                                   #   source: the bearing error of its returns. A return at
+                                   #   range r may lie max(inflation, r * tan(this)) from its
+                                   #   surface (arena edge, fixtures), and the other rover is
+                                   #   excluded in the sensor's polar frame with this added to
+                                   #   its bearing extent (obstacle_mapper.explained_by_rover).
+      leader: 0.1396               # 8 deg: no heading aid; IMU yaw scale 0.965 x a 180 deg
+                                   #   pivot = 6.3 deg, 6-8 deg seen for seconds after a pivot
+      follower: 0.0436             # 2.5 deg: box-axis heading aid, (axis - IMU yaw) scatter
+                                   #   2.4 deg
+
+    # --- stability (re-planning trigger) ---
+    confirm_scans: 3
+    drop_scans: 5
+    match_distance: 0.30
+    change_threshold: 0.10
+    shrink_threshold: 0.10         # = change_threshold, 2 cells, the spread of a face's position
+                                   #   between sightings. A sighting only shrinks where space was
+                                   #   seen free, so this only saves re-plans.

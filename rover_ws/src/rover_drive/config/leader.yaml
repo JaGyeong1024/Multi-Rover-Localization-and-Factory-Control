@@ -1,0 +1,193 @@
+# rover_drive parameters - leader (tracked skid-steer, mobile manipulator).
+# All nodes (path_tracker, safety_gate, depth_front, cmd_watchdog) read this file; each takes
+# the keys it declares. Hardware keys (motor / sensor quirks, mounts, device topics) are in
+# config/hardware/rover_leader.yaml, which launch passes after this file.
+# Units: m, rad, s. Keep the decimal point on every number (ROS parameter types are strict).
+/**:
+  ros__parameters:
+    robot: leader
+
+    # ---- speed / acceleration envelope (tracker + gate) ----
+    max_linear_speed: 0.10
+    max_reverse_speed: 0.10       # the mux may pass a reversing command from another source
+    max_angular_speed: 0.6
+    max_linear_accel: 0.20
+    max_linear_decel: 0.40
+    max_linear_jerk: 1.0
+    max_angular_accel: 2.0
+
+    # ---- pure pursuit (skid-steer: longer lookahead, wider arcs) ----
+    control_rate_hz: 20.0
+    lookahead_time_s: 2.0
+    lookahead_min: 0.20
+    lookahead_max: 0.35
+    max_curvature: 10.0
+    heading_free_rad: 0.35
+    heading_slow_rad: 0.90
+    turn_speed: 0.04
+    runin_heading_gain: 10.0      # [1/m] heading feedback on the final straight run-in: the
+                                  # slipping base did not settle heading within the 0.40 m
+                                  # run-in after a U-turn
+    # Integral of the cross-track error over distance driven, fed back as curvature: removes
+    # the sideways offset a constant heading-estimate bias leaves (0 = off).
+    xtrack_integral_gain: 50.0    # [1/m^3]
+    xtrack_integral_limit: 1.5    # [1/m] largest curvature the term may add
+
+    # ---- speed limiters ----
+    max_lateral_accel: 0.10
+    curvature_preview_m: 0.30
+    goal_decel: 0.10
+    approach_speed: 0.03
+    # Arrive with the lookahead fitting this many times into the path left (0 = off): the
+    # lookahead grows with the speed, the run-in to a goal (host approach_len 0.40 m) does
+    # not. Off here: at 0.10 m/s the lookahead is already the shortest (0.20 m, twice into
+    # the run-in). The speed presets set 2.0.
+    runin_lookaheads: 0.0
+    goal_stop_margin: 0.01
+    gap_gain: 1.5
+    gap_resume_margin: 0.05
+    gap_free_target: 0.20         # LiDAR free gap (see follower.yaml); no LiDAR here, so a
+    lead_gap_timeout_s: 0.3       # leader with a lead would use the path gap (PathCommand.gap)
+    gap_bridge: false             # see follower.yaml (needs a LiDAR gap; none here)
+    lead_timeout_s: 0.5
+    lead_off_path_tol: 0.30
+    lead_back_window: 0.5
+    degraded_speed: 0.04
+    quality_default: GOOD
+
+    # ---- freshness ----
+    pose_timeout_s: 0.5
+    cmd_timeout_s: 1.5
+    input_timeout_s: 0.5
+    gate_timeout_s: 1.0
+
+    # ---- monitors ----
+    jump_speed_factor: 2.0
+    jump_slack_m: 0.10
+    jump_reacquire_s: 0.5
+    off_path_max: 0.25
+    stuck_cmd_dist: 0.20
+    stuck_min_ratio: 0.2
+    projection_window: 0.5
+    init_tie_margin: 0.05
+    default_goal_pos_tol: 0.05
+    arrival_settle_s: 0.4
+
+    # ---- heading alignment manoeuvre ----
+    # Speed must stay above the host filter's course gate or the heading never anchors; it
+    # needs 3 course samples 0.15 m apart, so at least 0.45 m.
+    align_speed: 0.12
+    align_max_dist: 0.8
+    align_pass_speed: 0.13
+    align_pass_omega: 0.02
+
+    # ---- front obstacle stop: depth camera via depth_front (no LiDAR on the leader) ----
+    # The gate reads /leader/front_distance (metres, NaN = unknown) instead of a scan. Depth
+    # closer than ~0.47 m is not reliable, so the stop distance is kept above it and "was
+    # close, now unknown" also stops (front_lost_*).
+    lidar_enabled: false
+    front_distance_topic: /leader/front_distance
+    scan_timeout_s: 0.5           # no front distance for this long: stop (STALE_SCAN)
+    lidar_stop_base: 0.50         # clearance kept ahead of the front edge (> 0.47)
+    lidar_brake_decel: 0.40
+    lidar_reaction_s: 0.20
+    lidar_resume_s: 1.0           # after a front stop: must stay clear this long to move again
+    lidar_blind_speed: 0.10       # speed cap while the distance is unknown (0.0 = stop)
+    front_lost_stops: true
+    front_lost_near_m: 0.70       # last valid distance below this, then NaN -> stop
+    # Remember the depth scan's points nearer than front_lost_near_m (body frame, moved by the
+    # pose or, before alignment, by the passed command) and stop for one in the corridor
+    # (lidar_half_width) even after it entered the blind zone: a box covering part of the band
+    # otherwise reads "far, clear" there. Needs the depth scan (depth_scan_topic, same key as
+    # depth_front's output). Preset: front_memory.
+    front_memory: false
+    # Stop zone along the rest of the path command (lidar_half_width around it, up to the
+    # front edge at the goal) instead of straight ahead, while the rover follows the path
+    # (within 0.10 m, heading within heading_free_rad); else the straight zone. The band
+    # distance has no bearing: it counts as points across the band (depth_col_*, depth_hfov).
+    # Preset: front_path (with front_memory, whose points have bearings).
+    front_path: false
+    # "was close, now NaN" stops only while that object can still be ahead: inside this
+    # forward sector (the rover may have turned away from it during a leading pivot)
+    lidar_front_half_angle: 0.60
+    # scan-only keys (unused with front_distance_topic, kept for a later LiDAR)
+    lidar_half_width: 0.18
+    lidar_min_valid_beams: 5
+    lidar_exclude_lead: true
+    lidar_lead_radius: 0.30
+    lidar_lead_min_points: 10
+    gap_hard_min: 0.08
+
+    # ---- depth_front node ----
+    depth_rate_hz: 10.0
+    depth_percentile: 5.0
+    depth_min_valid_ratio: 0.30   # fewer valid pixels in the band -> NaN
+    depth_scan_enabled: true
+    depth_scan_topic: ''          # -> /leader/depth_scan
+    depth_scan_rate_hz: 10.0
+    depth_scan_beams: 80          # 0.73 deg per beam (4 cm at 3 m)
+    depth_scan_min_valid_ratio: 0.20   # fewer valid pixels in a beam -> 0.0 (no return)
+
+    # ---- leading pivot (a path may START with an in-place rotation; never at the goal) ----
+    pivot_omega: 0.35             # rad/s, largest pivot rate (tracks slip: keep it low)
+    pivot_min_omega: 0.14         # rad/s, smallest pivot rate (2 steps of omega_quantum)
+    pivot_gain: 1.0               # 1/s, rate = gain * heading error
+    pivot_tol: 0.05               # rad, pivot done -> track the path
+    pivot_pos_tol: 0.10           # m, pivot only when standing this close to its position
+    pivot_timeout_s: 30.0         # not done by then: STOPPED STUCK (host re-plans)
+    # The heading must follow the commanded rotation, else STOPPED STUCK at once (IMU lost,
+    # tracks not turning, wrong angular_sign) instead of spinning blind until the timeout.
+    pivot_min_turn_ratio: 0.25    # half the worst executed/commanded yaw rate (~0.5)
+    pivot_check_rad: 0.8          # commanded rad before judging; must clear the rotation hidden
+                                  # in the pose delay (0.4 s x 0.35 rad/s = 0.14 rad) by noise
+    pivot_slack_rad: 0.5          # commanded-rotation budget = |initial error| / ratio + this
+
+    # ---- pick approach ----
+    # The shelf is straight ahead on the last stretch to a pick goal and during the pick
+    # itself. Exempt only on the straight run-in (rest of the path one line, heading along it
+    # within heading_free_rad) and within pick_approach_dist: the run-in length (host
+    # approach_len, 0.40 m) + shelf distance at the goal must exceed the stop distance
+    # (~lidar_stop_base), else the gate stops for the shelf before the run-in.
+    pick_approach_dist: 0.6       # pick_at_goal + this close to the goal: /{robot}/approach_active
+    front_pick_exempt: true       # gate: no front stop while approach_active
+    approach_timeout_s: 1.0
+
+    # ---- square up to the fixture face (core.face_align; preset face_align) ----
+    # At a goal facing a fixture (fixture_ahead: every pick goal) the arm grasps only with the
+    # leader square to the shelf face. On: when the goal position is reached, fit the face in
+    # the depth scan (points within face_align_window to either side, face_align_range ahead
+    # of the camera), turn in place by its angle (pivot rate law and monitor, the turn
+    # measured by the gyro on imu_topic, not the global heading), measure again; at most 3
+    # turns. Then HOLDING/PARKED with detail FACE_ALIGNED, or FACE_ALIGN_FAILED (no usable
+    # fit, turn failed, timeout: the rover never turns on a fit it does not trust).
+    # The face at the goal (0.15-0.25 m from the front) is inside the camera's minimum range
+    # (depth_valid_min_m): the last good fit of the straight run-in is used then, carried by
+    # the gyro, if not older than face_align_memory_s.
+    face_align: false
+    face_align_tol_rad: 0.026     # 1.5 deg: square
+    face_align_max_rad: 0.6       # larger fitted angle: not trusted, no turn
+    face_align_window: 0.20       # m, half width of the points used
+    face_align_range: [0.15, 0.90]  # m, ahead of the camera
+    face_align_min_points: 8
+    face_align_timeout_s: 10.0
+    face_align_memory_s: 15.0     # s, oldest run-in fit used at the goal (0.0 = scan at the goal only)
+
+    # ---- command watchdog (off in leader.launch.py: the base stops after ~0.5 s itself) ----
+    watchdog_timeout_s: 0.5
+    watchdog_rate_hz: 10.0
+    alive_rate_hz: 10.0
+    alive_topic: ''
+
+    # ---- rates ----
+    feedback_rate_hz: 5.0         # the leader pick code times out at 2 s; keep well above 0.5 Hz
+    gate_rate_hz: 50.0
+    state_rate_hz: 5.0
+
+    # ---- topics ('' = derived from robot) ----
+    cmd_vel_topic: ''             # tracker output -> /leader/cmd_vel (input of cmd_vel_mux)
+    input_topic: /cmd_vel_mux     # gate input = output of the existing cmd_vel_mux
+    output_topic: /cmd_vel        # gate output to the base
+    estop_topic: /estop
+    approach_topic: ''            # -> /leader/approach_active
+    safety_state_topic: ''        # -> /leader/safety_state
+    lead_gap_topic: ''            # -> /leader/lead_gap (only published with a scan)

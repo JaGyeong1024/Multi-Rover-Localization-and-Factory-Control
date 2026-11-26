@@ -1,0 +1,12 @@
+# Host device udev rules, copied to /etc/udev/rules.d/ by setup/setup.sh.
+# They create stable symlinks regardless of the laptop or USB port.
+
+# UWB dongle (CP210x, 10c4:ea60) -> /dev/ttyUWB.
+#   MODE=0666: access independent of group. ID_MM_DEVICE_IGNORE: ModemManager grabbing the
+#   serial port breaks the UWB connection.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="ttyUWB", MODE="0666", GROUP="dialout", ENV{ID_MM_DEVICE_IGNORE}="1"
+
+# Ceiling camera (Logitech BRIO, 046d:085e), RGB node (index 0) -> /dev/global_cam.
+#   The BRIO exposes several video nodes: VID:PID + index==0 selects the RGB one (the laptop's
+#   built-in camera has another VID, so it does not collide).
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="085e", ATTR{index}=="0", SYMLINK+="global_cam"

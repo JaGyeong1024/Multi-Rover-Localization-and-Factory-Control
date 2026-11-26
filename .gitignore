@@ -1,0 +1,39 @@
+# ROS 2 build artifacts and recordings
+build/
+install/
+log/
+rosbag2*/
+*.db3
+*.mcap
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv_yolo/
+.venv_omx_*/
+
+# Editor / OS
+*.swp
+*.swo
+.vscode/
+.idea/
+.DS_Store
+
+# Local files
+*.local
+*.tmp
+*.bak
+
+# Data: only the runtime model and camera calibration are tracked
+*.pt
+/data/*
+!/data/models/
+/data/models/*
+!/data/models/yolo11n-obb_2class_v3.pt
+!/data/calibration/
+/data/calibration/*
+!/data/calibration/calibration.yaml
+!/data/calibration/remap.npz
+!/data/calibration/charuco_intrinsics.npz

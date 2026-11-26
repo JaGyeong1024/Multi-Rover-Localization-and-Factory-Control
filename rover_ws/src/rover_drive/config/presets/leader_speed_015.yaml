@@ -1,0 +1,6 @@
+# Use when: 3 m straight at 0.15 m/s keeps the lateral error and the front stop margin within limits.
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="speed_015", launch: presets:=speed_015).
+/**:
+  ros__parameters:
+    max_linear_speed: 0.15
+    runin_lookaheads: 2.0

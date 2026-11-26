@@ -1,0 +1,5 @@
+# Use when: the depth scan maps the floor or the edge pipes as boxes; the host map then uses the follower LiDAR only.
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="depth_scan_off", launch: presets:=depth_scan_off).
+/**:
+  ros__parameters:
+    depth_scan_enabled: false

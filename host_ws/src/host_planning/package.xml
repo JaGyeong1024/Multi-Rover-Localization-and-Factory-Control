@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>host_planning</name>
+  <version>0.1.0</version>
+  <description>Pure-Python (numpy only, no rclpy) path generation library for the host: smooth start-to-goal curves, obstacle avoidance and follower platooning paths.</description>
+  <maintainer email="user@example.com">user</maintainer>
+  <license>Apache-2.0</license>
+
+  <exec_depend>python3-numpy</exec_depend>
+
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

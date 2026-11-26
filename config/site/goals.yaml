@@ -1,0 +1,12 @@
+# Named goal poses (uwb_global; x, y in m, theta in rad, CCW positive).
+# Park a rover at the spot and teach it:
+#   ros2 topic pub --once /mission/teach_goal std_msgs/String "data: 'leader:pick_gear'"
+# The coordinator overwrites this file on every teach (comments are not preserved).
+frame_id: uwb_global
+goals:
+  leader_standby: {x: 0.86, y: 1.45, theta: 3.14159}
+  follower_unload: {x: 0.86, y: 1.95, theta: 3.14159}
+  pick_gear: {x: 4.313, y: 1.166, theta: 0.0}
+  load_gear: {x: 4.283, y: 0.786, theta: 0.0}
+  pick_bolt: {x: 4.315, y: 2.14, theta: 0.0}
+  load_bolt: {x: 4.30, y: 1.76, theta: 0.0}

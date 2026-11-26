@@ -1,0 +1,5 @@
+# Use when: the leader's executed/commanded pivot yaw ratio is below 0.5 or it overshoots the pivot heading.
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="pivot_slow", launch: presets:=pivot_slow).
+/**:
+  ros__parameters:
+    pivot_omega: 0.25

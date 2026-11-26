@@ -1,0 +1,186 @@
+mp_control_node:
+  ros__parameters:
+    # ArUco mode assumes the robot is already close to the object.
+    # The aruco_mp_bridge publishes /target/object_in_base and starts mp_control.
+    bbox_topic: /target/tracked_bbox
+    fallback_bbox_topic: /target/init_bbox
+    eef_bbox_topic: /target/eef_tracked_bbox
+    eef_init_bbox_topic: /target/eef_init_bbox
+    depth_topic: /camera/depth/image_raw
+    camera_info_topic: /camera/color/camera_info_calibrated
+    eef_camera_info_topic: /eef_camera/camera_info
+    close_range_ready_topic: /target/close_range_ready
+    stable_object_topic: /target/object_in_base
+    twist_topic: /servo_node/delta_twist_cmds
+    joint_trajectory_topic: /arm_controller/joint_trajectory_raw
+    gripper_action_name: /gripper_controller/gripper_cmd
+    target_frame: base_link
+    eef_frame: end_effector_link
+    base_cmd_vel_topic: /cmd_vel
+    base_hold_topic: /target/base_hold
+    eef_auto_init_enable_topic: /target/eef_auto_init_enable
+    servo_start_service: /servo_node/start_servo
+
+    # ArUco bridge drives start/ready state. Do not auto-start from front bbox.
+    auto_start: false
+    auto_start_on_bbox: false
+    use_fallback_bbox_for_control: false
+    start_servo_on_start: false
+    open_gripper_on_start: true
+    close_gripper_on_arrival: true
+    require_visual_grasp_confirmation: false
+
+    # Bypass front depth/color approach. ArUco bridge supplies the close object.
+    wait_for_base_approach: false
+    require_close_range_ready_for_pregrasp: false
+    use_depthless_triangulation: false
+    use_color_triangulation_after_min_depth: false
+    use_stable_object_point: true
+
+    # This flag also gates joint pregrasp/arm motion in mp_control_node.
+    # Keep it enabled, while ArUco bridge supplies the object point.
+    use_eef_refinement: true
+    auto_init_eef_tracker_from_object: false
+    allow_eef_camera_info_fallback: true
+
+    command_rate_hz: 20.0
+    max_target_age_s: 2.0
+    close_range_ready_max_age_s: 2.0
+    linear_gain: 1.4
+    angular_gain: 1.4
+    max_linear_speed: 0.08
+    max_angular_speed: 0.25
+    position_tolerance_m: 0.035
+
+    # Match real robot arm-entry distance gates.
+    arm_start_max_object_x_m: 0.30
+    arm_start_max_error_m: 0.50
+    eef_refinement_start_object_x_m: 0.30
+    object_height_m: 0.12
+    object_width_m: 0.12
+    object_pregrasp_standoff_m: 0.06
+    object_pregrasp_min_z_m: 0.50
+    object_pregrasp_lower_standoff_m: 0.02
+    object_pregrasp_min_lower_z_m: 0.10
+    object_pregrasp_enable_lowering: true
+
+    # Keep the proven real-robot joint pregrasp values.
+    use_joint_pregrasp: true
+    # Joint4 follows the existing tool-pitch compensation while joints 2/3 extend.
+    hold_joint4_during_extension: false
+    pregrasp_ready_joint_positions: [0.0, 1.2, -2.65, -0.55]
+    pregrasp_preserve_gripper_roll: true
+    pregrasp_roll_joint2_weight: 1.0
+    pregrasp_roll_joint3_weight: 1.0
+    pregrasp_roll_joint4_weight: 1.0
+    pregrasp_reverse_joint3_delta: true
+    pregrasp_hold_current_duration_s: 0.0
+    pregrasp_move_duration_s: 1.0
+    pregrasp_joint2_max_step_rad: 0.12
+    pregrasp_joint3_max_step_rad: 0.20
+    pregrasp_joint4_max_step_rad: 0.12
+    pregrasp_joint3_lead_enabled: false
+    pregrasp_joint3_lead_duration_ratio: 0.45
+    pregrasp_joint3_lead_fraction: 0.25
+    pregrasp_sync_steps: 1
+    pregrasp_settle_s: 0.5
+    pregrasp_joint_tolerance_rad: 0.05
+    pregrasp_republish_period_s: 0.3
+    pregrasp_joint_min_positions: [-3.14, -1.5, -2.70, -1.79]
+    pregrasp_joint_max_positions: [3.14, 1.5, 1.38, 2.04]
+
+    # Keep final-forward enabled, but joint4 is never a completion gate.
+    eef_forward_after_align: true
+    eef_forward_distance_m: 0.08
+    eef_forward_speed_mps: 0.028
+    eef_forward_fixed_duration_s: 0.0
+    eef_forward_min_advance_before_close_m: 0.0
+    eef_forward_gate_timeout_s: 25.0
+    eef_forward_start_tolerance_px: 90.0
+    eef_forward_use_joint_nudge: true
+    eef_forward_joint2_delta_rad: 0.040
+    eef_forward_joint3_delta_rad: -0.070
+    eef_forward_joint_nudge_duration_s: 0.75
+    eef_forward_joint_nudge_period_s: 0.80
+    eef_forward_joint3_first_duration_ratio: 0.65
+    eef_forward_joint4_after_joint3_complete: false
+    eef_forward_joint3_complete_delta_rad: 0.06
+    eef_forward_joint3_complete_tolerance_rad: 0.035
+    eef_forward_joint4_finish_tolerance_rad: 0.08
+    eef_forward_use_analytic_ik: false
+    eef_forward_use_bezier_ik: true
+    eef_forward_ik_link2_x_m: 0.024
+    eef_forward_ik_link2_z_m: 0.128
+    eef_forward_ik_link3_m: 0.124
+    eef_forward_ik_tool_m: 0.126
+    eef_forward_ik_pitch_weight: 0.35
+    eef_forward_ik_damping: 0.03
+    eef_forward_ik_iterations: 16
+    eef_forward_bezier_total_duration_s: 5.0
+    eef_forward_bezier_progress_step: 0.08
+    eef_forward_bezier_joint2_total_delta_rad: 0.30
+    eef_forward_bezier_joint3_total_delta_rad: 0.05
+    eef_forward_bezier_joint2_max_step_rad: 0.070
+    eef_forward_bezier_joint3_max_step_rad: 0.090
+    eef_forward_bezier_joint4_max_step_rad: 0.090
+    eef_forward_bezier_preserve_roll: true
+    eef_forward_roll_joint2_weight: 1.0
+    eef_forward_roll_joint3_weight: 1.0
+    eef_forward_roll_joint4_weight: 1.0
+    eef_forward_joint4_rpy_roll_gain: 0.0
+    eef_forward_joint4_rpy_roll_max_delta_rad: 0.025
+    eef_forward_joint4_max_delta_rad: 0.0
+    eef_forward_joint4_ground_parallel_limit_rad: -0.95
+    eef_forward_joint4_ground_limit_tolerance_rad: 0.01
+    eef_forward_joint4_down_positive: true
+    gripper_down_joint4_offset_rad: 0.0
+    close_on_front_bbox_shrink: false
+    front_bbox_close_area_ratio: 0.55
+    close_on_eef_bbox_shrink: false
+    eef_bbox_close_area_ratio: 0.55
+    close_after_full_eef_forward_extension: true
+
+    # Gripper is sized from fallback/object width in ArUco mode.
+    gripper_open_position: 0.019
+    gripper_close_position: -0.010
+    gripper_max_effort: -1.0
+    gripper_width_control_enabled: true
+    gripper_fallback_object_width_m: 0.12
+    gripper_finger_home_half_gap_m: 0.021
+    gripper_pre_grasp_clearance_m: 0.012
+    gripper_grasp_width_scale: 0.97
+    gripper_grasp_clearance_m: 0.0
+    gripper_grasp_compression_m: 0.0
+    gripper_min_position: -0.010
+    gripper_max_position: 0.019
+    gripper_min_measured_object_width_m: 0.01
+    gripper_max_measured_object_width_m: 0.18
+
+    # Handoff follows the current real-profile behavior.
+    handoff_after_grasp: true
+    handoff_joint_trajectory_topic: /arm_controller/joint_trajectory
+    handoff_grasp_settle_s: 0.5
+    # Lift, turn, restore captured grasp height, open, and return to Stay.
+    handoff_lift_joint2_delta_rad: -0.55
+    handoff_retract_joint3_delta_rad: 0.0
+    handoff_retract_hold_z: false
+    handoff_restore_grasp_pose: true
+    handoff_lift_joint_tolerance_rad: 0.10
+    handoff_retract_distance_m: 0.05
+    handoff_retract_z_tolerance_m: 0.005
+    handoff_lower_before_release: true
+    handoff_lift_duration_s: 1.8
+    handoff_place_duration_s: 2.0
+    handoff_place_joint2_delta_rad: 0.55
+    handoff_joint_move_duration_s: 7.0
+    handoff_joint_settle_s: 0.4
+    handoff_republish_period_s: 0.25
+    handoff_rotate_angle_rad: -1.57079633
+    handoff_rotate_odd_angle_deg: -90.0
+    handoff_rotate_even_angle_deg: -90.0
+    handoff_center_joint1_before_rotate: false
+    handoff_joint1_center_target_rad: 0.0
+    handoff_joint1_center_tolerance_rad: 0.03
+    handoff_rotate_angular_speed_rad_s: 0.45
+    handoff_release_settle_s: 0.5
+    handoff_stay_joint_positions: [0.104311, 0.027612, -0.001534, -1.638291]

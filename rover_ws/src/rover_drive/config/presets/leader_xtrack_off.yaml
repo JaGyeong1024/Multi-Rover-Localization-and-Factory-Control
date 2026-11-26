@@ -1,0 +1,5 @@
+# Use when: the leader weaves on the 3 m straight with the integral term on.
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="xtrack_off", launch: presets:=xtrack_off).
+/**:
+  ros__parameters:
+    xtrack_integral_gain: 0.0

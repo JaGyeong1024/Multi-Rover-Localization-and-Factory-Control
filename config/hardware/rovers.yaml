@@ -1,0 +1,46 @@
+# Hardware overlay for mission.yaml (plain YAML, merged over it): rover body and arm geometry
+# as the host plans with it. Frame: tracked point, x forward, y left. Units: m.
+robots:
+  leader:
+    plan:
+      # (front, rear, half_width) from the tracked point: a 0.18 m square covers the tracked
+      # body plus the arm on top (corner radius 0.127). The tracked point is the rotation centre.
+      # Not taken from the camera's detected box: the box of a tall rover is stretched by
+      # parallax.
+      footprint: [0.09, 0.09, 0.09]
+      pivot_offset: 0.0       # rotation centre behind the tracked point (= rover ref_offset_x)
+      # Front-stop zone of the leader's gate (depth camera), so no pose is planned where the
+      # gate refuses to drive. [start, length, half_width]:
+      #   start 0.045 = camera ahead of the tracked point (sensor_mounts.yaml leader_depth
+      #         mount_x, the single source of the mount)
+      #   length 0.59 >= 0.5325 + 0.05: where LIDAR_SLOW starts at max_linear_speed 0.10
+      #         (lidar_to_front 0.0 + lidar_stop_base 0.50 + v * reaction 0.20 s
+      #         + v^2 / (2 * decel 0.40)), plus 0.05 heading / tracking margin
+      #   half_width 0.19 >= 0.59 * tan(12.6 deg) + 0.05: depth band columns 0.30-0.70 of the
+      #         58.4 deg view (depth_hfov) at the zone's far end, plus 0.05
+      # Only obstacles count (fixtures, mapped boxes, the other rover), never the bounds.
+      # The relations are asserted in host_mission/test/test_cross_config.py.
+      front_zone: [0.045, 0.59, 0.19]
+  follower:
+    cargo: [-0.05, 0.0, 0.20, 0.20]   # usable cargo area (x, y, length, width): the deck behind
+                                      # the LiDAR (0.10 ahead of the tracked point)
+    plan:
+      footprint: [0.15, 0.15, 0.155]  # centred box over the 0.281 x 0.306 body
+      pivot_offset: -0.063    # (= rover ref_offset_x) the rotation centre is 6.3 cm ahead of
+                              # the tracked point (pivot circle fit)
+      # Front-stop zone of the follower's gate (LiDAR corridor), see the leader.
+      #   start 0.0 = the tracked point, not the LiDAR (sensor_mounts.yaml follower_lidar
+      #         mount_x 0.10): with 0.10 the follower stood several seconds on the bolt return
+      #   length 0.33 >= 0.28 + 0.05: LIDAR_SLOW start at max_linear_speed 0.20
+      #         (lidar_to_front 0.08 + lidar_stop_base 0.12 + v * 0.20 s + v^2 / (2 * 0.50)),
+      #         plus 0.05 heading / tracking margin
+      #   half_width 0.20 = lidar_half_width 0.15 + 0.05
+      # While it follows the leader (shared path) the leader is left out, as the gate does
+      # (lidar_exclude_lead).
+      front_zone: [0.0, 0.33, 0.20]
+pick:
+  # Where the arm drops a part, in the leader's pick-goal frame (forward, left). The follower
+  # stands on the leader's right, ~5 cm behind the leader centre (arm joint1 turned -90 deg).
+  # 0.38 m centre spacing is ~0.14 m body gap, inside the arm's reach; the leader's turn out at
+  # the pick needs >= 0.306 m lateral spacing.
+  drop_point: [-0.08, -0.38]

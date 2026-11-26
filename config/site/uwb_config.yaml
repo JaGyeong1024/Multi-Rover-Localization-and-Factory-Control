@@ -1,0 +1,91 @@
+# UWB site settings (ROS parameter file): tag IDs, serial port, anchor positions and the
+# affine correction applied downstream of the raw UWB pose. Frame uwb_global. Units: m.
+uwb_reader_node:
+  ros__parameters:
+    port: "/dev/ttyUWB"
+    baud_rate: 115200
+    frame_id: "uwb_global"
+    # 4-hex short tag IDs. Pinned so plug-in order cannot swap the rovers (an empty leader ID
+    # would lock onto whichever tag powers up first). Empty follower ID = no follower channel.
+    leader_tag_id: "08BA"
+    follower_tag_id: "31D4"
+    marker_scale: 0.05            # visualization sphere diameter, about the real tag size
+
+uwb_site:
+  ros__parameters:
+    # Firmware z is not trusted. The raw /uwb/leader_pose stays unchanged; these constants are
+    # used downstream only.
+    tag_z_default: 0.185
+    tag_z_by_id:
+      - "08BA=0.185"      # leader tag, 18.5 cm mount height
+      - "31D4=0.090"      # follower tag, 9 cm mount height
+
+uwb_correction_node:
+  ros__parameters:
+    # One node corrects all robots -> /uwb/{robot}_pose_corrected.
+    robots: ["leader", "follower"]
+    leader:
+      input_topic: "/uwb/leader_pose"
+      output_topic: "/uwb/leader_pose_corrected"
+      # Affine fit on 36 static waypoints at z = 0.185 (leave-one-out error: mean 11.6 cm vs
+      # raw 15.9 cm). Single-cell NLOS spikes are not captured; gate on the filter residual.
+      model: "affine"
+      offset: [0.075407832, 0.079169054]
+      affine_x: [0.986821080, -0.019559413, 0.178495766]
+      affine_y: [0.010359302, 1.035218051, -0.061380870]
+      output_z_mode: "fixed"
+      fixed_z: 0.185
+      marker_topic: "/uwb/leader_marker_corrected"
+      marker_scale: 0.10  # larger than the raw marker, for comparison in RViz
+    follower:
+      # Reuses the leader's affine: it was fitted at the leader's tag height, so the
+      # follower tag's height component (z = 0.09) is not corrected (raw error 24.5 cm ->
+      # 16.4 cm). A follower-specific fit would be better.
+      input_topic: "/uwb/follower_pose"
+      output_topic: "/uwb/follower_pose_corrected"
+      model: "affine"
+      offset: [0.075407832, 0.079169054]
+      affine_x: [0.986821080, -0.019559413, 0.178495766]
+      affine_y: [0.010359302, 1.035218051, -0.061380870]
+      output_z_mode: "fixed"
+      fixed_z: 0.090
+      marker_topic: "/uwb/follower_marker_corrected"
+      marker_scale: 0.10
+
+anchor_publisher_node:
+  ros__parameters:
+    frame_id: "uwb_global"
+    # Anchor short IDs (4-hex) in the order of the physical labels #1..#4 (the publisher
+    # labels them "anchor_1" .. "anchor_4", matching firmware `la` seat 0..3).
+    anchor_ids: ["5E54", "1F1F", "2F65", "1C14"]
+    # Flat list, 3 values per anchor: x, y, z. Origin = room wall corner (not an anchor), room
+    # 6.9 x 6.2 m. Measured to the module surface indicator, not the antenna phase centre; the
+    # residual bias is absorbed by the affine correction.
+    anchor_positions:
+      # anchor_1 = 5E54
+      - 0.070
+      - 0.030
+      - 0.520
+      # anchor_2 = 1F1F
+      - 6.870
+      - 0.030
+      - 0.520
+      # anchor_3 = 2F65
+      - 6.870
+      - 6.130
+      - 0.520
+      # anchor_4 = 1C14
+      - 0.030
+      - 6.130
+      - 0.520
+    cube_size: 0.08
+    label_height: 0.20
+    # ROI = anchor bounding box shrunk inward by roi_buffer on each side, drawn at z = roi_z.
+    # roi_buffer 0.0 disables it.
+    roi_buffer: 0.5
+    roi_z: 0.0
+    # Waypoint grid inside the ROI, numbered row by row in a zigzag from row 0 col 0.
+    # rows x cols points; either < 2 disables it.
+    waypoint_rows: 6
+    waypoint_cols: 6
+    waypoint_z: 0.0

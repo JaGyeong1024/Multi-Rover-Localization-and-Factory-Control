@@ -1,0 +1,5 @@
+# Use when: the leader does not stop by itself for a box that covers only part of its width.
+# Overlay on config/leader.yaml, only the keys below change (start: PRESETS="front_memory", launch: presets:=front_memory). Needs the depth scan: no effect together with depth_scan_off.
+/**:
+  ros__parameters:
+    front_memory: true
